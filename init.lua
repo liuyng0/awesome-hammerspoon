@@ -8,9 +8,14 @@ if not privatepath then
     hs.fs.mkdir(hs.configdir .. '/private')
 end
 privateconf = hs.fs.pathToAbsolute(hs.configdir .. '/private/config.lua')
+customconf = hs.fs.pathToAbsolute(hs.configdir .. '/custom.lua')
 if privateconf then
     -- Load awesomeconfig file if exists
     require('private/config')
+end
+
+if customconf then
+   require('custom')
 end
 
 hsreload_keys = hsreload_keys or {{"cmd", "shift", "ctrl"}, "R"}
