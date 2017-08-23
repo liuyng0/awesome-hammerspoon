@@ -39,10 +39,10 @@ hsapp_list = {
 }
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
-hsupervisor_keys = {{"cmd", "shift", "ctrl"}, "Q"}
+hsupervisor_keys = {{"alt", "shift", "ctrl"}, "Q"}
 
 -- Reload Hammerspoon configuration
-hsreload_keys = {{"cmd", "shift", "ctrl"}, "R"}
+hsreload_keys = {{"alt", "shift", "ctrl"}, "R"}
 
 -- Toggle help panel of this configuration.
 hshelp_keys = {{"alt", "shift"}, "/"}
@@ -60,7 +60,7 @@ hswhints_keys = {"alt", "tab"}
 
 -- appM environment keybinding: Application Launcher
 -- hsappM_keys = {"alt", "A"}
-hsappM_keys = {"", ""}
+hsappM_keys = {{"alt", "shift", "ctrl"}, "L"}
 
 -- clipshowM environment keybinding: System clipboard reader
 -- hsclipsM_keys = {"alt", "C"}
