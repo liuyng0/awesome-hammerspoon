@@ -88,8 +88,7 @@ hslock_keys = {{"alt", "shift", "ctrl"}, "."}
 
 -- resizeM environment keybinding: Windows manipulation
 -- hsresizeM_keys = {"alt", "R"}
--- hsresizeM_keys = {{"alt", "shift", "ctrl"}, "W"}
-hsresizeM_keys = {"", ""}
+hsresizeM_keys = {{"alt", "shift", "ctrl"}, "W"}
 
 -- cheatsheetM environment keybinding: Cheatsheet copycat
 -- hscheats_keys = {"alt", "S"}
