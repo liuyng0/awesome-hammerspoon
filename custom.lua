@@ -45,7 +45,7 @@ hsupervisor_keys = {{"alt", "shift", "ctrl"}, "Q"}
 hsreload_keys = {{"alt", "shift", "ctrl"}, "R"}
 
 -- Toggle help panel of this configuration.
-hshelp_keys = {{"alt", "shift"}, "/"}
+hshelp_keys = {{"alt", "shift", "ctrl"}, "/"}
 
 -- aria2 RPC host address
 hsaria2_host = "http://localhost:6800/jsonrpc"
@@ -64,7 +64,7 @@ hsappM_keys = {{"alt", "shift", "ctrl"}, "L"}
 
 -- clipshowM environment keybinding: System clipboard reader
 -- hsclipsM_keys = {"alt", "C"}
-hsclipsM_keys = {"", ""}
+hsclipsM_keys = {{"alt", "shift", "ctrl"}, "C"}
 
 -- Toggle the display of aria2 frontend
 -- hsaria2_keys = {"alt", "D"}
@@ -72,22 +72,23 @@ hsaria2_keys = {"", ""}
 
 -- Launch Hammerspoon Search
 -- hsearch_keys = {"alt", "G"}
-hsearch_keys = {"", ""}
+hsearch_keys = {{"alt", "shift", "ctrl"}, "S"}
 
 -- Read Hammerspoon and Spoons API manual in default browser
 -- hsman_keys = {"alt", "H"}
-hsman_keys = {"", ""}
+hsman_keys = {{"alt", "shift", "ctrl"}, "H"}
 
 -- countdownM environment keybinding: Visual countdown
 -- hscountdM_keys = {"alt", "I"}
-hscountdM_keys = {"", ""}
+hscountdM_keys = {{"alt", "shift", "ctrl"}, "I"}
 
 -- Lock computer's screen
 -- hslock_keys = {"alt", "L"}
-hslock_keys = {"", ""}
+hslock_keys = {{"alt", "shift", "ctrl"}, "."}
 
 -- resizeM environment keybinding: Windows manipulation
 -- hsresizeM_keys = {"alt", "R"}
+-- hsresizeM_keys = {{"alt", "shift", "ctrl"}, "W"}
 hsresizeM_keys = {"", ""}
 
 -- cheatsheetM environment keybinding: Cheatsheet copycat
@@ -96,7 +97,7 @@ hscheats_keys = {"", ""}
 
 -- Show digital clock above all windows
 -- hsaclock_keys = {"alt", "T"}
-hsaclock_keys = {"", ""}
+hsaclock_keys = {{"alt", "shift", "ctrl"}, "T"}
 
 -- Type the URL and title of the frontmost web page open in Google Chrome or Safari.
 -- hstype_keys = {"alt", "V"}
@@ -104,4 +105,4 @@ hstype_keys = {"", ""}
 
 -- Toggle Hammerspoon console
 -- hsconsole_keys = {"alt", "Z"}
-hsconsole_keys = {"", ""}
+hsconsole_keys = {{"alt", "shift", "ctrl"}, "C"}
