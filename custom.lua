@@ -1,14 +1,14 @@
 -- Specify Spoons which will be loaded
 hspoon_list = {
    "AClock",
-   "BingDaily",
+   -- "BingDaily",
    -- "Calendar",
-   "CircleClock",
-   "ClipShow",
-   "CountDown",
-   "FnMate",
-   "HCalendar",
-   "HSaria2",
+   -- "CircleClock",
+   -- "ClipShow",
+   -- "CountDown",
+   -- "FnMate",
+   -- "HCalendar",
+   -- "HSaria2",
    "HSearch",
    -- "KSheet",
    "SpeedMenu",
@@ -23,10 +23,13 @@ hsapp_list = {
    {key = 'i', name = 'iTerm'},
    {key = 'c', id = 'com.google.Chrome'},
    {key = 'f', name = 'Finder'},
-   {key = 'd', name = 'ShadowsocksX'},
+   {key = 's', name = 'ShadowsocksX'},
+   {key = 'd', name = 'Dash'},
+   {key = 'x', name = 'XMind'},
    {key = 'v', id = 'com.apple.ActivityMonitor'},
    {key = 'k', name = 'KeyCastr'},
    {key = 'y', id = 'com.apple.systempreferences'},
+   {key = 'p', name = 'Preview'},
 }
 
 hyper1 = {"ctrl", "shift", "alt"}
