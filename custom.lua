@@ -30,6 +30,7 @@ hsapp_list = {
    {key = 'k', name = 'KeyCastr'},
    {key = 'y', id = 'com.apple.systempreferences'},
    {key = 'p', name = 'Preview'},
+   {key = 'o', name = 'Xcode'},
 }
 
 hyper1 = {"ctrl", "shift", "alt"}
