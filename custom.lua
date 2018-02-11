@@ -26,12 +26,12 @@ hsapp_list = {
    {key = 's', name = 'ShadowsocksX'},
    {key = 'd', name = 'Dash'},
    {key = 'x', name = 'XMind'},
-   {key = 'v', id = 'com.apple.ActivityMonitor'},
+   {key = 'm', id = 'com.apple.ActivityMonitor'},
    {key = 'k', name = 'KeyCastr'},
    {key = 'y', id = 'com.apple.systempreferences'},
-   {key = 'p', name = 'Preview'},
+   {key = 'v', name = 'Preview'},
    {key = 'o', name = 'Xcode'},
-   {key = 'm', name = 'Activity Monitor'},
+   {key = 'p', name = 'PDF Professional'},
 }
 
 hyper1 = {"ctrl", "shift", "alt"}
