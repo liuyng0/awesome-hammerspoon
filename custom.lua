@@ -32,6 +32,7 @@ hsapp_list = {
    {key = 'v', name = 'Preview'},
    {key = 'o', name = 'Xcode'},
    {key = 'p', name = 'PDF Professional'},
+   {key = 'r', name = 'Firefox'},
 }
 
 hyper1 = {"ctrl", "shift", "alt"}
