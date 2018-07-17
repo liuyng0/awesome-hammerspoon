@@ -18,6 +18,49 @@ if customconf then
    require('custom')
 end
 
+
+function pathInfo(path)
+   local len = string.len(path)
+   local pos = len
+   local extpos = len+1
+   while pos > 0 do
+      local b = string.byte(path, pos)
+      if b == 46 and extpos ~= len+1 then -- 46 = char "."
+         extpos = pos
+      elseif b == 47 then -- 47 = char "/"
+         break
+      end
+      pos = pos - 1
+   end
+   local dirname = string.sub(path, 1, pos)
+   local filename = string.sub(path, pos + 1)
+   extpos = extpos - pos
+   local basename = string.sub(filename, 1, extpos - 1)
+   local extname = string.sub(filename, extpos)
+   return {
+      dirname = dirname,
+      filename = filename,
+      basename = basename,
+      extname = extname
+   }
+end
+
+function reloadConfig(files)
+   doReload = false
+   for _,file in pairs(files) do
+      if file:sub(-4) == ".lua" and pathInfo(file)["basename"]:sub(0,2) ~= ".#" then
+         doReload = true
+      end
+   end
+   if doReload then
+      myWatcher:stop()
+      hs.reload()
+   end
+end
+
+myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
+myWatcher:start()
+
 hsreload_keys = hsreload_keys or {{"cmd", "shift", "ctrl"}, "R"}
 if string.len(hsreload_keys[2]) > 0 then
     hs.hotkey.bind(hsreload_keys[1], hsreload_keys[2], "Reload Configuration", function() hs.reload() end)
@@ -287,6 +330,7 @@ if spoon.WinWin then
     cmodal:bind('', 'up', 'Move to Above Monitor', function() spoon.WinWin:stash() spoon.WinWin:moveToScreen("up") end)
     cmodal:bind('', 'down', 'Move to Below Monitor', function() spoon.WinWin:stash() spoon.WinWin:moveToScreen("down") end)
     cmodal:bind('', 'space', 'Move to Next Monitor', function() spoon.WinWin:stash() spoon.WinWin:moveToScreen("next") end)
+    cmodal:bind('', 'M', 'Move to Next Monitor', function() spoon.WinWin:stash() spoon.WinWin:moveToScreen("next") end)
     cmodal:bind('', '[', 'Undo Window Manipulation', function() spoon.WinWin:undo() end)
     cmodal:bind('', ']', 'Redo Window Manipulation', function() spoon.WinWin:redo() end)
     cmodal:bind('', '`', 'Center Cursor', function() spoon.WinWin:centerCursor() end)
@@ -364,3 +408,53 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Finally we initialize ModalMgr supervisor
 spoon.ModalMgr.supervisor:enter()
+
+hs.hotkey.bind(hyper3, 'L', "Lock sceen", function() hs.caffeinate.lockScreen() end)
+
+function screenOperation(nextCount)
+   local focusedWindow = hs.window.focusedWindow()
+   local focusedApp = focusedWindow:application()
+   -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
+   local thisAppWindows = focusedApp:allWindows()
+   local windowAngle = {}
+
+   for _, w in pairs(thisAppWindows) do
+      local frame = w:frame()
+      local angle = math.atan(-(frame.y+frame.h), (frame.w+frame.x))
+      -- hs.alert.show(string.format("%f, %s", angle, w:title())) 
+      table.insert(windowAngle, {
+         window = w,
+         clockwise_angle = angle
+      })
+   end
+
+   -- for _, w in pairs(windowAngle) do
+   --    hs.alert.show(string.format("before: %s, %f", w["window"]:title(), w["clockwise_angle"]))
+   -- end
+   table.sort(windowAngle, function(a, b)
+                 return a["clockwise_angle"] > b["clockwise_angle"]
+   end)
+   -- for _, w in pairs(windowAngle) do
+   --    hs.alert.show(string.format("after: %s, %f", w["window"]:title(), w["clockwise_angle"]))
+   -- end
+
+   local thisWindowIndex = 1
+   local numWindows=#windowAngle
+   for i = 1, numWindows do
+      -- hs.alert.show(string.format("The loop window is %s", windowAngle[i]["window"]:title()))
+      if focusedWindow == windowAngle[i]["window"] then
+         thisWindowIndex = i
+         break
+      end
+   end
+   local nextIndex = ((thisWindowIndex - 1 + numWindows + nextCount) % numWindows) + 1
+   -- hs.alert.show(string.format("The next window is:%s", windowAngle[nextIndex]["window"]:title()))
+   windowAngle[nextIndex]["window"]:focus()
+end
+
+hs.hotkey.bind(hyper2, '-', "Cycle previous screen", function() screenOperation(-1) end)
+hs.hotkey.bind(hyper2, '=', "Cycle next screen", function() screenOperation(1) end)
+
+-- Keep this line as the last line.
+hs.alert.show("Hammerspoon config loaded")
+

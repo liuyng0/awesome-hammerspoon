@@ -38,6 +38,7 @@ hsapp_list = {
 
 hyper1 = {"ctrl", "shift", "alt"}
 hyper2 = "cmd"
+hyper3 = {"ctrl", "alt"}
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
 hsupervisor_keys = {hyper1, "Q"}
