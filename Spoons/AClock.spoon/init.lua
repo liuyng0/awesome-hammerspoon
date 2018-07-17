@@ -37,7 +37,7 @@ function obj:toggleShow()
         self.timer = nil
         self.canvas:hide()
     else
-        local mainScreen = hs.screen.mainScreen()
+        local mainScreen = hs.screen.primaryScreen()
         local mainRes = mainScreen:fullFrame()
         self.canvas:frame({
             x = (mainRes.w-300)/2,
