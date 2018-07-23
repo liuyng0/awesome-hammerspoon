@@ -86,7 +86,7 @@ hscountdM_keys = {hyper1, "I"}
 
 -- Lock computer's screen
 -- hslock_keys = {"alt", "L"}
-hslock_keys = {hyper1, "."}
+hslock_keys = {hyper1, "L"}
 
 -- resizeM environment keybinding: Windows manipulation
 -- hsresizeM_keys = {"alt", "R"}

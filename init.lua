@@ -409,8 +409,6 @@ end
 -- Finally we initialize ModalMgr supervisor
 spoon.ModalMgr.supervisor:enter()
 
-hs.hotkey.bind(hyper3, 'L', "Lock sceen", function() hs.caffeinate.lockScreen() end)
-
 function screenOperation(nextCount)
    local focusedWindow = hs.window.focusedWindow()
    local focusedApp = focusedWindow:application()
