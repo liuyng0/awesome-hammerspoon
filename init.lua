@@ -451,8 +451,8 @@ function screenOperation(nextCount)
    -- hs.alert.show(string.format("Cycle %d screen to %s", nextCount, windowAngle[nextIndex]["window"]:title()))
 end
 
-hs.hotkey.bind(hyper2, 'J', "Switch to previous screen(same application)", function() screenOperation(-1) end)
-hs.hotkey.bind(hyper2, 'K', "Switch to next screen(same application)", function() screenOperation(1) end)
+hs.hotkey.bind(hyper2, 'K', "Switch to previous screen(same application)", function() screenOperation(-1) end)
+hs.hotkey.bind(hyper2, 'J', "Switch to next screen(same application)", function() screenOperation(1) end)
 
 -- Keep this line as the last line.
 hs.alert.show("Hammerspoon config loaded")
