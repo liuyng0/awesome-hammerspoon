@@ -405,54 +405,48 @@ if string.len(hsconsole_keys[2]) > 0 then
     spoon.ModalMgr.supervisor:bind(hsconsole_keys[1], hsconsole_keys[2], "Toggle Hammerspoon Console", function() hs.toggleConsole() end)
 end
 
+if spoon.Screen then
+    spoon.ModalMgr:new("screenM")
+    local cmodal = spoon.ModalMgr.modal_list["screenM"]
+    cmodal:bind('', 'escape', 'Deactivate screenM', function()
+                   spoon.ModalMgr:deactivate({"screenM"})
+    end)
+    cmodal:bind('', 'Q', 'Deactivate screenM', function()
+                   spoon.ModalMgr:deactivate({"screenM"})
+    end)
+
+    cmodal:bind('', 'N', 'Switch to Next Screen (Clockwise)', function()
+                   spoon.Screen:screenOperation(1)
+                   spoon.ModalMgr:deactivate({"screenM"})
+    end)
+    cmodal:bind('', 'P', 'Switch to Previous Screen (Clockwise)', function()
+                   spoon.Screen:screenOperation(-1)
+                   spoon.ModalMgr:deactivate({"screenM"})
+    end)
+    cmodal:bind('', 'H', "Toggle Window Highlight Mode", function()
+                   spoon.Screen:toggleWindowHighlightMode()
+                   spoon.ModalMgr:deactivate({"screenM"})
+    end)
+    cmodal:bind('', 'I', "Toggle Window Isolate Mode", function()
+                   hs.window.highlight.toggleIsolate()
+                   spoon.ModalMgr:deactivate({"screenM"})
+    end)
+
+    -- Register screenM with modal supervisor
+    hsscreenM_keys = hsscreenM_keys or {"cmd", "J"}
+    if string.len(hsscreenM_keys[2]) > 0 then
+        spoon.ModalMgr.supervisor:bind(hsscreenM_keys[1], hsscreenM_keys[2], "Enter screenM Environment", function()
+            spoon.ModalMgr:deactivateAll()
+            -- Show the keybindings cheatsheet once screenM is activated
+            spoon.ModalMgr:activate({"screenM"}, "#FF6347", true)
+        end)
+    end
+end
+
 ----------------------------------------------------------------------------------------------------
 -- Finally we initialize ModalMgr supervisor
 spoon.ModalMgr.supervisor:enter()
 
-function screenOperation(nextCount)
-   local focusedWindow = hs.window.focusedWindow()
-   local focusedApp = focusedWindow:application()
-   -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
-   local thisAppWindows = focusedApp:allWindows()
-   local windowAngle = {}
-
-   for _, w in pairs(thisAppWindows) do
-      local frame = w:frame()
-      local angle = math.atan(-(frame.y+frame.h), (frame.w+frame.x))
-      -- hs.alert.show(string.format("%f, %s", angle, w:title())) 
-      table.insert(windowAngle, {
-         window = w,
-         clockwise_angle = angle
-      })
-   end
-
-   -- for _, w in pairs(windowAngle) do
-   --    hs.alert.show(string.format("before: %s, %f", w["window"]:title(), w["clockwise_angle"]))
-   -- end
-   table.sort(windowAngle, function(a, b)
-                 return a["clockwise_angle"] > b["clockwise_angle"]
-   end)
-   -- for _, w in pairs(windowAngle) do
-   --    hs.alert.show(string.format("after: %s, %f", w["window"]:title(), w["clockwise_angle"]))
-   -- end
-
-   local thisWindowIndex = 1
-   local numWindows=#windowAngle
-   for i = 1, numWindows do
-      -- hs.alert.show(string.format("The loop window is %s", windowAngle[i]["window"]:title()))
-      if focusedWindow == windowAngle[i]["window"] then
-         thisWindowIndex = i
-         break
-      end
-   end
-   local nextIndex = ((thisWindowIndex - 1 + numWindows + nextCount) % numWindows) + 1
-   -- hs.alert.show(string.format("The next window is:%s", windowAngle[nextIndex]["window"]:title()))
-   windowAngle[nextIndex]["window"]:focus()
-   -- hs.alert.show(string.format("Cycle %d screen to %s", nextCount, windowAngle[nextIndex]["window"]:title()))
-end
-
-hs.hotkey.bind(hyper2, 'K', "Switch to previous screen(same application)", function() screenOperation(-1) end)
-hs.hotkey.bind(hyper2, 'J', "Switch to next screen(same application)", function() screenOperation(1) end)
 
 -- Keep this line as the last line.
 hs.alert.show("Hammerspoon config loaded")

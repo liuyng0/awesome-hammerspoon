@@ -5,7 +5,7 @@ hspoon_list = {
    -- "Calendar",
    -- "CircleClock",
    -- "ClipShow",
-   -- "CountDown",
+   "CountDown",
    -- "FnMate",
    -- "HCalendar",
    -- "HSaria2",
@@ -15,6 +15,7 @@ hspoon_list = {
    -- "TimeFlow",
    -- "UnsplashZ",
    "WinWin",
+   'Screen',
 }
 
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.
@@ -107,3 +108,5 @@ hstype_keys = {"", ""}
 -- Toggle Hammerspoon console
 -- hsconsole_keys = {"alt", "Z"}
 hsconsole_keys = {hyper1, "C"}
+
+hsscreenM_keys = {hyper2, "J"}
