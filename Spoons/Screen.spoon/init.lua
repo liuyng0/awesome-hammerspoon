@@ -46,9 +46,9 @@ function obj:screenOperation(nextCount)
    end
    local nextIndex = ((thisWindowIndex - 1 + numWindows + nextCount) % numWindows) + 1
    -- hs.alert.show(string.format("The next window is:%s", windowAngle[nextIndex]["window"]:title()))
-   windowAngle[nextIndex]["window"]:focus()
    hs.alert.closeAll()
-   local alertUUid = hs.alert.show("Current Screen")
+   local alertUUid = hs.alert.show("Current Screen", hs.alert.defaultStyle, windowAngle[nextIndex]["window"]:screen())
+   windowAngle[nextIndex]["window"]:focus()
    -- hs.alert.closeSpecific(alertUUid, 2)
 end
 
