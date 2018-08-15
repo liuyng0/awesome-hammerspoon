@@ -99,7 +99,17 @@ hswhints_keys = hswhints_keys or {"alt", "tab"}
 if string.len(hswhints_keys[2]) > 0 then
     spoon.ModalMgr.supervisor:bind(hswhints_keys[1], hswhints_keys[2], 'Show Window Hints', function()
         spoon.ModalMgr:deactivateAll()
-        hs.hints.windowHints()
+        hs.hints.windowHints(
+           nil,
+           function(win)
+              hs.alert.show(
+                 string.format("Focuse to: %s", win:title()),
+                 hs.alert.defaultStyle,
+                 hs.screen.mainScreen(),
+                 0.5
+              )
+              win.focus()
+        end)
     end)
 end
 
