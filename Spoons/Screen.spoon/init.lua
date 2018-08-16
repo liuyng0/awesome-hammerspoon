@@ -63,14 +63,24 @@ function obj:focusWindowOnNextScreen(nextCount)
    end
 end
 
-function obj:sameAppWindowInNextScreen(nextCount)
-   local focusedWindow = hs.window.focusedWindow()
-   local focusedApp = focusedWindow:application()
-   -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
-   local thisAppWindows = focusedApp:allWindows()
+function obj:sortedWindows()
+   local windowAngle = obj:_sortedWindows(hs.window.allWindows())
+   local windows = {}
+   for _, w in pairs(windowAngle) do
+      table.insert(windows, w["window"])
+   end
+
+   for _, w in pairs(windows) do
+      hs.alert.show(string.format("window:%s", w:title()))
+   end
+
+   return windows
+end
+
+function obj:_sortedWindows(wins)
    local windowAngle = {}
 
-   for _, w in pairs(thisAppWindows) do
+   for _, w in pairs(wins) do
       local frame = w:frame()
       local angle = math.atan(-(frame.y+frame.h), (frame.w+frame.x))
       -- hs.alert.show(string.format("%f, %s", angle, w:title())) 
@@ -86,10 +96,16 @@ function obj:sameAppWindowInNextScreen(nextCount)
    table.sort(windowAngle, function(a, b)
                  return a["clockwise_angle"] > b["clockwise_angle"]
    end)
-   -- for _, w in pairs(windowAngle) do
-   --    hs.alert.show(string.format("after: %s, %f", w["window"]:title(), w["clockwise_angle"]))
-   -- end
 
+   return windowAngle
+end
+
+function obj:sameAppWindowInNextScreen(nextCount)
+   local focusedWindow = hs.window.focusedWindow()
+   local focusedApp = focusedWindow:application()
+   -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
+   
+   local windowAngle = obj:_sortedWindows(focusedApp:allWindows())
    local thisWindowIndex = 1
    local numWindows=#windowAngle
    for i = 1, numWindows do

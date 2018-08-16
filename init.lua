@@ -103,7 +103,7 @@ if string.len(hswhints_keys[2]) > 0 then
     spoon.ModalMgr.supervisor:bind(hswhints_keys[1], hswhints_keys[2], 'Show Window Hints', function()
         spoon.ModalMgr:deactivateAll()
         spoon.Hints:windowHints(
-           nil,
+           spoon.Screen:sortedWindows(),
            function(win)
               win:raise()
               win:focus()

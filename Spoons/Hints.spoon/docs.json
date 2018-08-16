@@ -8,15 +8,15 @@
     ],
     "Function" : [
       {
-        "doc" : "Displays a keyboard hints for switching focus to each window\n\nParameters:\n * windows - An optional table containing some `hs.window` objects. If this value is nil, all windows will be hintsed\n * callback - An optional function that will be called when a window has been selected by the user. The function will be called with a single argument containing the `hs.window` object of the window chosen by the user\n * allowNonStandard - An optional boolean.  If true, all windows will be included, not just standard windows\n\nReturns:\n * None\n\nNotes:\n * If there are more windows open than there are characters available in Hints.hintsChars, multiple characters will be used\n * If Hints.style is set to \"vimperator\", every window hints is prefixed with the first character of the parent application's name\n * To display Hints only for the currently focused application, try something like:\n  * `Hints:windowHints(hs.window.focusedWindow():application():allWindows())`",
+        "desc" : "Displays a keyboard hints for switching focus to each window",
         "stripped_doc" : [
           "Displays a keyboard hints for switching focus to each window",
           ""
         ],
         "def" : "Hints:windowHints([windows, callback, allowNonStandard])",
-        "desc" : "Displays a keyboard hints for switching focus to each window",
+        "doc" : "Displays a keyboard hints for switching focus to each window\n\nParameters:\n * windows - An optional table containing some `hs.window` objects. If this value is nil, all windows will be hintsed\n * callback - An optional function that will be called when a window has been selected by the user. The function will be called with a single argument containing the `hs.window` object of the window chosen by the user\n * allowNonStandard - An optional boolean.  If true, all windows will be included, not just standard windows\n\nReturns:\n * None\n\nNotes:\n * If there are more windows open than there are characters available in Hints.hintChars, multiple characters will be used\n * If Hints.style is set to \"vimperator\", every window hints is prefixed with the first character of the parent application's name\n * To display Hints only for the currently focused application, try something like:\n  * `Hints:windowHints(hs.window.focusedWindow():application():allWindows())`",
         "notes" : [
-          " * If there are more windows open than there are characters available in Hints.hintsChars, multiple characters will be used",
+          " * If there are more windows open than there are characters available in Hints.hintChars, multiple characters will be used",
           " * If Hints.style is set to \"vimperator\", every window hints is prefixed with the first character of the parent application's name",
           " * To display Hints only for the currently focused application, try something like:",
           "  * `Hints:windowHints(hs.window.focusedWindow():application():allWindows())`"
@@ -38,34 +38,34 @@
     ],
     "Variable" : [
       {
-        "doc" : "This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map\nThe default is the letters A-Z. Note that if `obj.style` is set to \"vimperator\", this variable will be ignored.",
+        "desc" : "This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map",
         "stripped_doc" : [
           "This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map",
           "The default is the letters A-Z. Note that if `obj.style` is set to \"vimperator\", this variable will be ignored."
         ],
-        "def" : "Hints.hintsChars",
-        "desc" : "This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map",
+        "def" : "Hints.hintChars",
+        "doc" : "This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map\nThe default is the letters A-Z. Note that if `obj.style` is set to \"vimperator\", this variable will be ignored.",
         "notes" : [
 
         ],
-        "signature" : "Hints.hintsChars",
+        "signature" : "Hints.hintChars",
         "type" : "Variable",
         "returns" : [
 
         ],
-        "name" : "hintsChars",
+        "name" : "hintChars",
         "parameters" : [
 
         ]
       },
       {
-        "doc" : "If this is set to \"vimperator\", every window hints starts with the first character\nof the parent application's title",
+        "desc" : "If this is set to \"vimperator\", every window hints starts with the first character",
         "stripped_doc" : [
           "If this is set to \"vimperator\", every window hints starts with the first character",
           "of the parent application's title"
         ],
         "def" : "Hints.style",
-        "desc" : "If this is set to \"vimperator\", every window hints starts with the first character",
+        "doc" : "If this is set to \"vimperator\", every window hints starts with the first character\nof the parent application's title",
         "notes" : [
 
         ],
@@ -80,13 +80,13 @@
         ]
       },
       {
-        "doc" : "A fully specified family-face name, preferrably the PostScript name, such as Helvetica-BoldOblique or Times-Roman. (The Font Book app displays PostScript names of fonts in the Font Info panel.)\nThe default value is the system font",
+        "desc" : "A fully specified family-face name, preferrably the PostScript name, such as Helvetica-BoldOblique or Times-Roman. (The Font Book app displays PostScript names of fonts in the Font Info panel.)",
         "stripped_doc" : [
           "A fully specified family-face name, preferrably the PostScript name, such as Helvetica-BoldOblique or Times-Roman. (The Font Book app displays PostScript names of fonts in the Font Info panel.)",
           "The default value is the system font"
         ],
         "def" : "Hints.fontName",
-        "desc" : "A fully specified family-face name, preferrably the PostScript name, such as Helvetica-BoldOblique or Times-Roman. (The Font Book app displays PostScript names of fonts in the Font Info panel.)",
+        "doc" : "A fully specified family-face name, preferrably the PostScript name, such as Helvetica-BoldOblique or Times-Roman. (The Font Book app displays PostScript names of fonts in the Font Info panel.)\nThe default value is the system font",
         "notes" : [
 
         ],
@@ -101,12 +101,12 @@
         ]
       },
       {
-        "doc" : "The size of font that should be used. A value of 0.0 will use the default size.",
+        "desc" : "The size of font that should be used. A value of 0.0 will use the default size.",
         "stripped_doc" : [
           "The size of font that should be used. A value of 0.0 will use the default size."
         ],
         "def" : "Hints.fontSize",
-        "desc" : "The size of font that should be used. A value of 0.0 will use the default size.",
+        "doc" : "The size of font that should be used. A value of 0.0 will use the default size.",
         "notes" : [
 
         ],
@@ -121,13 +121,13 @@
         ]
       },
       {
-        "doc" : "If there are less than or equal to this many windows on screen their titles will be shown in the obj.\nThe default is 4. Setting to 0 will disable this feature.",
+        "desc" : "If there are less than or equal to this many windows on screen their titles will be shown in the obj.",
         "stripped_doc" : [
           "If there are less than or equal to this many windows on screen their titles will be shown in the obj.",
           "The default is 4. Setting to 0 will disable this feature."
         ],
         "def" : "Hints.showTitleThresh",
-        "desc" : "If there are less than or equal to this many windows on screen their titles will be shown in the obj.",
+        "doc" : "If there are less than or equal to this many windows on screen their titles will be shown in the obj.\nThe default is 4. Setting to 0 will disable this feature.",
         "notes" : [
 
         ],
@@ -142,12 +142,12 @@
         ]
       },
       {
-        "doc" : "If the title is longer than maxSize, the string is truncated, -1 to disable, valid value is >= 6",
+        "desc" : "If the title is longer than maxSize, the string is truncated, -1 to disable, valid value is >= 6",
         "stripped_doc" : [
           "If the title is longer than maxSize, the string is truncated, -1 to disable, valid value is >= 6"
         ],
         "def" : "Hints.titleMaxSize",
-        "desc" : "If the title is longer than maxSize, the string is truncated, -1 to disable, valid value is >= 6",
+        "doc" : "If the title is longer than maxSize, the string is truncated, -1 to disable, valid value is >= 6",
         "notes" : [
 
         ],
@@ -165,11 +165,11 @@
     "stripped_doc" : [
 
     ],
-    "desc" : "Switch focus with a transient per-application keyboard shortcut",
-    "type" : "Module",
     "Deprecated" : [
 
     ],
+    "desc" : "Switch focus with a transient per-application keyboard shortcut",
+    "type" : "Module",
     "Constructor" : [
 
     ],
@@ -179,19 +179,16 @@
     "Method" : [
 
     ],
-    "Command" : [
-
-    ],
     "doc" : "Switch focus with a transient per-application keyboard shortcut",
     "items" : [
       {
-        "doc" : "A fully specified family-face name, preferrably the PostScript name, such as Helvetica-BoldOblique or Times-Roman. (The Font Book app displays PostScript names of fonts in the Font Info panel.)\nThe default value is the system font",
+        "desc" : "A fully specified family-face name, preferrably the PostScript name, such as Helvetica-BoldOblique or Times-Roman. (The Font Book app displays PostScript names of fonts in the Font Info panel.)",
         "stripped_doc" : [
           "A fully specified family-face name, preferrably the PostScript name, such as Helvetica-BoldOblique or Times-Roman. (The Font Book app displays PostScript names of fonts in the Font Info panel.)",
           "The default value is the system font"
         ],
         "def" : "Hints.fontName",
-        "desc" : "A fully specified family-face name, preferrably the PostScript name, such as Helvetica-BoldOblique or Times-Roman. (The Font Book app displays PostScript names of fonts in the Font Info panel.)",
+        "doc" : "A fully specified family-face name, preferrably the PostScript name, such as Helvetica-BoldOblique or Times-Roman. (The Font Book app displays PostScript names of fonts in the Font Info panel.)\nThe default value is the system font",
         "notes" : [
 
         ],
@@ -206,12 +203,12 @@
         ]
       },
       {
-        "doc" : "The size of font that should be used. A value of 0.0 will use the default size.",
+        "desc" : "The size of font that should be used. A value of 0.0 will use the default size.",
         "stripped_doc" : [
           "The size of font that should be used. A value of 0.0 will use the default size."
         ],
         "def" : "Hints.fontSize",
-        "desc" : "The size of font that should be used. A value of 0.0 will use the default size.",
+        "doc" : "The size of font that should be used. A value of 0.0 will use the default size.",
         "notes" : [
 
         ],
@@ -226,34 +223,34 @@
         ]
       },
       {
-        "doc" : "This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map\nThe default is the letters A-Z. Note that if `obj.style` is set to \"vimperator\", this variable will be ignored.",
+        "desc" : "This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map",
         "stripped_doc" : [
           "This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map",
           "The default is the letters A-Z. Note that if `obj.style` is set to \"vimperator\", this variable will be ignored."
         ],
-        "def" : "Hints.hintsChars",
-        "desc" : "This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map",
+        "def" : "Hints.hintChars",
+        "doc" : "This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map\nThe default is the letters A-Z. Note that if `obj.style` is set to \"vimperator\", this variable will be ignored.",
         "notes" : [
 
         ],
-        "signature" : "Hints.hintsChars",
+        "signature" : "Hints.hintChars",
         "type" : "Variable",
         "returns" : [
 
         ],
-        "name" : "hintsChars",
+        "name" : "hintChars",
         "parameters" : [
 
         ]
       },
       {
-        "doc" : "If there are less than or equal to this many windows on screen their titles will be shown in the obj.\nThe default is 4. Setting to 0 will disable this feature.",
+        "desc" : "If there are less than or equal to this many windows on screen their titles will be shown in the obj.",
         "stripped_doc" : [
           "If there are less than or equal to this many windows on screen their titles will be shown in the obj.",
           "The default is 4. Setting to 0 will disable this feature."
         ],
         "def" : "Hints.showTitleThresh",
-        "desc" : "If there are less than or equal to this many windows on screen their titles will be shown in the obj.",
+        "doc" : "If there are less than or equal to this many windows on screen their titles will be shown in the obj.\nThe default is 4. Setting to 0 will disable this feature.",
         "notes" : [
 
         ],
@@ -268,13 +265,13 @@
         ]
       },
       {
-        "doc" : "If this is set to \"vimperator\", every window hints starts with the first character\nof the parent application's title",
+        "desc" : "If this is set to \"vimperator\", every window hints starts with the first character",
         "stripped_doc" : [
           "If this is set to \"vimperator\", every window hints starts with the first character",
           "of the parent application's title"
         ],
         "def" : "Hints.style",
-        "desc" : "If this is set to \"vimperator\", every window hints starts with the first character",
+        "doc" : "If this is set to \"vimperator\", every window hints starts with the first character\nof the parent application's title",
         "notes" : [
 
         ],
@@ -289,12 +286,12 @@
         ]
       },
       {
-        "doc" : "If the title is longer than maxSize, the string is truncated, -1 to disable, valid value is >= 6",
+        "desc" : "If the title is longer than maxSize, the string is truncated, -1 to disable, valid value is >= 6",
         "stripped_doc" : [
           "If the title is longer than maxSize, the string is truncated, -1 to disable, valid value is >= 6"
         ],
         "def" : "Hints.titleMaxSize",
-        "desc" : "If the title is longer than maxSize, the string is truncated, -1 to disable, valid value is >= 6",
+        "doc" : "If the title is longer than maxSize, the string is truncated, -1 to disable, valid value is >= 6",
         "notes" : [
 
         ],
@@ -309,15 +306,15 @@
         ]
       },
       {
-        "doc" : "Displays a keyboard hints for switching focus to each window\n\nParameters:\n * windows - An optional table containing some `hs.window` objects. If this value is nil, all windows will be hintsed\n * callback - An optional function that will be called when a window has been selected by the user. The function will be called with a single argument containing the `hs.window` object of the window chosen by the user\n * allowNonStandard - An optional boolean.  If true, all windows will be included, not just standard windows\n\nReturns:\n * None\n\nNotes:\n * If there are more windows open than there are characters available in Hints.hintsChars, multiple characters will be used\n * If Hints.style is set to \"vimperator\", every window hints is prefixed with the first character of the parent application's name\n * To display Hints only for the currently focused application, try something like:\n  * `Hints:windowHints(hs.window.focusedWindow():application():allWindows())`",
+        "desc" : "Displays a keyboard hints for switching focus to each window",
         "stripped_doc" : [
           "Displays a keyboard hints for switching focus to each window",
           ""
         ],
         "def" : "Hints:windowHints([windows, callback, allowNonStandard])",
-        "desc" : "Displays a keyboard hints for switching focus to each window",
+        "doc" : "Displays a keyboard hints for switching focus to each window\n\nParameters:\n * windows - An optional table containing some `hs.window` objects. If this value is nil, all windows will be hintsed\n * callback - An optional function that will be called when a window has been selected by the user. The function will be called with a single argument containing the `hs.window` object of the window chosen by the user\n * allowNonStandard - An optional boolean.  If true, all windows will be included, not just standard windows\n\nReturns:\n * None\n\nNotes:\n * If there are more windows open than there are characters available in Hints.hintChars, multiple characters will be used\n * If Hints.style is set to \"vimperator\", every window hints is prefixed with the first character of the parent application's name\n * To display Hints only for the currently focused application, try something like:\n  * `Hints:windowHints(hs.window.focusedWindow():application():allWindows())`",
         "notes" : [
-          " * If there are more windows open than there are characters available in Hints.hintsChars, multiple characters will be used",
+          " * If there are more windows open than there are characters available in Hints.hintChars, multiple characters will be used",
           " * If Hints.style is set to \"vimperator\", every window hints is prefixed with the first character of the parent application's name",
           " * To display Hints only for the currently focused application, try something like:",
           "  * `Hints:windowHints(hs.window.focusedWindow():application():allWindows())`"
@@ -336,6 +333,9 @@
           ""
         ]
       }
+    ],
+    "Command" : [
+
     ],
     "name" : "Hints"
   }

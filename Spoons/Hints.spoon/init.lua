@@ -14,14 +14,14 @@ local window = require "hs.window"
 local hotkey = require "hs.hotkey"
 local modal_hotkey = hotkey.modal
 
---- Hints.hintsChars
+--- Hints.hintChars
 --- Variable
 --- This controls the set of characters that will be used for window obj. They must be characters found in hs.keycodes.map
 --- The default is the letters A-Z. Note that if `obj.style` is set to "vimperator", this variable will be ignored.
-obj.hintsChars = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
+obj.hintChars = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
 
 -- vimperator mode requires to use full set of alphabet to represent applications.
-obj.hintsCharsVimperator = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
+obj.hintCharsVimperator = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
 
 --- Hints.style
 --- Variable
@@ -54,7 +54,7 @@ obj.titleMaxSize = -1
 local openHints = {}
 local takenPositions = {}
 local hintsDict = {}
-local hintsChars = nil
+local hintChars = nil
 local modalKey = nil
 local selectionCallback = nil
 
@@ -89,9 +89,9 @@ function obj:addWindow(dict, win)
       dict['count'] = 0
       n = 0
    end
-   local m = (n % #hintsChars) + 1
-   local char = hintsChars[m]
-   if n < #hintsChars then
+   local m = (n % #hintChars) + 1
+   local char = hintChars[m]
+   if n < #hintChars then
       dict[char] = win
    else
       if type(dict[char]) == "userdata" then
@@ -173,7 +173,7 @@ function obj:processChar(char)
       elseif type(hintsDict[char]) == "table" then
          hintsDict = hintsDict[char]
          if hintsDict.count == 1 then
-            toFocus = hintsDict[hintsChars[1]]
+            toFocus = hintsDict[hintChars[1]]
          else
             takenPositions = {}
             obj:displayHintsForDict(hintsDict, "")
@@ -198,7 +198,7 @@ function obj:setupModal()
    k = modal_hotkey.new(nil, nil)
    k:bind({}, 'escape', function() obj:closeHints(); k:exit() end)
 
-   for _, c in ipairs(hintsChars) do
+   for _, c in ipairs(hintChars) do
       k:bind({}, c, function() obj:processChar(c) end)
    end
    return k
@@ -217,15 +217,15 @@ end
 ---  * None
 ---
 --- Notes:
----  * If there are more windows open than there are characters available in Hints.hintsChars, multiple characters will be used
+---  * If there are more windows open than there are characters available in Hints.hintChars, multiple characters will be used
 ---  * If Hints.style is set to "vimperator", every window hints is prefixed with the first character of the parent application's name
 ---  * To display Hints only for the currently focused application, try something like:
 ---   * `Hints:windowHints(hs.window.focusedWindow():application():allWindows())`
 function obj:windowHints(windows, callback, allowNonStandard)
    if obj.style == "vimperator" then
-      hintsChars = obj.hintsCharsVimperator
+      hintChars = obj.hintCharsVimperator
    else
-      hintsChars = obj.hintsChars
+      hintChars = obj.hintChars
    end
 
    windows = windows or window.allWindows()
