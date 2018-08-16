@@ -1,5 +1,4 @@
 hs.hotkey.alertDuration = 0
-hs.hints.showTitleThresh = 0
 hs.window.animationDuration = 0
 
 privatepath = hs.fs.pathToAbsolute(hs.configdir .. '/private')
@@ -91,6 +90,10 @@ for _, v in pairs(hspoon_list) do
     hs.loadSpoon(v)
 end
 
+spoon.Hints.showTitleThresh = 0
+-- comment off to use default style.
+-- spoon.Hints.style = "vimperator"
+
 ----------------------------------------------------------------------------------------------------
 -- Then we create/register all kinds of modal keybindings environments.
 ----------------------------------------------------------------------------------------------------
@@ -99,16 +102,17 @@ hswhints_keys = hswhints_keys or {"alt", "tab"}
 if string.len(hswhints_keys[2]) > 0 then
     spoon.ModalMgr.supervisor:bind(hswhints_keys[1], hswhints_keys[2], 'Show Window Hints', function()
         spoon.ModalMgr:deactivateAll()
-        hs.hints.windowHints(
+        spoon.Hints:windowHints(
            nil,
            function(win)
+              win:raise()
+              win:focus()
               hs.alert.show(
-                 string.format("Focuse to: %s", win:title()),
+                 string.format("Focuse to: %s, no switch", win:title()),
                  hs.alert.defaultStyle,
                  hs.screen.mainScreen(),
                  0.5
               )
-              win.focus()
         end)
     end)
 end
