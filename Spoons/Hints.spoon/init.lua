@@ -182,7 +182,7 @@ function obj:processChar(char)
    end
 
    if toFocus then
-      -- hs.alert.show("toFocus is not nil")
+      -- hs.alert.show(string.format("toFocus type is: %s", type(toFocus)))
       modalKey:exit()
       if selectionCallback then
          selectionCallback(toFocus)
