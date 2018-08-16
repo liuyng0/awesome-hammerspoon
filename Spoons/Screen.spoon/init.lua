@@ -70,9 +70,9 @@ function obj:sortedWindows()
       table.insert(windows, w["window"])
    end
 
-   for _, w in pairs(windows) do
-      hs.alert.show(string.format("window:%s", w:title()))
-   end
+   -- for _, w in pairs(windows) do
+   --    hs.alert.show(string.format("window:%s", w:title()))
+   -- end
 
    return windows
 end
