@@ -15,7 +15,7 @@ function obj:focusWindowOnNextScreen(nextCount)
    for _, s in pairs(screens) do
       local frame = s:frame()
       local angle = math.atan(-(frame.y+frame.h), (frame.w+frame.x))
-      -- hs.alert.show(string.format("%f, %s", angle, w:title())) 
+      -- hs.alert.show(string.format("%f, %s", angle, w:title()))
       table.insert(screenAngle, {
                       screen = s,
                       clockwise_angle = angle
@@ -83,7 +83,7 @@ function obj:_sortedWindows(wins)
    for _, w in pairs(wins) do
       local frame = w:frame()
       local angle = math.atan(-(frame.y+frame.h), (frame.w+frame.x))
-      -- hs.alert.show(string.format("%f, %s", angle, w:title())) 
+      -- hs.alert.show(string.format("%f, %s", angle, w:title()))
       table.insert(windowAngle, {
          window = w,
          clockwise_angle = angle
@@ -104,7 +104,7 @@ function obj:sameAppWindowInNextScreen(nextCount)
    local focusedWindow = hs.window.focusedWindow()
    local focusedApp = focusedWindow:application()
    -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
-   
+
    local windowAngle = obj:_sortedWindows(focusedApp:allWindows())
    local thisWindowIndex = 1
    local numWindows=#windowAngle
