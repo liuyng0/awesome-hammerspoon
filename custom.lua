@@ -21,8 +21,10 @@ hspoon_list = {
 
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.
 hsapp_list = {
+   {key = 'a', name = 'Android Studio'},
    {key = 'e', name = 'Emacs'},
-   {key = 'i', name = 'iTerm'},
+   {key = 't', name = 'iTerm'},
+   {key = 'i', name = 'IntelliJ IDEA CE'},
    {key = 'c', id = 'com.google.Chrome'},
    {key = 'f', name = 'Finder'},
    {key = 's', name = 'ShadowsocksX'},
