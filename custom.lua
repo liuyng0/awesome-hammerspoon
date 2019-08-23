@@ -22,6 +22,7 @@ hspoon_list = {
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.
 hsapp_list = {
    {key = 'a', name = 'Android Studio'},
+   {key = 'b', name = 'Microsoft Outlook'},
    {key = 'e', name = 'Emacs'},
    {key = 't', name = 'iTerm'},
    {key = 'i', name = 'IntelliJ IDEA CE'},
@@ -38,6 +39,7 @@ hsapp_list = {
    {key = 'p', name = 'PDF Professional'},
    {key = 'r', name = 'Firefox'},
    {key = 'g', name = 'Gapplin'},
+   {key = '[', name = 'Amazon Chime'},
 }
 
 hyper1 = {"ctrl", "shift", "alt"}
