@@ -23,7 +23,7 @@ hspoon_list = {
 hsapp_list = {
    {key = 'a', name = 'Android Studio'},
    {key = 'b', name = 'Microsoft Outlook'},
-   {key = 'e', name = 'Emacs'},
+   -- {key = 'e', name = 'emacs'},
    {key = 'space', name = 'Spacemacs'},
    {key = 't', name = 'iTerm'},
    {key = 'i', name = 'IntelliJ IDEA CE'},
