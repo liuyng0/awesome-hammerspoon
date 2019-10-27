@@ -29,7 +29,7 @@ hsapp_list = {
    {key = 'i', name = 'IntelliJ IDEA CE'},
    {key = 'c', id = 'com.google.Chrome'},
    {key = 'f', name = 'Finder'},
-   {key = 's', name = 'ShadowsocksX'},
+   {key = 's', name = 'Visual Studio Code'},
    {key = 'd', name = 'Dash'},
    {key = 'x', name = 'XMind'},
    {key = 'm', id = 'com.apple.ActivityMonitor'},
