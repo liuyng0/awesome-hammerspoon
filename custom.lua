@@ -17,6 +17,7 @@ hspoon_list = {
    "WinWin",
    'Screen',
    'Hints',
+   'PopupTranslateSelection',
 }
 
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.
@@ -78,6 +79,9 @@ hsclipsM_keys = {hyper1, "C"}
 -- Toggle the display of aria2 frontend
 -- hsaria2_keys = {"alt", "D"}
 hsaria2_keys = {"", ""}
+
+-- Translate
+hstranslateM_keys = {hyper2, "\\"}
 
 -- Launch Hammerspoon Search
 -- hsearch_keys = {"alt", "G"}
