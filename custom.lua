@@ -24,7 +24,7 @@ hsapp_list = {
    {key = 'a', name = 'Android Studio'},
    {key = 'b', name = 'Microsoft Outlook'},
    -- {key = 'e', name = 'emacs'},
-   {key = 'space', name = 'Spacemacs'},
+   {key = 'space', name = 'Emacs'},
    {key = 't', name = 'iTerm'},
    {key = 'i', name = 'IntelliJ IDEA CE'},
    {key = 'c', id = 'com.google.Chrome'},
