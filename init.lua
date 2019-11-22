@@ -470,18 +470,37 @@ if spoon.PopupTranslateSelection then
     spoon.ModalMgr:new("translateM")
     local cmodal = spoon.ModalMgr.modal_list["translateM"]
     cmodal:bind('', 'escape', 'Deactivate translateM', function()
+                  spoon.PopupTranslateSelection:hide()
                    spoon.ModalMgr:deactivate({"translateM"})
     end)
-    cmodal:bind('', 'E', 'Translate the selection to English', function()
-                  spoon.PopupTranslateSelection:translateSelectionPopup("en", "auto")
-                   spoon.ModalMgr:deactivate({"translateM"})
+    cmodal:bind('', 'Q', 'Deactivate translateM', function()
+                  spoon.PopupTranslateSelection:hide()
+                  spoon.ModalMgr:deactivate({"translateM"})
     end)
-    cmodal:bind('', 'C', 'Translate the selection to Chinese', function()
-                   spoon.PopupTranslateSelection:translateSelectionPopup("zh", "auto")
-                   spoon.ModalMgr:deactivate({"translateM"})
-    end)
-
-    -- Register translateM with modal supervisor
+    if spoon.PopupTranslateSelection:translateShellEnabled() then
+      cmodal:bind('', 'E', 'Translate Shell (to English)', function()
+                    spoon.ModalMgr:deactivate({"translateM"})
+                    local text = spoon.PopupTranslateSelection:selectionOrInput()
+                    spoon.ModalMgr:activate({"translateM"})
+                    spoon.PopupTranslateSelection:translateShell("en", text)
+      end)
+      cmodal:bind('', 'C', 'Translate Shell (to Chinese)', function()
+                    spoon.ModalMgr:deactivate({"translateM"})
+                    local text = spoon.PopupTranslateSelection:selectionOrInput()
+                    spoon.ModalMgr:activate({"translateM"})
+                    spoon.PopupTranslateSelection:translateShell("zh", text)
+      end)
+    else
+      cmodal:bind('', 'E', 'Translate the selection to English', function()
+                    spoon.PopupTranslateSelection:translateSelectionPopup("en", "auto")
+                    spoon.ModalMgr:deactivate({"translateM"})
+      end)
+      cmodal:bind('', 'C', 'Translate the selection to Chinese', function()
+                    spoon.PopupTranslateSelection:translateSelectionPopup("zh", "auto")
+                    spoon.ModalMgr:deactivate({"translateM"})
+      end)
+    end
+       -- Register translateM with modal supervisor
     hstranslateM_keys = hstranslateM_keys or {"cmd", "]"}
     if string.len(hstranslateM_keys[2]) > 0 then
         spoon.ModalMgr.supervisor:bind(hstranslateM_keys[1], hstranslateM_keys[2], "Enter translateM Environment", function()

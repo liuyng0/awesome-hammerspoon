@@ -43,6 +43,17 @@ obj.logger = hs.logger.new('PopupTranslateSelection')
 -- Internal variable - the hs.webview object for the popup
 obj.webview = nil
 
+function obj:init()
+  self.tsScriptPath = "~/repo/public/config/zsh/script/common/translate-shell.sh"
+  self.tsScriptExist = hs.fs.pathToAbsolute(self.tsScriptPath)
+  self.tsWebview = hs.webview.new({x=0, y=0, w=0, h=0})
+  self.tsWebview:windowTitle("Translate Shell")
+  self.tsWebview:windowStyle("utility")
+  self.tsWebview:allowGestures(true)
+  self.tsWebview:allowNewWindows(false)
+  self.tsWebview:level(hs.drawing.windowLevels.modalPanel)
+end
+
 --- PopupTranslateSelection:translatePopup(text, to, from)
 --- Method
 --- Display a translation popup with the translation of the given text between the specified languages
@@ -154,6 +165,53 @@ function obj:bindHotkeys(mapping)
       end
    end
    hs.spoons.bindHotkeysToSpec(def, mapping)
+end
+
+function obj:translateShellEnabled()
+  return self.tsScriptExist
+end
+
+function obj:selectionOrInput()
+  local text=current_selection()
+  text = text:gsub("^%s*(.-)%s*$", "%1")
+  if text == '' then
+    -- hs.timer.doAfter(5, function() hs.focus() hs.dialog.textPrompt("Main message.", "Please enter something:") end)
+    hs.focus()
+    _, text = hs.dialog.textPrompt("Translate shell input", "Input the text to translate")
+  end
+  return text
+end
+
+function obj:translateShell(to, text)
+  local mainScreen = hs.screen.mainScreen()
+  local mainRes = mainScreen:fullFrame()
+  local command = self.tsScriptPath .. " " .. to .. " " .. text
+  local translateOutput = hs.execute(command)
+  local html = [[
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <p>Source: <hr/> ]] .. text ..  [[ </p> </br> </br>
+    <p>Result: <hr/> <span style="white-space: pre-line">]] .. translateOutput ..  [[</span> </p> </br> </br>
+    </body>
+    </html>
+    ]]
+  local capp = hs.application.frontmostApplication()
+  local cscreen = hs.screen.mainScreen()
+  local cres = cscreen:fullFrame()
+  self.tsWebview:frame({
+      x = cres.x+cres.w*0.15/2,
+      y = cres.y+cres.h*0.25/2,
+      w = cres.w*0.85,
+      h = cres.h*0.75
+  })
+
+  self.tsWebview:html(html)
+  self.tsWebview:show()
+end
+
+function obj:hide()
+  self.tsWebview:hide()
 end
 
 return obj
