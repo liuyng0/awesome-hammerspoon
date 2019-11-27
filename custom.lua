@@ -27,7 +27,6 @@ hsapp_list = {
    -- {key = 'e', name = 'emacs'},
    {key = 'space', name = 'Emacs'},
    {key = 't', name = 'iTerm'},
-   {key = 'i', name = 'IntelliJ IDEA CE'},
    {key = 'c', id = 'com.google.Chrome'},
    {key = 'f', name = 'Finder'},
    {key = 's', name = 'Visual Studio Code'},
@@ -43,6 +42,12 @@ hsapp_list = {
    {key = 'g', name = 'Gapplin'},
    {key = '[', name = 'Amazon Chime'},
 }
+
+if hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA.app") then
+  table.insert(hsapp_list, {key = 'i', name = 'IntelliJ IDEA'})
+else
+  table.insert(hsapp_list, {key = "i", name = "IntelliJ IDEA CE"})
+end
 
 hyper1 = {"ctrl", "shift", "alt"}
 hyper2 = "cmd"
