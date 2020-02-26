@@ -107,6 +107,9 @@ end
 
 function selectWindowInList(allWindows, showAppNameAsPrefix)
   local chooser = hs.chooser.new(function(choice)
+      if choice == nil then
+        return;
+      end
       local chosenWindow = hs.window.get(choice["id"])
       chosenWindow:raise()
       chosenWindow:focus()
@@ -142,7 +145,7 @@ function selectWindowInList(allWindows, showAppNameAsPrefix)
 end
 
 function obj:selectWindowFromAllWindows()
-  local allWindows = hs.window.allWindows()
+  local allWindows = hs.window.filter.default:getWindows()
   selectWindowInList(allWindows, true)
 end
 
