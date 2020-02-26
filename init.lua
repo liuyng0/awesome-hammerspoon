@@ -429,6 +429,15 @@ if spoon.Screen then
                    spoon.ModalMgr:deactivate({"screenM"})
     end)
 
+    cmodal:bind('', 'L', 'select window from focused App', function()
+                  spoon.Screen:selectWindowFromFocusedApp()
+                  spoon.ModalMgr:deactivate({"screenM"})
+    end)
+    cmodal:bind('', 'A', 'select window from all Windows', function()
+                  spoon.Screen:selectWindowFromAllWindows()
+                  spoon.ModalMgr:deactivate({"screenM"})
+    end)
+
     cmodal:bind('', 'N', 'Switch to the same app window in next Screen (Clockwise)', function()
                    spoon.Screen:sameAppWindowInNextScreen(1)
                    spoon.ModalMgr:deactivate({"screenM"})

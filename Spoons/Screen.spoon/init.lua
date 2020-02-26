@@ -100,6 +100,61 @@ function obj:_sortedWindows(wins)
    return windowAngle
 end
 
+function getWindowNameFromCache(windowId, defaultWindowName)
+  -- TODO: maybe add a cache to set window name overrides
+  return defaultWindowName
+end
+
+function selectWindowInList(allWindows, showAppNameAsPrefix)
+  local chooser = hs.chooser.new(function(choice)
+      local chosenWindow = hs.window.get(choice["id"])
+      chosenWindow:raise()
+      chosenWindow:focus()
+  end)
+  local chooserChoices = {}
+  for _, w in pairs(allWindows) do
+    table.insert(chooserChoices, {
+                   ["text"] = getWindowNameFromCache(w:id(), w:title()),
+                   ["visible"] = w:isVisible(),
+                   ["id"] = w:id(),
+                   ["application"] = w:application():name(),
+    })
+  end
+  table.sort(chooserChoices, function(a, b)
+               if a["application"] ~= b["application"] then
+                 return a["application"] < b["application"]
+               end
+
+               if a["visible"] == b["visible"] then
+                 return a["text"] < b["text"]
+               else
+                 return a["visible"]
+               end
+  end)
+
+  if showAppNameAsPrefix then
+    for _, c in pairs(chooserChoices) do
+      c["text"] = c["application"] .. " >> " .. c["text"]
+    end
+  end
+  chooser:choices(chooserChoices)
+  chooser:show()
+end
+
+function obj:selectWindowFromAllWindows()
+  local allWindows = hs.window.allWindows()
+  selectWindowInList(allWindows, true)
+end
+
+function obj:selectWindowFromFocusedApp()
+  local focusedWindow = hs.window.focusedWindow()
+  local focusedApp = focusedWindow:application()
+  -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
+
+  local allWindows = focusedApp:allWindows()
+  selectWindowInList(allWindows, false)
+end
+
 function obj:sameAppWindowInNextScreen(nextCount)
    local focusedWindow = hs.window.focusedWindow()
    local focusedApp = focusedWindow:application()
