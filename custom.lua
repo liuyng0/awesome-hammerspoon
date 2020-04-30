@@ -26,7 +26,7 @@ hsapp_list = {
    {key = 'b', name = 'Microsoft Outlook'},
    -- {key = 'e', name = 'emacs'},
    {key = 'space', name = 'Emacs'},
-   {key = 't', name = 'iTerm'},
+   -- {key = 't', name = 'iTerm'},
    {key = 'c', id = 'com.google.Chrome'},
    {key = 'f', name = 'Finder'},
    {key = 's', name = 'Visual Studio Code'},
