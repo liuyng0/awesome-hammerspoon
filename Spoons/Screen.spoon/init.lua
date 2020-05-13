@@ -199,4 +199,40 @@ function obj:toggleWindowHighlightMode()
    end
 end
 
+function obj:selectChromeTab()
+  local getChromeTabsScript = getJsScript("getChromeTabs.js")
+  local switchToChromeTabsScript = getJsScript("switchToChromeTab.js")
+  local output, status, exitType, rc = hs.execute(getChromeTabsScript)
+  local logger = hs.logger.new('ChromeTabs')
+  if status then
+    local windowTabs = hs.json.decode(output)
+    local chooserChoices = {}
+    for _, w in pairs(windowTabs) do
+      local wid = w["windowId"]
+      for _, tab in pairs(w["tabs"]) do
+        table.insert(chooserChoices, {
+                       ["text"] = tab["title"],
+                       ["subText"] = tab["url"],
+                       ["windowId"] = wid,
+        })
+      end
+    end
+    local chooser = hs.chooser.new(function(choice)
+        if choice == nil then
+          return;
+        end
+        local commandline_arguments = hs.json.encode({
+            ["windowId"] = choice["windowId"],
+            ["tabTitle"] = choice["text"],
+        })
+        local command = switchToChromeTabsScript .. " " .. "'" .. commandline_arguments .. "'"
+        -- logger:e("Command: " .. command)
+        hs.execute(command)
+    end)
+    chooser:choices(chooserChoices)
+    chooser:show()
+    chooser:searchSubText(true)
+  end
+end
+
 return obj

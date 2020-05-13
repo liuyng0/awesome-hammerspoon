@@ -44,6 +44,10 @@ function pathInfo(path)
    }
 end
 
+function getJsScript(filename)
+  return os.getenv("HOME") .. "/.hammerspoon/js/" .. filename
+end
+
 function reloadConfig(files)
    doReload = false
    for _,file in pairs(files) do
@@ -427,6 +431,11 @@ if spoon.Screen then
     end)
     cmodal:bind('', 'Q', 'Deactivate screenM', function()
                    spoon.ModalMgr:deactivate({"screenM"})
+    end)
+
+    cmodal:bind('', 'C', 'Select Chrome Tab', function()
+                  spoon.Screen:selectChromeTab()
+                  spoon.ModalMgr:deactivate({"screenM"})
     end)
 
     cmodal:bind('', 'L', 'select window from focused App', function()

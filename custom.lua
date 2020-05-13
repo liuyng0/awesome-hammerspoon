@@ -125,3 +125,10 @@ hstype_keys = {"", ""}
 hsconsole_keys = {hyper1, "C"}
 
 hsscreenM_keys = {hyper2, "J"}
+
+-- Change the test function to test
+function test()
+  hs.alert.show(hs.inspect.inspect(hs.tabs.tabWindows(hs.application.frontmostApplication())))
+end
+
+hs.hotkey.bind(hyper2, "T", test)
