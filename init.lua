@@ -48,6 +48,10 @@ function getJsScript(filename)
   return os.getenv("HOME") .. "/.hammerspoon/js/" .. filename
 end
 
+function getVifFile(filename)
+  return os.getenv("HOME") .. "/vif/" .. filename
+end
+
 function reloadConfig(files)
    doReload = false
    for _,file in pairs(files) do
@@ -433,10 +437,10 @@ if spoon.Screen then
                    spoon.ModalMgr:deactivate({"screenM"})
     end)
 
-    cmodal:bind('', 'C', 'Select Chrome Tab', function()
-                  spoon.Screen:selectChromeTab()
-                  spoon.ModalMgr:deactivate({"screenM"})
-    end)
+    -- cmodal:bind('', 'C', 'Select Chrome Tab', function()
+    --               spoon.Screen:selectChromeTab()
+    --               spoon.ModalMgr:deactivate({"screenM"})
+    -- end)
 
     cmodal:bind('', 'L', 'select window from focused App', function()
                   spoon.Screen:selectWindowFromFocusedApp()
@@ -535,3 +539,11 @@ spoon.ModalMgr.supervisor:enter()
 
 -- Keep this line as the last line.
 hs.alert.show("Hammerspoon config loaded")
+
+
+-- Change the test function to test
+function test()
+  hs.alert.show("this is a test")
+end
+
+hs.hotkey.bind(hyper2, "T", function() spoon.Links:test() end)

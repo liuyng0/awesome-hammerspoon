@@ -5,6 +5,8 @@ obj.name = "browserTabs"
 obj.version = "1.0"
 obj.author = "ashfinal <ashfinal@gmail.com>"
 
+local logger = hs.logger.new("Chrome Tab Manager", "debug")
+
 -- Internal function used to find our location, so we know where to load files from
 local function script_path()
     local str = debug.getinfo(2, "S").source:sub(2)
@@ -14,40 +16,70 @@ end
 obj.spoonPath = script_path()
 
 -- Define the source's overview. A unique `keyword` key should exist, so this source can be found.
-obj.overview = {text="Type t ⇥ to search safari/chrome Tabs.", image=hs.image.imageFromPath(obj.spoonPath .. "/resources/tabs.png"), keyword="t"}
+obj.overview = {text="Type t ⇥ to search safari/chrome Tabs.", image=hs.image.imageFromPath(obj.spoonPath .. "/resources/tabs.png"), keyword="c"}
 -- Define the notice when a long-time request is being executed. It could be `nil`.
 obj.notice = {text="Requesting data, please wait a while …"}
 
-local function browserTabsRequest()
-    local safari_running = hs.application.applicationsForBundleID("com.apple.Safari")
+obj.init_func = function ()
+    local chromeTabManagerPath = getJsScript("chromeTabManager.js")
+    local arguments = hs.json.encode({
+            winId = -1,
+            tabTitle = -1,
+            operation = ":getTabs",
+    })
+
+    local command = chromeTabManagerPath .. " " .. "'" .. arguments .. "'"
+    local output, status, exitType, rc = hs.execute(command)
+
+    -- logger:d("Finished command: " .. command .. ", and got output: " .. output)
     local chooser_data = {}
-    if #safari_running > 0 then
-        local stat, data= hs.osascript.applescript('tell application "Safari"\nset winlist to tabs of windows\nset tablist to {}\nrepeat with i in winlist\nif (count of i) > 0 then\nrepeat with currenttab in i\nset tabinfo to {name of currenttab as unicode text, URL of currenttab}\ncopy tabinfo to the end of tablist\nend repeat\nend if\nend repeat\nreturn tablist\nend tell')
-        -- Notice `output` key and its `arg`. The built-in output contains `browser`, `safari`, `chrome`, `firefon`, `clipboard`, `keystrokes`. You can define new output type if you like.
-        if stat then
-            chooser_data = hs.fnutils.imap(data, function(item)
-                return {text=item[1], subText=item[2], image=hs.image.imageFromPath(obj.spoonPath .. "/resources/safari.png"), output="safari", arg=item[2]}
-            end)
-        end
-    end
-    local chrome_running = hs.application.applicationsForBundleID("com.google.Chrome")
-    if #chrome_running > 0 then
-        local stat, data= hs.osascript.applescript('tell application "Google Chrome"\nset winlist to tabs of windows\nset tablist to {}\nrepeat with i in winlist\nif (count of i) > 0 then\nrepeat with currenttab in i\nset tabinfo to {name of currenttab as unicode text, URL of currenttab}\ncopy tabinfo to the end of tablist\nend repeat\nend if\nend repeat\nreturn tablist\nend tell')
-        if stat then
-            for idx,val in pairs(data) do
-                -- Usually we want to open chrome tabs in Google Chrome.
-                table.insert(chooser_data, {text=val[1], subText=val[2], image=hs.image.imageFromPath(obj.spoonPath .. "/resources/chrome.png"), output="chrome", arg=val[2]})
+    if status and output ~= "" then
+        local windowTabs = hs.json.decode(output)
+        local index = 1
+        for _, w in pairs(windowTabs) do
+            local wid = w.windowId
+            for _, tab in pairs(w.tabs) do
+                table.insert(chooser_data, {
+                                 text = tab.title,
+                                 subText = tab.url,
+                                 output = "chrome",
+                                 windowId = wid,
+                                 tabTitle = tab.title,
+                                 index = index,
+                                 image=hs.image.imageFromPath(obj.spoonPath .. "/resources/chrome.png")
+                })
+                index = index + 1
             end
         end
     end
-    -- Return specific table as hs.chooser's data, other keys except for `text` could be optional.
+
     return chooser_data
 end
 
--- Define the function which will be called when the `keyword` triggers a new source. The returned value is a table. Read more: http://www.hammerspoon.org/docs/hs.chooser.html#choices
-obj.init_func = browserTabsRequest
--- Insert a friendly tip at the head so users know what to do next.
 obj.description = {text="Browser Tabs Search", subText="Search and select one item to open in corresponding browser.", image=hs.image.imageFromPath(obj.spoonPath .. "/resources/tabs.png")}
+
+local function writerGenerator(operations)
+    local writer = {}
+    for _, operation in pairs(operations) do
+        table.insert(writer, {
+                         operation = operation,
+                         operator = function(config)
+                             config.currentOperation = operation
+        end})
+    end
+
+    return writer
+end
+
+obj.config = {
+    currentOperation = ":switchTo",
+    allOperations = {
+        ":switchTo",
+        ":openInNewTab",
+        ":delete",
+    },
+}
+obj.config_writer = writerGenerator(obj.config.allOperations)
 
 -- As the user is typing, the callback function will be called for every keypress. The returned value is a table.
 obj.callback = nil

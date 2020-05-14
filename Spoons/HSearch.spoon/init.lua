@@ -23,10 +23,13 @@ end
 obj.spoonPath = script_path()
 
 obj.sources = {}
+obj.sources_config = {}
 obj.sources_overview = {}
 obj.search_path = {hs.configdir .. "/private/hsearch_dir", obj.spoonPath}
 obj.hotkeys = {}
 obj.source_kw = nil
+
+local logger = hs.logger.new("HSearch", 'debug')
 
 function obj:restoreOutput()
     obj.output_pool = {}
@@ -39,7 +42,16 @@ function obj:restoreOutput()
         hs.urlevent.openURLWithBundle(arg, "com.apple.Safari")
     end
     local function openWithChrome(arg)
-        hs.urlevent.openURLWithBundle(arg, "com.google.Chrome")
+        local argTable = hs.json.decode(arg)
+        local chromeTabManagerPath = getJsScript("chromeTabManager.js")
+        local arguments = hs.json.encode({
+                windowId = argTable.windowId,
+                tabTitle = argTable.tabTitle,
+                operation = argTable.config.currentOperation,
+        })
+        local command = chromeTabManagerPath .. " " .. "'" .. arguments .. "'"
+        local output, status, exitType, rc = hs.execute(command)
+        -- logger:d("Run command: " .. command .. ", and got output: " .. output)
     end
     local function openWithFirefox(arg)
         hs.urlevent.openURLWithBundle(arg, "org.mozilla.firefox")
@@ -60,6 +72,51 @@ function obj:restoreOutput()
     obj.output_pool["keystrokes"] = sendKeyStrokes
 end
 
+function obj:currentSourceMultipleOperationEnabled()
+    if obj.source_kw == nil then
+        return false
+    end
+    local source_config = obj.sources_config[obj.source_kw]
+    return source_config ~= nil and (type(source_config.config) == 'table' and type(source_config.config_writer) == 'table')
+end
+
+function obj:appendOperationData(chooser_data)
+    local source_config = obj.sources_config[obj.source_kw]
+    for _, writer in ipairs(source_config.config_writer) do
+        local operation = writer.operation
+        local operator = writer.operator
+        table.insert(chooser_data, {
+                         text = operation,
+                         subText = "This is a operation to manipulate the configuration.",
+                         operation = operation,
+        })
+    end
+    table.insert(chooser_data, {
+                     text = ":viewConfig",
+                     subText = hs.inspect.inspect(source_config.config, {newline="  "}),
+                     operation = ":viewConfig",
+    })
+end
+
+function obj:operateOnMaybe(config, operation)
+    local source_config = obj.sources_config[obj.source_kw]
+    for _, writer in ipairs(source_config.config_writer) do
+        if writer.operation == operation then
+            writer.operator(config)
+        end
+    end
+end
+
+function obj:filterParsableFieldsToJson(chosen)
+    local newTable = {}
+    for index, value in pairs(chosen) do
+        if type(value) == 'number' or type(value) == 'nil' or type(value) == 'string' or type(value) == 'table' then
+            newTable[index] = value
+        end
+    end
+    return hs.json.encode(newTable)
+end
+
 function obj:init()
     obj.chooser = hs.chooser.new(function(chosen)
         obj.trigger:disable()
@@ -70,8 +127,22 @@ function obj:init()
             end
         end
         if chosen ~= nil then
+            if chosen.operation ~= nil and obj:currentSourceMultipleOperationEnabled() then
+                obj:operateOnMaybe(obj.sources_config[obj.source_kw].config, chosen.operation)
+                -- logger.d("Configuration become: " .. hs.inspect.inspect(obj.sources_config[obj.source_kw].config))
+                obj.sources[obj.source_kw]()
+                return
+            end
             if chosen.output then
-                obj.output_pool[chosen.output](chosen.arg)
+                if obj:currentSourceMultipleOperationEnabled() then
+                    chosen.config = obj.sources_config[obj.source_kw].config
+                    local arguments = obj:filterParsableFieldsToJson(chosen)
+                    -- logger.d("Call with parameter: " .. arguments)
+                    obj.output_pool[chosen.output](arguments)
+                    obj.sources[obj.source_kw]()
+                else
+                    obj.output_pool[chosen.output](chosen.arg)
+                end
             end
         end
     end)
@@ -179,6 +250,7 @@ function obj:loadSources()
             if file ~= obj.spoonPath .. "/init.lua" then
                 local f = loadfile(file)
                 if f then
+                    logger.i("Loading " .. file .. " successfully")
                     local source = f()
                     local output = source.new_output
                     if output then obj.output_pool[output.name] = output.func end
@@ -187,6 +259,12 @@ function obj:loadSources()
                     table.insert(obj.sources_overview, overview)
                     local hotkey = source.hotkeys
                     if hotkey then obj.hotkeys[overview.keyword] = hotkey end
+                    if source.config ~= nil and source.config_writer ~= nil then
+                        obj.sources_config[overview.keyword] = {
+                            config = source.config,
+                            config_writer = source.config_writer,
+                        }
+                    end
                     local function sourceFunc()
                         local notice = source.notice
                         if notice then obj.chooser:choices({notice}) end
@@ -196,6 +274,9 @@ function obj:loadSources()
                             if chooser_data then
                                 local desc = source.description
                                 if desc then table.insert(chooser_data, 1, desc) end
+                            end
+                            if obj:currentSourceMultipleOperationEnabled() then
+                                obj:appendOperationData(chooser_data)
                             end
                             obj.chooser:choices(chooser_data)
                         else
@@ -210,6 +291,8 @@ function obj:loadSources()
                     end
                     -- Add this source to sources pool, so it can found and triggered.
                     obj.sources[overview.keyword] = sourceFunc
+                else
+                    logger.e("Load fail: " .. file)
                 end
             end
         end

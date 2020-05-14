@@ -16,6 +16,7 @@ hspoon_list = {
    -- "UnsplashZ",
    "WinWin",
    'Screen',
+   'Links',
    'Hints',
    'PopupTranslateSelection',
 }
@@ -90,7 +91,7 @@ hstranslateM_keys = {hyper2, "\\"}
 
 -- Launch Hammerspoon Search
 -- hsearch_keys = {"alt", "G"}
-hsearch_keys = {hyper1, "S"}
+hsearch_keys = {hyper2, "Z"}
 
 -- Read Hammerspoon and Spoons API manual in default browser
 -- hsman_keys = {"alt", "H"}
@@ -125,10 +126,3 @@ hstype_keys = {"", ""}
 hsconsole_keys = {hyper1, "C"}
 
 hsscreenM_keys = {hyper2, "J"}
-
--- Change the test function to test
-function test()
-  hs.alert.show(hs.inspect.inspect(hs.tabs.tabWindows(hs.application.frontmostApplication())))
-end
-
-hs.hotkey.bind(hyper2, "T", test)
