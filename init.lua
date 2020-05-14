@@ -437,11 +437,6 @@ if spoon.Screen then
                    spoon.ModalMgr:deactivate({"screenM"})
     end)
 
-    -- cmodal:bind('', 'C', 'Select Chrome Tab', function()
-    --               spoon.Screen:selectChromeTab()
-    --               spoon.ModalMgr:deactivate({"screenM"})
-    -- end)
-
     cmodal:bind('', 'L', 'select window from focused App', function()
                   spoon.Screen:selectWindowFromFocusedApp()
                   spoon.ModalMgr:deactivate({"screenM"})
