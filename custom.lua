@@ -26,10 +26,11 @@ hsapp_list = {
     {key = 'space', name = 'Emacs'},
     {key = 'c', id = 'com.google.Chrome'},
     {key = 'd', name = 'Dash'},
-    {key = 'a', id = 'com.apple.ActivityMonitor'},
+    {key = 'w', id = 'com.apple.ActivityMonitor'},
     {key = 'p', id = 'com.apple.systempreferences'},
     {key = 'f', name = 'Firefox'},
-    {key = 'o', name = 'Amazon Chime'},o
+    {key = 'a', name = 'Amazon Chime'},
+    {key = 'o', name = 'OmniGraffle'},
     -- {key = 'a', name = 'Android Studio'},
     -- {key = 'e', name = 'emacs'},
     -- {key = 't', name = 'iTerm'},
