@@ -1,53 +1,58 @@
 -- Specify Spoons which will be loaded
 hspoon_list = {
-   -- "AClock",
-   -- "BingDaily",
-   -- "Calendar",
-   -- "CircleClock",
-   -- "ClipShow",
-   -- "CountDown",
-   -- "FnMate",
-   -- "HCalendar",
-   -- "HSaria2",
-   "HSearch",
-   -- "KSheet",
-   -- "SpeedMenu",
-   -- "TimeFlow",
-   -- "UnsplashZ",
-   "WinWin",
-   'Screen',
-   'Links',
-   'Hints',
-   'PopupTranslateSelection',
+    -- "AClock",
+    -- "BingDaily",
+    -- "Calendar",
+    -- "CircleClock",
+    -- "ClipShow",
+    -- "CountDown",
+    -- "FnMate",
+    -- "HCalendar",
+    -- "HSaria2",
+    "HSearch",
+    -- "KSheet",
+    -- "SpeedMenu",
+    -- "TimeFlow",
+    -- "UnsplashZ",
+    "WinWin",
+    'Screen',
+    'Links',
+    'Hints',
+    'PopupTranslateSelection',
 }
 
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.
 hsapp_list = {
-   {key = 'a', name = 'Android Studio'},
-   {key = 'b', name = 'Microsoft Outlook'},
-   -- {key = 'e', name = 'emacs'},
-   {key = 'space', name = 'Emacs'},
-   -- {key = 't', name = 'iTerm'},
-   {key = 'c', id = 'com.google.Chrome'},
-   {key = 'f', name = 'Finder'},
-   {key = 's', name = 'Visual Studio Code'},
-   {key = 'd', name = 'Dash'},
-   {key = 'x', name = 'XMind'},
-   {key = 'm', id = 'com.apple.ActivityMonitor'},
-   {key = 'k', name = 'KeyCastr'},
-   {key = 'y', id = 'com.apple.systempreferences'},
-   {key = 'v', name = 'Preview'},
-   {key = 'o', name = 'Xcode'},
-   {key = 'p', name = 'PDF Professional'},
-   {key = 'r', name = 'Firefox'},
-   {key = 'g', name = 'Gapplin'},
-   {key = '[', name = 'Amazon Chime'},
+    {key = 'space', name = 'Emacs'},
+    {key = 'c', id = 'com.google.Chrome'},
+    {key = 'd', name = 'Dash'},
+    {key = 'a', id = 'com.apple.ActivityMonitor'},
+    {key = 'p', id = 'com.apple.systempreferences'},
+    {key = 'f', name = 'Firefox'},
+    {key = 'o', name = 'Amazon Chime'},o
+    -- {key = 'a', name = 'Android Studio'},
+    -- {key = 'e', name = 'emacs'},
+    -- {key = 't', name = 'iTerm'},
+    -- {key = 'f', name = 'Finder'},
+    -- {key = 's', name = 'Visual Studio Code'},
+    -- {key = 'x', name = 'XMind'},
+    -- {key = 'k', name = 'KeyCastr'},
+    -- {key = 'v', name = 'Preview'},
+    -- {key = 'o', name = 'Xcode'},
+    -- {key = 'p', name = 'PDF Professional'},
+    -- {key = 'g', name = 'Gapplin'},
 }
 
-if hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA.app") then
-  table.insert(hsapp_list, {key = 'i', name = 'IntelliJ IDEA'})
+if hs.fs.pathToAbsolute("/Applications/Microsoft Outlook.appm") then
+    table.insert(hsapp_list, {key = 'm', name = 'Microsoft Outlook'})
 else
-  table.insert(hsapp_list, {key = "i", name = "IntelliJ IDEA CE"})
+    table.insert(hsapp_list, {key = 'm', name = 'Mail'})
+end
+
+if hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA.app") then
+    table.insert(hsapp_list, {key = 'i', name = 'IntelliJ IDEA'})
+else
+    table.insert(hsapp_list, {key = "i", name = "IntelliJ IDEA CE"})
 end
 
 hyper1 = {"ctrl", "shift", "alt"}
