@@ -53,6 +53,7 @@ end
 hyper1 = {"ctrl", "shift", "alt"}
 hyper2 = "cmd"
 hyper3 = {"ctrl", "alt"}
+hyper4 = {"ctrl", "cmd"}
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
 hsupervisor_keys = {hyper1, "Q"}
@@ -91,7 +92,7 @@ hstranslateM_keys = {hyper2, "\\"}
 
 -- Launch Hammerspoon Search
 -- hsearch_keys = {"alt", "G"}
-hsearch_keys = {hyper2, "Z"}
+hsearch_keys = {hyper4, "space"}
 
 -- Read Hammerspoon and Spoons API manual in default browser
 -- hsman_keys = {"alt", "H"}
