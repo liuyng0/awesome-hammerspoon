@@ -1,11 +1,11 @@
 -- Specify Spoons which will be loaded
 hspoon_list = {
-   "AClock",
+   -- "AClock",
    -- "BingDaily",
    -- "Calendar",
    -- "CircleClock",
    -- "ClipShow",
-   "CountDown",
+   -- "CountDown",
    -- "FnMate",
    -- "HCalendar",
    -- "HSaria2",
@@ -73,7 +73,8 @@ hsaria2_secret = "token"
 -- Those keybindings below could be disabled by setting to {"", ""} or {{}, ""}
 
 -- Window hints keybinding: Focuse to any window you want
-hswhints_keys = {hyper2, ";"}
+-- hswhints_keys = {hyper2, ";"}
+hswhints_keys = {"", ""}
 
 -- appM environment keybinding: Application Launcher
 -- hsappM_keys = {"alt", "A"}
@@ -81,30 +82,30 @@ hsappM_keys = {hyper2, "L"}
 
 -- clipshowM environment keybinding: System clipboard reader
 -- hsclipsM_keys = {"alt", "C"}
-hsclipsM_keys = {hyper1, "C"}
+-- hsclipsM_keys = {hyper1, "C"}
 
 -- Toggle the display of aria2 frontend
 -- hsaria2_keys = {"alt", "D"}
 hsaria2_keys = {"", ""}
 
 -- Translate
-hstranslateM_keys = {hyper2, "\\"}
+hstranslateM_keys = {hyper2, "O"}
 
 -- Launch Hammerspoon Search
 -- hsearch_keys = {"alt", "G"}
-hsearch_keys = {hyper4, "space"}
+hsearch_keys = {hyper2, "I"}
 
 -- Read Hammerspoon and Spoons API manual in default browser
 -- hsman_keys = {"alt", "H"}
-hsman_keys = {hyper1, "H"}
+hsman_keys = {"", ""}
 
 -- countdownM environment keybinding: Visual countdown
 -- hscountdM_keys = {"alt", "I"}
-hscountdM_keys = {hyper1, "I"}
+-- hscountdM_keys = {hyper1, "I"}
 
 -- Lock computer's screen
 -- hslock_keys = {"alt", "L"}
-hslock_keys = {hyper1, "L"}
+hslock_keys = {hyper3, "L"}
 
 -- resizeM environment keybinding: Windows manipulation
 -- hsresizeM_keys = {"alt", "R"}
@@ -116,7 +117,7 @@ hscheats_keys = {"", ""}
 
 -- Show digital clock above all windows
 -- hsaclock_keys = {"alt", "T"}
-hsaclock_keys = {hyper1, "T"}
+hsaclock_keys = {"", ""}
 
 -- Type the URL and title of the frontmost web page open in Google Chrome or Safari.
 -- hstype_keys = {"alt", "V"}
@@ -124,6 +125,6 @@ hstype_keys = {"", ""}
 
 -- Toggle Hammerspoon console
 -- hsconsole_keys = {"alt", "Z"}
-hsconsole_keys = {hyper1, "C"}
+hsconsole_keys = {"", ""}
 
 hsscreenM_keys = {hyper2, "J"}
