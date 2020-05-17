@@ -44,7 +44,7 @@ hsapp_list = {
     -- {key = 'g', name = 'Gapplin'},
 }
 
-if hs.fs.pathToAbsolute("/Applications/Microsoft Outlook.appm") then
+if hs.fs.pathToAbsolute("/Applications/Microsoft Outlook.app") then
     table.insert(hsapp_list, {key = 'm', name = 'Microsoft Outlook'})
 else
     table.insert(hsapp_list, {key = 'm', name = 'Mail'})
