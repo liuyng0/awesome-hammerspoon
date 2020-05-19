@@ -541,4 +541,8 @@ function test()
     hs.alert.show("this is a test")
 end
 
-hs.hotkey.bind(hyper2, "T", function() spoon.Links:test() end)
+function testEmacs28()
+    hs.execute("open /Applications/Emacs28.app")
+end
+
+hs.hotkey.bind(hyper2, "T", function() testEmacs28() end)
