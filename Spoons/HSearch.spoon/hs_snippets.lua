@@ -25,13 +25,11 @@ obj.init_func = function ()
 
     local command = orgSourceFeedScript .. " " .. "-t source-code -o get-sources"
     -- logger:d("Start to call: " .. command)
-    local output, status, exitType, rc = hs.execute(command, true)
+    local output, status, exitType, rc = executeWithPathPopulated(command)
 
     -- logger:d(output, status, exitType, rct)
     local chooser_data = {}
     if status and output ~= "" then
-        output = hs.fnutils.split(output, "\n")
-        output = output[#output-1]
         local snippets = hs.json.decode(output)
         local index = 1
         for _, s in pairs(snippets) do

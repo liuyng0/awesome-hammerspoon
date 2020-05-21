@@ -52,6 +52,24 @@ function getVifFile(filename)
     return os.getenv("HOME") .. "/vif/" .. filename
 end
 
+__my_path = nil
+function populatePathMaybe()
+    if not __my_path then
+        local output, status, exitType, rc = hs.execute("echo \\$PATH", true)
+        if status and output ~= "" then
+            output = hs.fnutils.split(output, "\n")
+            __my_path = output[#output-1]
+        end
+    end
+end
+
+function executeWithPathPopulated(command)
+    populatePathMaybe()
+    if __my_path then
+        return hs.execute("export PATH=" .. __my_path .. " && " .. command)
+    end
+end
+
 function reloadConfig(files)
     doReload = false
     for _,file in pairs(files) do
@@ -532,10 +550,6 @@ end
 -- Finally we initialize ModalMgr supervisor
 spoon.ModalMgr.supervisor:enter()
 
--- Keep this line as the last line.
-hs.alert.show("Hammerspoon config loaded")
-
-
 -- Change the test function to test
 function test()
     hs.alert.show("this is a test")
@@ -546,3 +560,11 @@ function testEmacs28()
 end
 
 hs.hotkey.bind(hyper2, "T", function() test() end)
+
+populatePathMaybe()
+-- Keep this the last.
+if __my_path then
+    hs.alert.show("Hammerspoon config loaded, path loaded.")
+else
+    hs.alert.show("Hammerspoon config loaded, load PATH failure")
+end
