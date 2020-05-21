@@ -545,4 +545,4 @@ function testEmacs28()
     hs.execute("open /Applications/Emacs28.app")
 end
 
-hs.hotkey.bind(hyper2, "T", function() testEmacs28() end)
+hs.hotkey.bind(hyper2, "T", function() test() end)
