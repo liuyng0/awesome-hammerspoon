@@ -43,7 +43,7 @@ function obj:restoreOutput()
     end
     local function openWithChrome(arg)
         local argTable = hs.json.decode(arg)
-        local chromeTabManagerPath = getJsScript("chromeTabManager.js")
+        local chromeTabManagerPath = getScript("chromeTabManager.js")
         local arguments = hs.json.encode({
                 windowId = argTable.windowId,
                 tabTitle = argTable.tabTitle,

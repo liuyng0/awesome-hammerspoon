@@ -44,8 +44,8 @@ function pathInfo(path)
     }
 end
 
-function getJsScript(filename)
-    return os.getenv("HOME") .. "/.hammerspoon/js/" .. filename
+function getScript(filename)
+    return os.getenv("HOME") .. "/.hammerspoon/scripts/" .. filename
 end
 
 function getVifFile(filename)

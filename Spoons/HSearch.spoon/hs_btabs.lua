@@ -21,7 +21,7 @@ obj.overview = {text="Type t ⇥ to search safari/chrome Tabs.", image=hs.image.
 obj.notice = {text="Requesting data, please wait a while …"}
 
 obj.init_func = function ()
-    local chromeTabManagerPath = getJsScript("chromeTabManager.js")
+    local chromeTabManagerPath = getScript("chromeTabManager.js")
     local arguments = hs.json.encode({
             winId = -1,
             tabTitle = -1,
