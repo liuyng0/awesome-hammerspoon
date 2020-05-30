@@ -18,6 +18,44 @@ TARGET_ORG_FILE_REGEX = r"[a-zA-z_-]*\.org"
 SOURCE_TYPES = ["source-code", "links"]
 
 logging.basicConfig(filename="/tmp/org-source-feed.log", level=logging.DEBUG)
+class EntryOfLinks(object):
+    def __init__(self, source_type, remain_args):
+        self.source_type = source_type
+        self.remain_args = remain_args
+        self.args = None
+
+    def get_sources(self):
+        useful_link_file = os.path.join(ORG_SOURCE_DIR, "useful-links.md")
+        if not os.path.exists(useful_link_file):
+            return []
+
+        result = []
+        with open(useful_link_file, "r") as f:
+            for line in f.readlines():
+                for matched_result in re.finditer(r"\[(?P<link_desc>.*?)\]\((?P<link>.*?)\)", line, re.M | re.I):
+                    logging.debug("Find a link link_desc=[{link_desc}], link=[{link}]".format(
+                        link_desc=matched_result["link_desc"],
+                        link=matched_result["link"],
+                    ))
+                    result.append({
+                        "source_file": "useful-links",
+                        "name": matched_result["link_desc"],
+                        "type": "link",
+                        "code": matched_result["link"],
+                    })
+            return result
+
+    def run(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "--operation",
+            "-o",
+            required=True,
+            help="operation type"
+        )
+        self.args = parser.parse_args(self.remain_args)
+        logging.debug("EntryOfLinks get args: {}".format(self.args))
+        return EntryOfLinks.__dict__[self.args.operation.replace('-', '_')](self)
 
 class EntryOfSourceCode(object):
     def __init__(self, source_type, remain_args):

@@ -41,19 +41,7 @@ function obj:restoreOutput()
     local function openWithSafari(arg)
         hs.urlevent.openURLWithBundle(arg, "com.apple.Safari")
     end
-    local function openWithChrome(arg)
-        local argTable = hs.json.decode(arg)
-        local chromeTabManagerPath = getScript("chromeTabManager.js")
-        local arguments = hs.json.encode({
-                windowId = argTable.windowId,
-                tabTitle = argTable.tabTitle,
-                operation = argTable.config.currentOperation,
-        })
-        local command = chromeTabManagerPath .. " " .. "'" .. arguments .. "'"
-        local output, status, exitType, rc = hs.execute(command)
-        -- logger:d("Run command: " .. command .. ", and got output: " .. output)
-    end
-    local function openWithFirefox(arg)
+   local function openWithFirefox(arg)
         hs.urlevent.openURLWithBundle(arg, "org.mozilla.firefox")
     end
     local function copyToClipboard(arg)
@@ -66,7 +54,6 @@ function obj:restoreOutput()
     end
     obj.output_pool["browser"] = openWithBrowser
     obj.output_pool["safari"] = openWithSafari
-    obj.output_pool["chrome"] = openWithChrome
     obj.output_pool["firefox"] = openWithFirefox
     obj.output_pool["clipboard"] = copyToClipboard
     obj.output_pool["keystrokes"] = sendKeyStrokes
@@ -138,7 +125,11 @@ function obj:init()
                     chosen.config = obj.sources_config[obj.source_kw].config
                     local arguments = obj:filterParsableFieldsToJson(chosen)
                     -- logger.d("Call with parameter: " .. arguments)
-                    obj.output_pool[chosen.output](arguments)
+                    if obj.sources_config[obj.source_kw].output_method ~= nil then
+                        obj.sources_config[obj.source_kw].output_method(arguments)
+                    else
+                        obj.output_pool[chosen.output](arguments)
+                    end
                     obj.sources[obj.source_kw]()
                 else
                     obj.output_pool[chosen.output](chosen.arg)
@@ -260,10 +251,18 @@ function obj:loadSources()
                     local hotkey = source.hotkeys
                     if hotkey then obj.hotkeys[overview.keyword] = hotkey end
                     if source.config ~= nil and source.config_writer ~= nil then
-                        obj.sources_config[overview.keyword] = {
-                            config = source.config,
-                            config_writer = source.config_writer,
-                        }
+                        if source.output_method ~= nil then
+                            obj.sources_config[overview.keyword] = {
+                                config = source.config,
+                                config_writer = source.config_writer,
+                                output_method = source.output_method,
+                            }
+                        else
+                            obj.sources_config[overview.keyword] = {
+                                config = source.config,
+                                config_writer = source.config_writer,
+                            }
+                        end
                     end
                     local function sourceFunc()
                         local notice = source.notice

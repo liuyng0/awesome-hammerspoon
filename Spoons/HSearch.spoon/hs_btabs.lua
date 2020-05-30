@@ -84,4 +84,17 @@ obj.config_writer = writerGenerator(obj.config.allOperations)
 -- As the user is typing, the callback function will be called for every keypress. The returned value is a table.
 obj.callback = nil
 
+obj.output_method = function(arg)
+    local argTable = hs.json.decode(arg)
+    local chromeTabManagerPath = getScript("chromeTabManager.js")
+    local arguments = hs.json.encode({
+            windowId = argTable.windowId,
+            tabTitle = argTable.tabTitle,
+            operation = argTable.config.currentOperation,
+    })
+    local command = chromeTabManagerPath .. " " .. "'" .. arguments .. "'"
+    local output, status, exitType, rc = hs.execute(command)
+    -- logger:d("Run command: " .. command .. ", and got output: " .. output)
+end
+
 return obj
