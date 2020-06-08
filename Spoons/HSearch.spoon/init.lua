@@ -128,7 +128,7 @@ function obj:init()
                     if obj.sources_config[obj.source_kw].output_method ~= nil then
                         obj.sources_config[obj.source_kw].output_method(arguments)
                     else
-                        obj.output_pool[chosen.output](arguments)
+                        obj.output_pool[chosen.output](chosen.arg)
                     end
                     obj.sources[obj.source_kw]()
                 else
