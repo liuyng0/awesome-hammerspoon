@@ -561,6 +561,18 @@ end
 
 hs.hotkey.bind(hyper2, "T", function() test() end)
 
+function copyEmailLink()
+    status, data = hs.osascript.applescript([[tell application "Microsoft Outlook"
+        set theMessages to selected objects
+        repeat with theMessage in theMessages
+        set toOpen to id of theMessage
+        set the clipboard to toOpen
+        end repeat
+        end tell]])
+    hs.alert.show("email link is copied")
+end
+
+hs.hotkey.bind(hyper4, "L", function() copyEmailLink() end)
 populatePathMaybe()
 -- Keep this the last.
 if __my_path then
