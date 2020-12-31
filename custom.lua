@@ -50,6 +50,11 @@ else
     table.insert(hsapp_list, {key = 'm', name = 'Mail'})
 end
 
+if hs.fs.pathToAbsolute("/Applications/Kindle.app") then
+    table.insert(hsapp_list, {key = 'k', name = 'Kindle'})
+end
+
+
 if hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA.app") then
     table.insert(hsapp_list, {key = 'i', name = 'IntelliJ IDEA'})
 else
