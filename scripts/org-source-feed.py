@@ -5,6 +5,8 @@ import argparse
 import re
 import json
 import logging
+import sys
+import itertools
 
 ORG_SOURCE_DIR = os.path.expanduser("~/org/database")
 SOURCE_CODE_BLOCK_REGEX = (
@@ -81,7 +83,25 @@ class EntryOfSourceCode(object):
 
     @staticmethod
     def remove_prefix_ws(content):
-        return "\n".join(map(lambda s: s[2:] if len(s) >= 2 else s, content.split("\n")))
+        lines = list(map(lambda s: s.rstrip(), content.split("\n")))
+        n = EntryOfSourceCode.count_prefix_ws(lines)
+        # logging.debug(f"lines: {*lines,}, n: {n}")
+        if n > 0:
+            return "\n".join(map(lambda s: s[n:] if len(s) >= n else s, lines))
+        return "\n".join(lines)
+
+    @staticmethod
+    def count_prefix_ws(lines):
+        n = sys.maxsize
+        for line in lines:
+            if line == '':
+                continue
+            num_prefix_ws = sum(1 for _ in itertools.takewhile(str.isspace, line))
+            if num_prefix_ws < n:
+                n = num_prefix_ws
+        if n == sys.maxsize:
+            return 0
+        return n
 
     def run(self):
         parser = argparse.ArgumentParser()
