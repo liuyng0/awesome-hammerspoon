@@ -134,7 +134,7 @@ function obj:moveAndResize(option)
         local cscreen = cwin:screen()
         local cres = cscreen:fullFrame()
         if cscreen:name() == "BenQ EW2440L" then
-            cres.h = cres.h - 35
+            cres.h = cres.h * 0.97
         end
         local stepw = cres.w/obj.gridparts
         local steph = cres.h/obj.gridparts
