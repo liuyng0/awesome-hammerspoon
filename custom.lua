@@ -30,7 +30,6 @@ hsapp_list = {
     {key = 's', id = 'com.apple.systempreferences'},
     {key = 'p', name = 'Preview'},
     {key = 'f', name = 'Firefox'},
-    {key = 'a', name = 'Amazon Chime'},
     {key = 'o', name = 'OmniGraffle'},
     {key = 't', name = 'iTerm'},
     -- {key = 'a', name = 'Android Studio'},
@@ -43,6 +42,12 @@ hsapp_list = {
     -- {key = 'p', name = 'PDF Professional'},
     -- {key = 'g', name = 'Gapplin'},
 }
+
+if hs.fs.pathToAbsolute("/Applications/Android Studio.app") then
+    table.insert(hsapp_list, {key = 'a', name = 'Android Studio'})
+else
+    table.insert(hsapp_list, {key = 'a', name = 'Amazon Chime'})
+end
 
 if hs.fs.pathToAbsolute("/Applications/Microsoft Outlook.app") then
     table.insert(hsapp_list, {key = 'm', name = 'Microsoft Outlook'})
