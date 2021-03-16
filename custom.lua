@@ -62,8 +62,10 @@ end
 
 if hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA.app") then
     table.insert(hsapp_list, {key = 'i', name = 'IntelliJ IDEA'})
-else
+elseif hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA CE.app") then
     table.insert(hsapp_list, {key = "i", name = "IntelliJ IDEA CE"})
+elseif hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA 2021.1 CE EAP.app") then
+    table.insert(hsapp_list, {key = "i", name = "IntelliJ IDEA 2021.1 CE EAP.app"})
 end
 
 hyper1 = {"ctrl", "shift", "alt"}
