@@ -199,5 +199,20 @@ function obj:toggleWindowHighlightMode()
    end
 end
 
+function obj:getVisibleWindowsForAllScreens()
+    local all_windows = hs.window.orderedWindows()
+    local flattened_windows = {}
+    for _, w in pairs(all_windows) do
+        local w_info = {
+            id = w:id(),
+            title = w:title(),
+            screen = w:screen(),
+            frame = w:frame(),
+            application = w:application(),
+        }
+        print(hs.inspect.inspect(w_info))
+        table.insert(flattened_windows, w_info)
+    end
+end
 
 return obj
