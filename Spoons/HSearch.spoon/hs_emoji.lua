@@ -18,17 +18,22 @@ obj.overview = {text="Type e ⇥ to find relevant Emoji.", image=hs.image.imageF
 -- Define the notice when a long-time request is being executed. It could be `nil`.
 obj.notice = nil
 
+obj.choices = {}
+
 local function emojiTips()
-    local choices = {}
+    if next(obj.choices) ~= nil then
+        return obj.choices
+    end
+
     for _, emoji in ipairs(hs.json.decode(io.open(obj.spoonPath .. "/emojis/emojis.json"):read())) do
-        table.insert(choices,
+        table.insert(obj.choices,
                      {text=emoji['name'],
                       subText=table.concat(emoji['kwds'], ", "),
                       image=hs.image.imageFromPath(obj.spoonPath .. "/emojis/" .. emoji['id'] .. ".png"),
                       output="keystrokes",
                       arg=emoji['chars']})
     end
-    return choices
+    return obj.choices
 end
 
 -- Define the function which will be called when the `keyword` triggers a new source. The returned value is a table. Read more: http://www.hammerspoon.org/docs/hs.chooser.html#choices
