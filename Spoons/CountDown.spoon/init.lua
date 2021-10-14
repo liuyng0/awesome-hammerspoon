@@ -17,21 +17,23 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 obj.canvas = nil
 obj.timer = nil
 
+local color = hs.drawing.color.x11
+
 function obj:init()
     self.canvas = hs.canvas.new({x=0, y=0, w=0, h=0}):show()
     self.canvas:behavior(hs.canvas.windowBehaviors.canJoinAllSpaces)
     self.canvas:level(hs.canvas.windowLevels.status)
-    self.canvas:alpha(0.35)
+    self.canvas:alpha(0.45)
     self.canvas[1] = {
         type = "rectangle",
         action = "fill",
-        fillColor = hs.drawing.color.osx_red,
+        fillColor = color.lightred,
         frame = {x="0%", y="0%", w="0%", h="100%"}
     }
     self.canvas[2] = {
         type = "rectangle",
         action = "fill",
-        fillColor = hs.drawing.color.osx_green,
+        fillColor = color.lightgreen,
         frame = {x="0%", y="0%", w="0%", h="100%"}
     }
 end
