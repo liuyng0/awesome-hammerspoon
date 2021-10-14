@@ -5,7 +5,7 @@ hspoon_list = {
     -- "Calendar",
     -- "CircleClock",
     -- "ClipShow",
-    -- "CountDown",
+    "CountDown",
     -- "FnMate",
     -- "HCalendar",
     -- "HSaria2",
@@ -119,7 +119,7 @@ hsman_keys = {"", ""}
 
 -- countdownM environment keybinding: Visual countdown
 -- hscountdM_keys = {"alt", "I"}
--- hscountdM_keys = {hyper1, "I"}
+hscountdM_keys = {hyper2, "N"}
 
 -- Lock computer's screen
 -- hslock_keys = {"alt", "L"}
