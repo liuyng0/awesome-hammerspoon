@@ -29,7 +29,7 @@ function obj:init()
     obj.modal_tray = hs.canvas.new({x = 0, y = 0, w = 0, h = 0})
     obj.modal_tray:level(hs.canvas.windowLevels.tornOffMenu)
     obj.modal_tray[1] = {
-        type = "circle",
+        type = "rectangle",
         action = "fill",
         fillColor = {hex = "#FFFFFF", alpha = 0.7},
     }
@@ -141,14 +141,10 @@ function obj:activate(idList, trayColor, showKeys)
         obj.active_list[val] = obj.modal_list[val]
     end
     if trayColor then
-        local cscreen = hs.screen.mainScreen()
-        local cres = cscreen:fullFrame()
-        obj.modal_tray:frame({
-            x = cres.w - math.ceil(cres.w / 32),
-            y = cres.h - math.ceil(cres.w / 32),
-            w = math.ceil(cres.w / 32 / 2),
-            h = math.ceil(cres.w / 32 / 2)
-        })
+        local mainScreen = hs.screen.mainScreen()
+        local mainRes = mainScreen:fullFrame()
+        obj.modal_tray:frame({x=mainRes.x, y=mainRes.y, w=mainRes.w, h=50})
+
         obj.modal_tray[1].fillColor = {hex = trayColor, alpha = 0.7}
         obj.modal_tray:show()
     end
