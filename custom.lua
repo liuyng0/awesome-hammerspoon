@@ -146,3 +146,17 @@ hstype_keys = {"", ""}
 hsconsole_keys = {"", ""}
 
 hsscreenM_keys = {hyper2, "J"}
+
+mic_ui = {
+    includeNonVisible = false,
+    includeOtherSpaces = false,
+
+    highlightThumbnailStrokeWidth = 0,
+    backgroundColor = {0, 128, 255, 0.3},
+    showTitles = false,
+}
+
+mic_expose = hs.expose.new(nil, mic_ui)
+hs.hotkey.bind(hyper2, ';', function()
+                   mic_expose:toggleShow()
+end)
