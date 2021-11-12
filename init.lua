@@ -546,6 +546,39 @@ if spoon.PopupTranslateSelection then
     end
 end
 
+-- Begin MissionControlWithExpose
+local setting = {
+    includeNonVisible = false,
+    includeOtherSpaces = false,
+
+    highlightThumbnailStrokeWidth = 0,
+    backgroundColor = {0, 128, 255, 0.3},
+    showTitles = true,
+}
+
+local hsExposeInstance = hs.expose.new(nil, setting)
+spoon.ModalMgr:new("MCExpose")
+local cmodal = spoon.ModalMgr.modal_list["MCExpose"]
+cmodal:bind('', 'escape', 'Deactivate MCExpose', function() spoon.ModalMgr:deactivate({"MCExpose"}) end)
+cmodal:bind('', 'Q', 'Deactivate MCExpose', function() spoon.ModalMgr:deactivate({"MCExpose"}) end)
+cmodal:bind('', 'A', 'Show all', function()
+                hsExposeInstance:toggleShow(false)
+                spoon.ModalMgr:deactivate({"MCExpose"})
+end)
+cmodal:bind('', 'C', 'Only current application', function()
+                hsExposeInstance:toggleShow(true)
+                spoon.ModalMgr:deactivate({"MCExpose"})
+end)
+
+
+-- Register countdownM with modal supervisor
+spoon.ModalMgr.supervisor:bind(hsexpose_keys[1], hsexpose_keys[2], "Enter MCExpose Environment", function()
+                                   spoon.ModalMgr:deactivateAll()
+                                   -- Show the keybindings cheatsheet once countdownM is activated
+                                   spoon.ModalMgr:activate({"MCExpose"}, "#FF6347", true)
+end)
+-- End MissionControlWithExpose
+
 ----------------------------------------------------------------------------------------------------
 -- Finally we initialize ModalMgr supervisor
 spoon.ModalMgr.supervisor:enter()
@@ -575,6 +608,7 @@ end
 hs.hotkey.bind(hyper4, "L", function() copyEmailLink() end)
 populatePathMaybe()
 -- Keep this the last.
+
 if __my_path then
     hs.alert.show("Hammerspoon config loaded, path loaded.")
 else
