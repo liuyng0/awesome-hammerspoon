@@ -28,7 +28,7 @@ hsapp_list = {
     {key = 'c', id = 'com.google.Chrome'},
     {key = 'd', name = 'Dash'},
     {key = 'w', id = 'com.apple.ActivityMonitor'},
-    {key = 's', id = 'com.apple.systempreferences'},
+    {key = 's', name = 'Slack'},
     {key = 'p', name = 'Preview'},
     {key = 'f', name = 'Firefox'},
     {key = 'o', name = 'OmniGraffle'},
