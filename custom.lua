@@ -1,3 +1,4 @@
+local logger = hs.logger.new("custom.lua", 'debug')
 -- Specify Spoons which will be loaded
 hspoon_list = {
     -- "AClock",
