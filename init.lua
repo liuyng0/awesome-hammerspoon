@@ -615,6 +615,18 @@ hs.hotkey.bind(hyper4, "L", function() copyEmailLink() end)
 populatePathMaybe()
 -- Keep this the last.
 
+
+local modal = hs.hotkey.modal.new()
+modal:bind({"ctrl", "shift"}, 'n', function() hs.eventtap.keyStroke({"cmd", "shift"}, "]") end)
+modal:bind({"ctrl", "shift"}, 'p', function() hs.eventtap.keyStroke({"cmd", "shift"}, "[") end)
+hs.window.filter.new('iTerm2') -- Name might differ (just print the name to the console)
+    :subscribe(hs.window.filter.windowFocused,function()
+                   modal:enter()
+              end)
+    :subscribe(hs.window.filter.windowUnfocused,function()
+                   modal:exit()
+              end)
+
 if __my_path then
     hs.alert.show("Hammerspoon config loaded, path loaded.")
 else
