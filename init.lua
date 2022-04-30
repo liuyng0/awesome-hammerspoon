@@ -589,6 +589,12 @@ end)
 -- Finally we initialize ModalMgr supervisor
 spoon.ModalMgr.supervisor:enter()
 
+local stay = require('hammers/stay')
+stay.hotkey = hs.hotkey.new(hsstay_keys[1], hsstay_keys[2], function()
+                                stay:toggle_or_choose()
+end)
+stay:start()
+
 -- Change the test function to test
 function test()
     hs.alert.show("this is a test")
@@ -613,8 +619,6 @@ end
 
 hs.hotkey.bind(hyper4, "L", function() copyEmailLink() end)
 populatePathMaybe()
--- Keep this the last.
-
 
 local modal = hs.hotkey.modal.new()
 modal:bind({"ctrl", "shift"}, 'n', function()
@@ -625,6 +629,7 @@ modal:bind({"ctrl", "shift"}, 'p', function()
         -- logger.d("send ctrl + shift + [")
         hs.eventtap.keyStroke({"cmd", "shift"}, "[")
 end)
+
 hs.window.filter.new('iTerm2') -- Name might differ (just print the name to the console)
     :subscribe(hs.window.filter.windowFocused,function()
                    -- logger.d("enter iterm local mode")
@@ -635,6 +640,7 @@ hs.window.filter.new('iTerm2') -- Name might differ (just print the name to the 
                    modal:exit()
               end)
 
+-- NOTE: Keep this the last.
 if __my_path then
     hs.alert.show("Hammerspoon config loaded, path loaded.")
 else
