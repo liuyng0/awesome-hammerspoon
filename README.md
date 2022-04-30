@@ -16,6 +16,9 @@ brew install luarocks
 ```
 
 - Install luarocks library
-```
+
+``` shell
 ln -sf /usr/local/share/lua/5.4/luarocks ~/.hammerspoon/
+# or
+ln -sf /opt/homebrew/share/lua/5.4/luarocks ~/.hammerspoon
 ```
