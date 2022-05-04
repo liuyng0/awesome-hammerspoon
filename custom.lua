@@ -33,6 +33,7 @@ hsapp_list = {
     {key = 'f', name = 'Firefox'},
     {key = 'o', name = 'OmniGraffle'},
     {key = 't', name = 'iTerm'},
+    {key = 'q', name = "Quip"},
     -- {key = 'a', name = 'Android Studio'},
     -- {key = 'e', name = 'emacs'},
     -- {key = 'f', name = 'Finder'},
