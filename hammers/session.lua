@@ -76,6 +76,7 @@ end
 
 function M:saveCurrentSession()
     local windows = getVisibleWindows()
+    hs.focus()
     local ok, text = hs.dialog.textPrompt("Enter a session name:", "the default text is provided", "title - description", "OK", "Cancel")
     if ok == "OK" then
         if M.sessions[text] == nil then
