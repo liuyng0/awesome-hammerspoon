@@ -584,15 +584,41 @@ spoon.ModalMgr.supervisor:bind(hsexpose_keys[1], hsexpose_keys[2], "Enter MCExpo
 end)
 -- End MissionControlWithExpose
 
-----------------------------------------------------------------------------------------------------
--- Finally we initialize ModalMgr supervisor
-spoon.ModalMgr.supervisor:enter()
 
-local stay = require('hammers/stay')
-stay.hotkey = hs.hotkey.new(hsstay_keys[1], hsstay_keys[2], function()
-                                stay:toggle_or_choose()
-end)
-stay:start()
+
+if hsstay_keys then
+    local stay = require('hammers/stay')
+    stay.hotkey = hs.hotkey.new(hsstay_keys[1], hsstay_keys[2], function()
+                                    stay:toggle_or_choose()
+    end)
+    stay:start()
+end
+
+if hssession_keys then
+    local session = require('hammers/session')
+    spoon.ModalMgr:new("HSSession")
+    local cmodal = spoon.ModalMgr.modal_list["HSSession"]
+    cmodal:bind('', 'escape', 'Deactivate HSSession', function() spoon.ModalMgr:deactivate({"HSSession"}) end)
+    cmodal:bind('', 'Q', 'Deactivate HSSession', function() spoon.ModalMgr:deactivate({"HSSession"}) end)
+    cmodal:bind('', 'S', 'Save current application', function()
+                    session:saveCurrentSession()
+                    spoon.ModalMgr:deactivate({"HSSession"})
+    end)
+    cmodal:bind('', 'G', 'Switch to session', function()
+                    session:switchToSession()
+                    spoon.ModalMgr:deactivate({"HSSession"})
+    end)
+    cmodal:bind('', 'L', '[Debug] Show Current Session', function()
+                    session:showCurrentSession()
+                    spoon.ModalMgr:deactivate({"HSSession"})
+    end)
+    -- Register countdownM with modal supervisor
+    spoon.ModalMgr.supervisor:bind(hssession_keys[1], hssession_keys[2], "Enter HSSession Environment", function()
+                                       spoon.ModalMgr:deactivateAll()
+                                       -- Show the keybindings cheatsheet once countdownM is activated
+                                       spoon.ModalMgr:activate({"HSSession"}, "#FF6347", true)
+    end)
+end
 
 -- Change the test function to test
 function test()
@@ -603,7 +629,8 @@ function testEmacs28()
     hs.execute("open /Applications/Emacs28.app")
 end
 
-hs.hotkey.bind(hyper2, "T", function() test() end)
+-- hs.hotkey.bind(hyper2, "T", function() test() end)
+hs.hotkey.bind(hyper2, "T", function() session:saveCurrentSession() end)
 
 function copyEmailLink()
     status, data = hs.osascript.applescript([[tell application "Microsoft Outlook"
@@ -638,6 +665,10 @@ hs.window.filter.new('iTerm2') -- Name might differ (just print the name to the 
                    -- logger.d("exit iterm local mode")
                    modal:exit()
               end)
+
+----------------------------------------------------------------------------------------------------
+-- Finally we initialize ModalMgr supervisor
+spoon.ModalMgr.supervisor:enter()
 
 -- NOTE: Keep this the last.
 if __my_path then
