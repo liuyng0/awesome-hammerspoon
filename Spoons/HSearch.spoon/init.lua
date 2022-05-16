@@ -137,6 +137,7 @@ function obj:init()
             end
         end
     end)
+    obj.chooser:searchSubText(true)
     obj.chooser:rows(9)
 end
 
@@ -286,7 +287,6 @@ function obj:loadSources()
                         else
                             obj.chooser:queryChangedCallback()
                         end
-                        obj.chooser:searchSubText(true)
                     end
                     -- Add this source to sources pool, so it can found and triggered.
                     obj.sources[overview.keyword] = sourceFunc
