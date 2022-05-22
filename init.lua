@@ -525,27 +525,40 @@ if spoon.PopupTranslateSelection then
 end
 
 -- Begin MissionControlWithExpose
-local setting = {
+local settingAll = {
     includeNonVisible = false,
     includeOtherSpaces = false,
 
     highlightThumbnailStrokeWidth = 0,
     backgroundColor = {0, 128, 255, 0.3},
     showTitles = true,
+    onlyActiveApplication = false,
 }
 
-local hsExposeInstance = hs.expose.new(nil, setting)
+local settingOnlyCurrent = {
+    includeNonVisible = false,
+    includeOtherSpaces = false,
+
+    highlightThumbnailStrokeWidth = 0,
+    backgroundColor = {0, 128, 255, 0.3},
+    showTitles = true,
+    onlyActiveApplication = true,
+    maxHintLetters = 0, -- TODO: doesn't work here
+}
+
+local hsExposeInstanceAll = hs.expose.new(nil, settingAll)
+local hsExposeInstanceCurrent = hs.expose.new(nil, settingCurrent)
 spoon.ModalMgr:new("MCExpose")
 local cmodal = spoon.ModalMgr.modal_list["MCExpose"]
 cmodal:bind('', 'escape', 'Deactivate MCExpose', function() spoon.ModalMgr:deactivate({"MCExpose"}) end)
 cmodal:bind('', 'Q', 'Deactivate MCExpose', function() spoon.ModalMgr:deactivate({"MCExpose"}) end)
 cmodal:bind('', 'A', 'Show all', function()
                 spoon.ModalMgr:deactivate({"MCExpose"})
-                hsExposeInstance:toggleShow(false)
+                hsExposeInstanceAll:toggleShow(false)
 end)
 cmodal:bind('', 'C', 'Only current application', function()
                 spoon.ModalMgr:deactivate({"MCExpose"})
-                hsExposeInstance:toggleShow(true)
+                hsExposeInstanceCurrent:toggleShow(true)
 end)
 
 

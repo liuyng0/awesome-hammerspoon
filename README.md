@@ -1,5 +1,11 @@
 Hammerspoon configuration, fork from [https://github.com/ashfinal/awesome-hammerspoon].
 
+## File structure
+### custom.lua
+- Set hot configuration keys
+- preloading some packages
+### init.lua
+- binding the prefixes to modal functions
 
 ## Include luarocks libarary
 https://github.com/Hammerspoon/hammerspoon/issues/363
