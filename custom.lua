@@ -18,7 +18,6 @@ hspoon_list = {
     "WinWin",
     'Screen',
     'Links',
-    'Hints',
     'PopupTranslateSelection',
 }
 
@@ -91,10 +90,6 @@ hsaria2_secret = "token"
 
 ----------------------------------------------------------------------------------------------------
 -- Those keybindings below could be disabled by setting to {"", ""} or {{}, ""}
-
--- Window hints keybinding: Focuse to any window you want
--- hswhints_keys = {hyper2, ";"}
-hswhints_keys = {"", ""}
 
 -- appM environment keybinding: Application Launcher
 -- hsappM_keys = {"alt", "A"}

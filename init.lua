@@ -118,33 +118,6 @@ for _, v in pairs(hspoon_list) do
     hs.loadSpoon(v)
 end
 
-spoon.Hints.showTitleThresh = 0
--- comment off to use default style.
--- spoon.Hints.style = "vimperator"
-
-----------------------------------------------------------------------------------------------------
--- Then we create/register all kinds of modal keybindings environments.
-----------------------------------------------------------------------------------------------------
--- Register windowHints (Register a keybinding which is NOT modal environment with modal supervisor)
-hswhints_keys = hswhints_keys or {"alt", "tab"}
-if string.len(hswhints_keys[2]) > 0 then
-    spoon.ModalMgr.supervisor:bind(hswhints_keys[1], hswhints_keys[2], 'Show Window Hints', function()
-                                       spoon.ModalMgr:deactivateAll()
-                                       spoon.Hints:windowHints(
-                                           spoon.Screen:sortedWindows(),
-                                           function(win)
-                                               win:raise()
-                                               win:focus()
-                                               hs.alert.show(
-                                                   string.format("Focuse to: %s, no switch", win:title()),
-                                                   hs.alert.defaultStyle,
-                                                   hs.screen.mainScreen(),
-                                                   0.5
-                                               )
-                                       end)
-    end)
-end
-
 ----------------------------------------------------------------------------------------------------
 -- appM modal environment
 spoon.ModalMgr:new("appM")
