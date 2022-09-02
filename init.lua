@@ -632,29 +632,61 @@ end
 hs.hotkey.bind(hyper4, "L", function() copyEmailLink() end)
 populatePathMaybe()
 
-local modal = hs.hotkey.modal.new()
-modal:bind({"ctrl", "shift"}, '[', function()
-        local itemApp = hs.application.find('iTerm2')
-        itemApp:selectMenuItem({'Window', 'Select Previous Tab'})
-end)
-modal:bind({"ctrl", "shift"}, ']', function()
-        local itemApp = hs.application.find('iTerm2')
-        itemApp:selectMenuItem({'Window','Select Next Tab'})
-end)
-modal:bind({"ctrl", "shift"}, 'T', function()
-        local itemApp = hs.application.find('iTerm2')
-        itemApp:selectMenuItem({'Shell', 'New Tab with Current Profile'})
-end)
+---------------------------------------------------------------------------------------------------
+-- Application specific hot keys
+local appmodal = require 'hammers/appmodal'
+local APP_OMNI_GRAFFLE_NAME = "OmniGraffle"
+local APP_ITERM_NAME = "iTerm2"
 
-hs.window.filter.new('iTerm2') -- Name might differ (just print the name to the console)
-    :subscribe(hs.window.filter.windowFocused,function()
-                   -- logger.d("enter iterm local mode")
-                   modal:enter()
-              end)
-    :subscribe(hs.window.filter.windowUnfocused,function()
-                   -- logger.d("exit iterm local mode")
-                   modal:exit()
-              end)
+---- OmniGraffle
+local omnigraffle_modal = appmodal.bind(
+    "cmd", 'P',
+    APP_OMNI_GRAFFLE_NAME,
+    {
+        {
+            key='T', description='Toggle all Side bars', action=function()
+                hs.eventtap.keyStroke({"cmd", "alt"}, "1")
+                hs.eventtap.keyStroke({"cmd", "shift"}, "I")
+            end
+        },
+        {
+            key='L', description='Toggle left Side bars', action=function()
+                hs.eventtap.keyStroke({"cmd", "alt"}, "1")
+            end
+        },
+        {
+            key='R', description='Toggle right Side bars', action=function()
+                hs.eventtap.keyStroke({"cmd", "shift"}, "I")
+            end
+        }
+    }
+)
+
+---- iTerm2
+local iterm_modal = appmodal.bind(
+    "cmd", 'P',
+    APP_ITERM_NAME,
+    {
+        {
+            key='[', description='Select Previous Tab', action=function()
+                local itemApp = hs.application.find(APP_ITERM_NAME)
+                itemApp:selectMenuItem({'Window', 'Select Previous Tab'})
+            end
+        },
+        {
+            key=']', description='Select Next Tab', action=function()
+                local itemApp = hs.application.find(APP_ITERM_NAME)
+                itemApp:selectMenuItem({'Window', 'Select Next Tab'})
+            end
+        },
+        {
+            key='T', description='New Tab with Current Profile', action=function()
+                local itemApp = hs.application.find(APP_ITERM_NAME)
+                itemApp:selectMenuItem({'Shell', 'New Tab with Current Profile'})
+            end
+        }
+    }
+)
 
 ----------------------------------------------------------------------------------------------------
 -- Finally we initialize ModalMgr supervisor
