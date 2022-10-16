@@ -637,6 +637,7 @@ populatePathMaybe()
 local appmodal = require 'hammers/appmodal'
 local APP_OMNI_GRAFFLE_NAME = "OmniGraffle"
 local APP_ITERM_NAME = "iTerm2"
+local APP_CHROME = "Google Chrome"
 
 ---- OmniGraffle
 local omnigraffle_modal = appmodal.bind(
@@ -668,21 +669,53 @@ local iterm_modal = appmodal.bind(
     APP_ITERM_NAME,
     {
         {
-            key='[', description='Select Previous Tab', action=function()
+            key='P', description='Select Previous Tab', action=function()
                 local itemApp = hs.application.find(APP_ITERM_NAME)
                 itemApp:selectMenuItem({'Window', 'Select Previous Tab'})
             end
         },
         {
-            key=']', description='Select Next Tab', action=function()
+            key='N', description='Select Next Tab', action=function()
                 local itemApp = hs.application.find(APP_ITERM_NAME)
                 itemApp:selectMenuItem({'Window', 'Select Next Tab'})
             end
         },
         {
-            key='T', description='New Tab with Current Profile', action=function()
+            key='C', description='New Tab with Current Profile', action=function()
                 local itemApp = hs.application.find(APP_ITERM_NAME)
                 itemApp:selectMenuItem({'Shell', 'New Tab with Current Profile'})
+            end
+        }
+    }
+)
+
+---- iTerm2
+local iterm_modal = appmodal.bind(
+    "cmd", 'P',
+    APP_CHROME,
+    {
+        {
+            key='P', description='Select Previous Tab', action=function()
+                local itemApp = hs.application.find(APP_CHROME)
+                itemApp:selectMenuItem({'Tab', 'Select Previous Tab'})
+            end
+        },
+        {
+            key='N', description='Select Next Tab', action=function()
+                local itemApp = hs.application.find(APP_CHROME)
+                itemApp:selectMenuItem({'Tab', 'Select Next Tab'})
+            end
+        },
+        {
+            key='S', description='Search Tabs', action=function()
+                local itemApp = hs.application.find(APP_CHROME)
+                itemApp:selectMenuItem({'Tab', 'Search Tabs…'})
+            end
+        },
+        {
+            key='M', description='Task Manager', action=function()
+                local itemApp = hs.application.find(APP_CHROME)
+                itemApp:selectMenuItem({'Window', 'Task Manager'})
             end
         }
     }
