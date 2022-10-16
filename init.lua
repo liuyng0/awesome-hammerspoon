@@ -660,6 +660,12 @@ local omnigraffle_modal = appmodal.bind(
             key='R', description='Toggle right Side bars', action=function()
                 hs.eventtap.keyStroke({"cmd", "shift"}, "I")
             end
+        },
+        {
+            key='E', description='Export to SVGs', action=function()
+                local itemApp = hs.application.find(APP_OMNI_GRAFFLE_NAME)
+                itemApp:selectMenuItem({'File', 'Export…'})
+            end
         }
     }
 )
