@@ -123,7 +123,7 @@ end
 spoon.ModalMgr:new("appM")
 local cmodal = spoon.ModalMgr.modal_list["appM"]
 cmodal:bind('', 'escape', 'Deactivate appM', function() spoon.ModalMgr:deactivate({"appM"}) end)
-cmodal:bind('', 'tab', 'Toggle Cheatsheet', function() spoon.ModalMgr:toggleCheatsheet() end)
+cmodal:bind('', 'tab', 'Deactivate appM', function() spoon.ModalMgr:deactivate({"appM"}) end)
 if not hsapp_list then
     hsapp_list = {
         {key = 'f', name = 'Finder'},
@@ -157,6 +157,7 @@ end
 -- Then we register some keybindings with modal supervisor
 hsappM_keys = hsappM_keys or {"alt", "A"}
 if string.len(hsappM_keys[2]) > 0 then
+    cmodal:bind(hsappM_keys[1], hsappM_keys[2], 'Deactivate appM', function() spoon.ModalMgr:deactivate({"appM"}) end)
     spoon.ModalMgr.supervisor:bind(hsappM_keys[1], hsappM_keys[2], "Enter AppM Environment", function()
                                        spoon.ModalMgr:deactivateAll()
                                        -- Show the keybindings cheatsheet once appM is activated
