@@ -523,8 +523,8 @@ if spoon.PopupTranslateSelection then
                     spoon.ModalMgr:deactivate({"translateM"})
     end)
     cmodal:bind('', 'I', 'Open 画词翻译', function()
-                    if not hs.window'^欧路词典$':application():findMenuItem({'功能', '划词翻译'})['ticked'] then
-                        hs.window'^欧路词典$':application():selectMenuItem({'功能', '划词翻译'})
+                    if not hs.application('^Eudic$'):findMenuItem({'功能', '划词翻译'})['ticked'] then
+                        hs.application('^Eudic$'):selectMenuItem({'功能', '划词翻译'})
                         hs.timer.doAfter(1, function()
                                              hs.window'^取词 $':raise()
                         end)
@@ -534,8 +534,8 @@ if spoon.PopupTranslateSelection then
                     spoon.ModalMgr:deactivate({"translateM"})
     end)
     cmodal:bind('', 'P', 'Close 画词翻译', function()
-                    if hs.window'^欧路词典$':application():findMenuItem({'功能', '划词翻译'})['ticked'] then
-                        hs.window'^欧路词典$':application():selectMenuItem({'功能', '划词翻译'})
+                    if hs.application('^Eudic$'):findMenuItem({'功能', '划词翻译'})['ticked'] then
+                        hs.application('^Eudic$'):selectMenuItem({'功能', '划词翻译'})
                         hs.timer.doAfter(1, function()
                                              hs.window'^取词 $':application():hide()
                         end)
