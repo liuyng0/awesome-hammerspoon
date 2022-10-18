@@ -6,6 +6,13 @@ local fun = require 'luarocks/fun'
 local appmodal = {}
 local logger = hs.logger.new('appmodal')
 appmodal.logger = logger
+appmodal.global_keys = nil
+
+function appmodal:set_global_keys(keys_map)
+    appmodal.global_keys_map = keys_map
+
+    return appmodal
+end
 
 function appmodal.bind(key1, key2, app_name, action_map)
     local modal_name = app_name .. 'AppModal'
@@ -17,6 +24,15 @@ function appmodal.bind(key1, key2, app_name, action_map)
                         spoon.ModalMgr:deactivate({modal_name})
                         m.action()
         end)
+    end
+
+    if appmodal.global_keys_map ~= nil then
+        for _, m in ipairs(appmodal.global_keys_map) do
+            cmodal:bind(m.key[1], m.key[2], m.description, function()
+                            spoon.ModalMgr:deactivate({modal_name})
+                            m.action()
+            end)
+        end
     end
 
     cmodal:bind('', 'escape', 'Deactivate ' .. modal_name, function() spoon.ModalMgr:deactivate({modal_name}) end)

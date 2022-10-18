@@ -670,6 +670,23 @@ local APP_OMNI_GRAFFLE_NAME = "OmniGraffle"
 local APP_ITERM_NAME = "iTerm2"
 local APP_CHROME = "Google Chrome"
 
+local app_model_global_actions = {
+    {
+        key={"cmd", "J"}, description='Tile Window to Left of Screen', action=function()
+            local cwin = hs.window.focusedWindow()
+            cwin:application():selectMenuItem({'Window', 'Tile Window to Left of Screen'})
+        end
+    },
+    {
+        key={"cmd", "L"}, description='Tile Window to Right of Screen', action=function()
+            local cwin = hs.window.focusedWindow()
+            cwin:application():selectMenuItem({'Window', 'Tile Window to Right of Screen'})
+        end
+    }
+}
+
+appmodal:set_global_keys(app_model_global_actions)
+
 ---- OmniGraffle
 local omnigraffle_modal = appmodal.bind(
     "cmd", 'P',
