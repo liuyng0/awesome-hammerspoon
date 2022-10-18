@@ -522,8 +522,26 @@ if spoon.PopupTranslateSelection then
                     end
                     spoon.ModalMgr:deactivate({"translateM"})
     end)
-    cmodal:bind('', 'H', 'Toggle 画词翻译', function()
-                    hs.window'^欧路词典$':application():selectMenuItem({'功能', '划词翻译'})
+    cmodal:bind('', 'I', 'Open 画词翻译', function()
+                    if not hs.window'^欧路词典$':application():findMenuItem({'功能', '划词翻译'})['ticked'] then
+                        hs.window'^欧路词典$':application():selectMenuItem({'功能', '划词翻译'})
+                        hs.timer.doAfter(1, function()
+                                             hs.window'^取词 $':raise()
+                        end)
+                    else
+                        hs.alert('欧路词典划词翻译已经打开')
+                    end
+                    spoon.ModalMgr:deactivate({"translateM"})
+    end)
+    cmodal:bind('', 'P', 'Close 画词翻译', function()
+                    if hs.window'^欧路词典$':application():findMenuItem({'功能', '划词翻译'})['ticked'] then
+                        hs.window'^欧路词典$':application():selectMenuItem({'功能', '划词翻译'})
+                        hs.timer.doAfter(1, function()
+                                             hs.window'^取词 $':application():hide()
+                        end)
+                    else
+                        hs.alert('欧路词典划词翻译已经关闭')
+                    end
                     spoon.ModalMgr:deactivate({"translateM"})
     end)
     -- Register translateM with modal supervisor
