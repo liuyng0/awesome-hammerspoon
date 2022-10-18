@@ -514,6 +514,18 @@ if spoon.PopupTranslateSelection then
                         spoon.ModalMgr:deactivate({"translateM"})
         end)
     end
+    cmodal:bind('', 'O', 'Toggle showing Eudic LightPeek', function()
+                    if hs.window'^取词 $':isVisible() then
+                        hs.window'^取词 $':application():hide()
+                    else
+                        hs.window'^取词 $':raise()
+                    end
+                    spoon.ModalMgr:deactivate({"translateM"})
+    end)
+    cmodal:bind('', 'H', 'Toggle 画词翻译', function()
+                    hs.window'^欧路词典$':application():selectMenuItem({'功能', '划词翻译'})
+                    spoon.ModalMgr:deactivate({"translateM"})
+    end)
     -- Register translateM with modal supervisor
     hstranslateM_keys = hstranslateM_keys or {"cmd", "]"}
     if string.len(hstranslateM_keys[2]) > 0 then
