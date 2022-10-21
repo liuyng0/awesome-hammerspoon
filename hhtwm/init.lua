@@ -1,5 +1,6 @@
 -- hhtwm - hackable hammerspoon tiling wm
 
+local funext = require 'hammers/funext'
 local createLayouts = require('hhtwm.layouts')
 local spaces        = require('hs.spaces')
 
@@ -32,20 +33,22 @@ local ensureCacheSpaces = function(spaceId)
 end
 
 local getCurrentSpacesIds = function()
-    return spaces.activeSpaces()
+    return funext.imap(spaces.activeSpaces(), function(k,v) return v end)
 end
 
 local getSpaceId = function(win)
     win = win or hs.window.frontmostWindow()
 
+    local spaceId
+
     if win ~= nil then
         local spaceIds = spaces.windowSpaces(win)
         if spaceIds ~= nil and #spaceIds > 0 then
-            return spaceIds[1]
+            spaceId = spaceIds[1]
         end
     end
 
-    return spaces.activeSpaceOnScreen()
+    return spaceId or spaces.activeSpaceOnScreen()
 end
 
 local getSpacesIdsTable = function()
@@ -70,10 +73,13 @@ local getAllWindowsUsingSpaces = function()
     local tmp = {}
 
     hs.fnutils.each(spacesIds, function(spaceId)
-                        local windows = spaces.windowsForSpace(spaceId)
+                        local windowIds = spaces.windowsForSpace(spaceId)
 
-                        hs.fnutils.each(windows, function(win)
-                                            table.insert(tmp, win)
+                        hs.fnutils.each(windowIds, function(winId)
+                                            local window = hs.window(winId)
+                                            if window ~= nil then
+                                                table.insert(tmp, window)
+                                            end
                         end)
     end)
 
