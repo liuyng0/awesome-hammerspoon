@@ -558,7 +558,7 @@ end
 -- Begin MissionControlWithExpose
 local settingAll = {
     includeNonVisible = false,
-    includeOtherSpaces = false,
+    includeOtherSpaces = true,
 
     highlightThumbnailStrokeWidth = 0,
     backgroundColor = {0, 128, 255, 0.3},
@@ -568,12 +568,12 @@ local settingAll = {
 
 local settingOnlyCurrent = {
     includeNonVisible = false,
-    includeOtherSpaces = false,
+    includeOtherSpaces = true,
 
     highlightThumbnailStrokeWidth = 0,
     backgroundColor = {0, 128, 255, 0.3},
     showTitles = true,
-    onlyActiveApplication = true,
+    onlyActiveApplication = false,
     maxHintLetters = 0, -- TODO: doesn't work here
 }
 
