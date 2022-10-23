@@ -592,6 +592,25 @@ cmodal:bind('', 'C', 'Only current application', function()
                 hsExposeInstanceCurrent:toggleShow(true)
 end)
 
+cmodal:bind('', 'E', 'Toggle App Expose Using Spaces', function()
+                spoon.ModalMgr:deactivate({"MCExpose"})
+                hs.spaces.toggleAppExpose()
+end)
+
+cmodal:bind('', 'D', 'Toggle Show Desktop Using Spaces', function()
+                spoon.ModalMgr:deactivate({"MCExpose"})
+                hs.spaces.toggleShowDesktop()
+end)
+
+cmodal:bind('', 'M', 'Toggle Mission Control Using Spaces', function()
+                spoon.ModalMgr:deactivate({"MCExpose"})
+                hs.spaces.toggleMissionControl()
+end)
+
+cmodal:bind('', 'L', 'Toggle Launch Pad', function()
+                spoon.ModalMgr:deactivate({"MCExpose"})
+                hs.spaces.toggleLaunchPad()
+end)
 
 -- Register countdownM with modal supervisor
 spoon.ModalMgr.supervisor:bind(hsexpose_keys[1], hsexpose_keys[2], "Enter MCExpose Environment", function()
