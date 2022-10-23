@@ -123,6 +123,8 @@ function obj:toggleCheatsheet(iterList, force)
             end
         end
         obj.which_key:show()
+        hs.dockicon.hide() -- to make it possible to bring to front of fullscreen windows
+        obj.which_key:bringToFront(true)
     end
 end
 
