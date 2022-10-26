@@ -557,39 +557,29 @@ end
 
 -- Begin MissionControlWithExpose
 local settingAll = {
-    includeNonVisible = false,
+    includeNonVisible = true,
     includeOtherSpaces = true,
 
-    highlightThumbnailStrokeWidth = 0,
-    backgroundColor = {0, 128, 255, 0.3},
+    -- highlightThumbnailStrokeWidth = 0,
+    -- backgroundColor = {0, 128, 255, 0.3},
     showTitles = true,
     onlyActiveApplication = false,
+    fitWindowsInBackground = false,
 }
 
-local settingOnlyCurrent = {
-    includeNonVisible = false,
-    includeOtherSpaces = true,
 
-    highlightThumbnailStrokeWidth = 0,
-    backgroundColor = {0, 128, 255, 0.3},
-    showTitles = true,
-    onlyActiveApplication = false,
-    maxHintLetters = 0, -- TODO: doesn't work here
-}
-
-local hsExposeInstanceAll = hs.expose.new(nil, settingAll)
-local hsExposeInstanceCurrent = hs.expose.new(nil, settingCurrent)
+local hsExposeInstanceDefaultAllSpaces = hs.expose.new(nil, settingAll)
 spoon.ModalMgr:new("MCExpose")
 local cmodal = spoon.ModalMgr.modal_list["MCExpose"]
 cmodal:bind('', 'escape', 'Deactivate MCExpose', function() spoon.ModalMgr:deactivate({"MCExpose"}) end)
 cmodal:bind('', 'Q', 'Deactivate MCExpose', function() spoon.ModalMgr:deactivate({"MCExpose"}) end)
 cmodal:bind('', 'A', 'Show all', function()
                 spoon.ModalMgr:deactivate({"MCExpose"})
-                hsExposeInstanceAll:toggleShow(false)
+                hsExposeInstanceDefaultAllSpaces:toggleShow(false)
 end)
 cmodal:bind('', 'C', 'Only current application', function()
                 spoon.ModalMgr:deactivate({"MCExpose"})
-                hsExposeInstanceCurrent:toggleShow(true)
+                hsExposeInstanceDefaultAllSpaces:toggleShow(true)
 end)
 
 cmodal:bind('', 'E', 'Toggle App Expose Using Spaces', function()
