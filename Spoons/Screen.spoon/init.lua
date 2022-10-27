@@ -48,6 +48,7 @@ function obj:focusWindowOnNextScreen(nextCount)
                hs.alert.defaultStyle, nextScreen, 0.5
             )
          end
+         w:unminimize()
          w:raise()
          w:focus()
          raiseAndFocusedWindow = true
@@ -110,7 +111,8 @@ function selectWindowInList(allWindows, showAppNameAsPrefix)
       if choice == nil then
         return;
       end
-      local chosenWindow = hs.window.get(choice["id"])
+      local chosenWindow = choice["windowObject"]
+      chosenWindow:unminimize()
       chosenWindow:raise()
       chosenWindow:focus()
   end)
@@ -119,7 +121,7 @@ function selectWindowInList(allWindows, showAppNameAsPrefix)
     table.insert(chooserChoices, {
                    ["text"] = getWindowNameFromCache(w:id(), w:title()),
                    ["visible"] = w:isVisible(),
-                   ["id"] = w:id(),
+                   ["windowObject"] = w,
                    ["application"] = w:application():name(),
     })
   end
@@ -154,7 +156,7 @@ function obj:selectWindowFromFocusedApp()
   local focusedApp = focusedWindow:application()
   -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
 
-  local allWindows = focusedApp:allWindows()
+  local allWindows = hs.window.filter.new{focusedApp:name()}:getWindows() -- focusedApp:allWindows()
   selectWindowInList(allWindows, false)
 end
 
