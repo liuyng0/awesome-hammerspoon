@@ -564,7 +564,7 @@ local settingAll = {
     -- backgroundColor = {0, 128, 255, 0.3},
     showTitles = true,
     onlyActiveApplication = false,
-    fitWindowsInBackground = false,
+    -- fitWindowsInBackground = false,
 }
 
 
