@@ -139,11 +139,12 @@ function selectWindowInList(allWindows, showAppNameAsPrefix)
 
   if showAppNameAsPrefix then
     for _, c in pairs(chooserChoices) do
-      c["text"] = c["application"] .. " >> " .. c["text"]
+        c["subText"] = c["application"] .. " | " .. c["text"]
+        c["text"] = c["application"]
     end
   end
   chooser:choices(chooserChoices)
-  chooser:show()
+  chooser:searchSubText(true):show()
 end
 
 function obj:selectWindowFromAllWindows()
