@@ -1,4 +1,5 @@
 local obj = {}
+local colorpicker = require('hammers.colorpicker')
 obj.__index = obj
 
 -- Metadata
@@ -146,6 +147,7 @@ function selectWindowInList(allWindows, showAppNameAsPrefix)
       c["text"] = c["application"]
     end
   end
+  colorpicker:setChooserUI(chooser, chooserChoices)
   chooser:choices(chooserChoices)
   chooser:searchSubText(true):show()
 end
@@ -175,7 +177,8 @@ end
 function obj:_switchFocusIfOnlyOneChoice()
   local windows = obj:_sameAppWindowsWithFocusedExceptFocused()
   if #windows == 0 then
-    obj.logger.w("No other windows")
+
+    hs.alert.show("No other windows", 0.5)
 
     return nil
   end
