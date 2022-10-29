@@ -17,6 +17,7 @@ hspoon_list = {
     -- "UnsplashZ",
     "WinWin",
     'Screen',
+    'Space',
     'Links',
     'PopupTranslateSelection',
 }

@@ -468,7 +468,10 @@ if spoon.Screen then
                     hs.window.highlight.toggleIsolate()
                     spoon.ModalMgr:deactivate({"screenM"})
     end)
-
+    cmodal:bind('', 'S', "Switch to Screen", function()
+                  spoon.Space:switchToScreen()
+                  spoon.ModalMgr:deactivate({"screenM"})
+    end)
     -- Register screenM with modal supervisor
     hsscreenM_keys = hsscreenM_keys or {"cmd", "J"}
     if string.len(hsscreenM_keys[2]) > 0 then
