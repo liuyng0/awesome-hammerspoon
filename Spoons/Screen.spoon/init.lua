@@ -166,7 +166,8 @@ function obj:sameAppWindowInNextScreen(nextCount)
    local focusedApp = focusedWindow:application()
    -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
 
-   local windowAngle = obj:_sortedWindows(focusedApp:allWindows())
+   local allWindows = hs.window.filter.new{focusedApp:name()}:getWindows() -- focusedApp:allWindows()
+   local windowAngle = obj:_sortedWindows(allWindows)
    local thisWindowIndex = 1
    local numWindows=#windowAngle
    for i = 1, numWindows do
@@ -183,6 +184,7 @@ function obj:sameAppWindowInNextScreen(nextCount)
       hs.alert.closeAll()
       local alertUUid = hs.alert.show("Current Screen", hs.alert.defaultStyle, nextWindow:screen(), 0.5)
    end
+   nextWindow:unminimize()
    nextWindow:raise()
    nextWindow:focus()
    -- hs.alert.closeSpecific(alertUUid, 2)
