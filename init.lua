@@ -472,6 +472,25 @@ if spoon.Screen then
     -- Register screenM with modal supervisor
     hsscreenM_keys = hsscreenM_keys or {"cmd", "J"}
     if string.len(hsscreenM_keys[2]) > 0 then
+        ---- Try to use hs.window.switcher, but seems not work well
+        -- local nextWindow = function()
+        --     spoon.ModalMgr:deactivate({"screenM"})
+        --     local focusedWindow = hs.window.focusedWindow()
+        --     local focusedApp = focusedWindow:application()
+        --     -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
+
+        --     hs.window.switcher.new(hs.window.filter.new{focusedApp:name()}):next()
+        -- end
+        -- local previousWindow = function()
+        --     spoon.ModalMgr:deactivate({"screenM"})
+        --     local focusedWindow = hs.window.focusedWindow()
+        --     local focusedApp = focusedWindow:application()
+        --     -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
+
+        --     hs.window.switcher.new(hs.window.filter.new{focusedApp:name()}):previous()
+        -- end
+        -- cmodal:bind(hsscreenM_keys[1], 'N', "Next Window", nextWindow, nil, nextWindow)
+        -- cmodal:bind(hsscreenM_keys[1], 'P', "Previous Window", previousWindow, nil, previousWindow)
         spoon.ModalMgr.supervisor:bind(hsscreenM_keys[1], hsscreenM_keys[2], "Enter screenM Environment", function()
                                            spoon.ModalMgr:deactivateAll()
                                            -- Show the keybindings cheatsheet once screenM is activated
