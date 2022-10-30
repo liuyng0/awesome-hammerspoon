@@ -10,22 +10,82 @@ local st = require('hs.styledtext')
 local color = require('hs.drawing.color')
 local funs = require('hs.fnutils')
 
+m.textSize = 18
+m.subTextSize = 16
+
+function m:x11Alpha(color, alpha)
+  return {
+    red = color.red,
+    green = color.green,
+    blue = color.blue,
+    alpha = alpha
+  }
+end
+
 m.lightStyle = {
-    fontSize = {text = 18, subText = 14},
-    default = {text = color.x11.blue,
-               subText = color.x11.royalblue},
-    grayOut =  {text = color.x11.steelblue,
-                subText = color.x11.dodgerblue}
+    default = {
+      text = {
+        font = {
+          name='Arial Bold',
+          size=m.textSize
+        },
+        color = m:x11Alpha(color.x11.maroon, 0.8)
+      },
+      subText = {
+        font = {
+          name='Arial',
+          size=m.subTextSize
+        },
+        color=m:x11Alpha(color.x11.blue, 0.9)
+      }
+    },
+    grayOut = {
+      text = {
+        font = {
+          name='Arial Bold',
+          size=m.textSize
+        },
+        color=color.x11.steelblue
+      },
+      subText = {
+        font = {
+          size=m.subTextSize
+        },
+        color=color.x11.dodgerblue
+      }
+    }
 }
 
 m.darkStyle = {
-    fontSize = {text = 18, subText = 14},
-    default = {text = color.x11.dodgerblue,
-               subText = color.x11.royalblue},
-    grayOut =  {text = color.x11.lightsteelblue,
-                subText = color.x11.steelblue}
+  default = {
+    text = {
+      font = {
+        size=m.textSize
+      },
+      color=color.x11.dodgerblue
+    },
+    subText = {
+      font = {
+        size=m.subTextSize
+      },
+      color=color.x11.royalblue
+    }
+  },
+  grayOut = {
+    text = {
+      font = {
+        size=m.textSize
+      },
+      color=color.x11.lightsteelblue
+    },
+    subText = {
+      font = {
+        size=m.subTextSize
+      },
+      color=color.x11.steelblue
+    }
+  }
 }
-
 
 -- options.darStyle: true or false
 -- options.textKey, default "text"
@@ -59,25 +119,19 @@ function m:setChooserUI(chooser, choices, options)
     m.logger.w("Need to recolor")
     choices = funs.map(choices, function(choice)
                          choice.__colorpicker_style = style
-                         local fgColor
+                         local textStyle
                          if isGrayOut(choice) then
-                           fgColor = style.grayOut
+                           textStyle = style.grayOut
                          else
-                           fgColor = style.default
+                           textStyle = style.default
                          end
 
                          if choice[textKey] ~= nil then
-                           choice["text"] = m:styledTextCompatible(choice[textKey], {
-                                                                     font={size=style.fontSize.text},
-                                                                     color=fgColor.text
-                           })
+                           choice["text"] = m:styledTextCompatible(choice[textKey], textStyle.text)
                          end
 
                          if choice[subTextKey] ~= nil then
-                           choice["subText"] = m:styledTextCompatible(choice[subTextKey], {
-                                                                        font={size=style.fontSize.subText},
-                                                                        color=fgColor.subText
-                           })
+                           choice["subText"] = m:styledTextCompatible(choice[subTextKey], textStyle.subText)
                          end
                          return choice
     end)
