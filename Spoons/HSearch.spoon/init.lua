@@ -30,6 +30,16 @@ obj.hotkeys = {}
 obj.source_kw = nil
 
 local logger = hs.logger.new("HSearch", 'debug')
+local colorpicker = require('hammers.colorpicker')
+
+function obj:setChoices(chooser, choices)
+  if choices ~= nil then
+    colorpicker:setChooserUI(chooser, choices)
+  end
+  if chooser ~= nil then
+    chooser:choices(choices)
+  end
+end
 
 function obj:restoreOutput()
     obj.output_pool = {}
@@ -155,7 +165,7 @@ function obj:switchSource()
             if obj.sources[querystr] then
                 obj.source_kw = querystr
                 obj.chooser:query('')
-                obj.chooser:choices(nil)
+                obj:setChoices(obj.chooser, nil)
                 obj.chooser:queryChangedCallback()
                 obj.sources[querystr]()
             else
@@ -165,7 +175,7 @@ function obj:switchSource()
                 if obj.sources[row_kw] then
                     obj.source_kw = row_kw
                     obj.chooser:query('')
-                    obj.chooser:choices(nil)
+                    obj:setChoices(obj.chooser, nil)
                     obj.chooser:queryChangedCallback()
                     obj.sources[row_kw]()
                 else
@@ -174,7 +184,7 @@ function obj:switchSource()
                         {text="No source found!", subText="Maybe misspelled the keyword?"},
                         {text="Want to add your own source?", subText="Feel free to read the code and open PRs. :)"}
                     }
-                    obj.chooser:choices(chooser_data)
+                    obj:setChoices(obj.chooser, chooser_data)
                     obj.chooser:queryChangedCallback()
                     hs.eventtap.keyStroke({"cmd"}, "a")
                 end
@@ -184,7 +194,7 @@ function obj:switchSource()
             local chooser_data = {
                 {text="Invalid Keyword", subText="Trigger keyword must only consist of alphanumeric characters."}
             }
-            obj.chooser:choices(chooser_data)
+            obj:setChoices(obj.chooser, chooser_data)
             obj.chooser:queryChangedCallback()
             hs.eventtap.keyStroke({"cmd"}, "a")
         end
@@ -194,14 +204,14 @@ function obj:switchSource()
         if obj.sources[row_kw] then
             obj.source_kw = row_kw
             obj.chooser:query('')
-            obj.chooser:choices(nil)
+            obj:setChoices(obj.chooser, nil)
             obj.chooser:queryChangedCallback()
             obj.sources[row_kw]()
         else
             obj.source_kw = nil
             -- If no matching source then show sources overview
             local chooser_data = obj.sources_overview
-            obj.chooser:choices(chooser_data)
+            obj:setChoices(obj.chooser, chooser_data)
             obj.chooser:queryChangedCallback()
         end
     end
@@ -267,7 +277,9 @@ function obj:loadSources()
                     end
                     local function sourceFunc()
                         local notice = source.notice
-                        if notice then obj.chooser:choices({notice}) end
+                        if notice then
+                          obj:setChoices(obj.chooser, {notice})
+                        end
                         local request = source.init_func
                         if request then
                             local chooser_data = request()
@@ -278,9 +290,9 @@ function obj:loadSources()
                             if obj:currentSourceMultipleOperationEnabled() then
                                 obj:appendOperationData(chooser_data)
                             end
-                            obj.chooser:choices(chooser_data)
+                            obj:setChoices(obj.chooser, chooser_data)
                         else
-                            obj.chooser:choices(nil)
+                            obj:setChoices(obj.chooser, nil)
                         end
                         if source.callback then
                             obj.chooser:queryChangedCallback(source.callback)
@@ -308,7 +320,8 @@ function obj:toggleShow()
         -- If it's the first time HSearch shows itself, then load all sources from files
         obj:loadSources()
         -- Show sources overview, so users know what to do next.
-        obj.chooser:choices(obj.sources_overview)
+
+        obj:setChoices(obj.chooser, obj.sources_overview)
     end
     if obj.chooser:isVisible() then
         obj.chooser:hide()
