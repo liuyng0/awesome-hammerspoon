@@ -770,6 +770,12 @@ local iterm_modal = appmodal.bind(
                 local itemApp = hs.application.find(APP_ITERM_NAME)
                 itemApp:selectMenuItem({'Shell', 'New Tab with Current Profile'})
             end
+        },
+        {
+          key='X', description='Close', action=function()
+            local itemApp = hs.application.find(APP_ITERM_NAME)
+            itemApp:selectMenuItem({'Shell', 'Close'})
+          end
         }
     }
 )
