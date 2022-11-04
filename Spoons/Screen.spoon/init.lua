@@ -183,7 +183,7 @@ function obj:_switchFocusIfOnlyOneChoice()
     return nil
   end
   if #windows == 1 then
-    obj.logger.w("Only one other window, simply switch to")
+    hs.alert.show("Only one window, switched", 0.5)
 
     windows[1]:unminimize()
     windows[1]:raise()
@@ -247,20 +247,41 @@ function obj:toggleWindowHighlightMode()
   end
 end
 
+
+-- TODO: complete the swapWithNext function
+function obj:swapWithNext()
+  obj.logger.w(hs.inspect(obj:getVisibleWindowsGroupedByScreens()))
+end
+
+function obj:getVisibleWindowsGroupedByScreens()
+  local wins = obj:getVisibleWindowsForAllScreens()
+  local rs = {}
+  for i = 1, #wins do
+    if rs[wins[i].screen:id()] == nil then
+      rs[wins[i].screen:id()] = {wins[i]}
+    else
+      table.insert(rs[wins[i].screen:id()], wins[i])
+    end
+  end
+  return rs
+end
+
 function obj:getVisibleWindowsForAllScreens()
-  local all_windows = hs.window.orderedWindows()
-  local flattened_windows = {}
-  for _, w in pairs(all_windows) do
+  local all_windows = hs.window.filter.default:getWindows()
+  local wins = {}
+  for i, w in pairs(all_windows) do
     local w_info = {
       id = w:id(),
       title = w:title(),
       screen = w:screen(),
       frame = w:frame(),
       application = w:application(),
+      order = i,
     }
-    print(hs.inspect.inspect(w_info))
-    table.insert(flattened_windows, w_info)
+    -- print(hs.inspect.inspect(w_info))
+    table.insert(wins, w_info)
   end
+  return wins
 end
 
 return obj
