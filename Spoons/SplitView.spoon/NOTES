@@ -1,0 +1,7 @@
+hs -c "hs.doc.builder.genJSON(\"$(pwd)\")" > docs.json
+
+../hammerspoon/scripts/docs/bin/build_docs.py --templates ../hammerspoon/scripts/docs/templates/ --output_dir . --json --html --markdown --standalone .
+
+cd ..
+
+zip -r SplitView.spoon.zip SplitView.spoon -x '*/.?*' 

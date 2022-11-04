@@ -20,6 +20,7 @@ hspoon_list = {
     'Space',
     'Links',
     'PopupTranslateSelection',
+    'SplitView',
 }
 
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.
