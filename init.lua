@@ -296,6 +296,10 @@ if spoon.CountDown then
                     spoon.ModalMgr:deactivate({"countdownM"})
     end)
 
+    cmodal:bind('', '-', '0.1 Minutes - 6 seconds Countdown', function()
+                    spoon.CountDown:startFor(0.1)
+                    spoon.ModalMgr:deactivate({"countdownM"})
+    end)
     -- Register countdownM with modal supervisor
     hscountdM_keys = hscountdM_keys or {"alt", "I"}
     if string.len(hscountdM_keys[2]) > 0 then

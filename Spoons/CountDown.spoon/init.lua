@@ -119,7 +119,7 @@ function obj:setProgress(progress, notifystr)
             hs.notify.new({
                 title = "Time(" .. notifystr .. " mins) is up!",
                 informativeText = "Now is " .. os.date("%X")
-            }):send()
+            }):withdrawAfter(15):soundName("Hero"):send()
         end
     else
         obj.canvas[1].frame.w = tostring(progress)
