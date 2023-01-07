@@ -822,7 +822,7 @@ local iterm_modal = appmodal.bind(
             end
         },
         {
-            key='S', description='Search Tabs', action=function()
+            key={'cmd', 'P'}, description='Search Tabs', action=function()
                 local itemApp = hs.application.find(APP_CHROME)
                 itemApp:selectMenuItem({'Tab', 'Search Tabs…'})
             end
