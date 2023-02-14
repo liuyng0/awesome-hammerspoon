@@ -38,6 +38,7 @@ hsapp_list = {
     {key = 'h', name = "Hammerspoon"},
     {key = ';', name = 'Xcode'},
     {key = 'x', name = 'XMind'},
+    {key = 'b', name = 'iBooks'}
     -- {key = 'a', name = 'Android Studio'},
     -- {key = 'f', name = 'Finder'},
     -- {key = 's', name = 'Visual Studio Code'},
