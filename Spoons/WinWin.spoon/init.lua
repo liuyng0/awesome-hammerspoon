@@ -159,6 +159,8 @@ function obj:moveAndResize(option)
             cwin:setFrame({x=cres.x, y=cres.y, w=cres.w, h=cres.h})
         elseif option == "center" then
             cwin:centerOnScreen()
+        elseif option == "centerHalfWidth" then
+            cwin:setFrame({x=cres.x+cres.w/4, y=cres.y, w=cres.w/2, h=cres.h})
         elseif option == "expand" then
             cwin:setFrame({x=wf.x-stepw, y=wf.y-steph, w=wf.w+(stepw*2), h=wf.h+(steph*2)})
         elseif option == "shrink" then
