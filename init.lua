@@ -725,6 +725,7 @@ local appmodal = require 'hammers/appmodal'
 local APP_OMNI_GRAFFLE_NAME = "OmniGraffle"
 local APP_ITERM_NAME = "iTerm2"
 local APP_CHROME = "Google Chrome"
+local APP_GOODNOTES = 'GoodNotes'
 
 local app_model_global_actions = {
     {
@@ -836,6 +837,13 @@ local iterm_modal = appmodal.bind(
         }
     }
 )
+
+spoon.AppBindings:bind(APP_GOODNOTES, {
+  { {'ctrl'}, 'i', {}, 'up' },           -- Scroll message window
+  { {'ctrl'}, 'k', {}, 'down' },          -- Scroll message window
+  { {'ctrl'}, 'j', {}, 'left' },          -- Scroll message window
+  { {'ctrl'}, 'l', {}, 'right' },          -- Scroll message window
+})
 
 ----------------------------------------------------------------------------------------------------
 -- Finally we initialize ModalMgr supervisor

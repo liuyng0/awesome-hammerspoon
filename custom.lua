@@ -21,6 +21,7 @@ hspoon_list = {
     'Links',
     'PopupTranslateSelection',
     'SplitView',
+    'AppBindings'
 }
 
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.
@@ -38,7 +39,8 @@ hsapp_list = {
     {key = 'h', name = "Hammerspoon"},
     {key = ';', name = 'Xcode'},
     {key = 'x', name = 'XMind'},
-    {key = 'b', name = 'iBooks'}
+    {key = 'b', name = 'iBooks'},
+    {key = 'n', name = 'GoodNotes'}
     -- {key = 'a', name = 'Android Studio'},
     -- {key = 'f', name = 'Finder'},
     -- {key = 's', name = 'Visual Studio Code'},
