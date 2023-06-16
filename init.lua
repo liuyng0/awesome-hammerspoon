@@ -137,16 +137,18 @@ for _, v in ipairs(hsapp_list) do
     if v.id then
         local located_name = hs.application.nameForBundleID(v.id)
         if located_name then
-            logger.d("bind " .. v.key .. " to bundle id: " .. v.id)
-            cmodal:bind('', v.key, located_name, function()
+            logger.d("bind " .. hs.inspect(v.key) .. " to bundle id: " .. v.id)
+            cmodal:bind(type(v.key) == 'table' and v.key[1] or '',
+                        type(v.key) == 'table' and v.key[2] or v.key, located_name, function()
                             logger.d("launch by bundle id " .. v.id)
                             hs.application.launchOrFocusByBundleID(v.id)
                             spoon.ModalMgr:deactivate({"appM"})
             end)
         end
     elseif v.name then
-        logger.d("bind " .. v.key .. " to app name: " .. v.name)
-        cmodal:bind('', v.key, v.name, function()
+        logger.d("bind " .. hs.inspect(v.key) .. " to app name: " .. v.name)
+        cmodal:bind(type(v.key) == 'table' and v.key[1] or '',
+                    type(v.key) == 'table' and v.key[2] or v.key, v.name, function()
                         logger.d("launch by name " .. v.name)
                         hs.application.launchOrFocus(v.name)
                         spoon.ModalMgr:deactivate({"appM"})

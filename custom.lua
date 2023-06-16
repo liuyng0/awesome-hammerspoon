@@ -1,4 +1,11 @@
 local logger = hs.logger.new("custom.lua", 'debug')
+
+hyper1 = {"ctrl", "shift", "alt"}
+hyper2 = "cmd"
+hyper3 = {"ctrl", "alt"}
+hyper4 = {"ctrl", "cmd"}
+
+
 -- Specify Spoons which will be loaded
 hspoon_list = {
     -- "AClock",
@@ -30,6 +37,7 @@ hsapp_list = {
     {key = 'c', id = 'com.google.Chrome'},
     {key = 'd', name = 'Dash'},
     {key = 'w', id = 'com.apple.ActivityMonitor'},
+    {key = {hyper2, 'w'}, name = 'WeChat'},
     {key = 's', name = 'Slack'},
     {key = 'p', name = 'Preview'},
     {key = 'f', name = 'Firefox'},
@@ -73,11 +81,6 @@ elseif hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA CE.app") then
 elseif hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA 2021.1 CE EAP.app") then
     table.insert(hsapp_list, {key = "i", name = "IntelliJ IDEA 2021.1 CE EAP.app"})
 end
-
-hyper1 = {"ctrl", "shift", "alt"}
-hyper2 = "cmd"
-hyper3 = {"ctrl", "alt"}
-hyper4 = {"ctrl", "cmd"}
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
 hsupervisor_keys = {hyper1, "Q"}
