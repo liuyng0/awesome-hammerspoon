@@ -846,6 +846,12 @@ spoon.AppBindings:bind(APP_GOODNOTES, {
   { {'ctrl'}, 'j', {}, 'left' },          -- Scroll message window
   { {'ctrl'}, 'l', {}, 'right' },          -- Scroll message window
 })
+spoon.AppBindings:bind("Kindle", {
+  { {'ctrl'}, 'i', {}, 'up' },           -- Scroll message window
+  { {'ctrl'}, 'k', {}, 'down' },          -- Scroll message window
+  { {'ctrl'}, 'j', {}, 'left' },          -- Scroll message window
+  { {'ctrl'}, 'l', {}, 'right' },          -- Scroll message window
+})
 
 ----------------------------------------------------------------------------------------------------
 -- Finally we initialize ModalMgr supervisor
