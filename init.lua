@@ -874,6 +874,8 @@ hsreload_keys = hsreload_keys or {{"cmd", "shift", "ctrl"}, "R"}
 if string.len(hsreload_keys[2]) > 0 then
     hs.hotkey.bind(hsreload_keys[1], hsreload_keys[2], "Reload Configuration", function() hs.reload() end)
 end
+-- Disable the alert key showing
+hs.hotkey.alertDuration = 0
 
 -- NOTE: Keep this the last.
 if __my_path then
