@@ -550,11 +550,6 @@ if spoon.PopupTranslateSelection then
         end)
     end
 
-    cmodal:bind(hstranslateM_keys[1], hstranslateM_keys[2], 'Google Translate', function()
-                    spoon.PopupTranslateSelection:toggleTranslatePopup("zh", "en")
-                    spoon.ModalMgr:deactivate({"translateM"})
-    end)
-
     cmodal:bind('', 'O', 'Toggle showing Eudic LightPeek', function()
                     if hs.window'^取词 $':isVisible() then
                         hs.window'^取词 $':application():hide()
@@ -593,6 +588,12 @@ if spoon.PopupTranslateSelection then
         end)
     end
 end
+
+hs.hotkey.bind(hyper2, "'", function()
+                    spoon.PopupTranslateSelection:toggleTranslatePopup("zh", "en")
+                    spoon.ModalMgr:deactivate({"translateM"})
+end)
+
 
 -- Begin MissionControlWithExpose
 local settingAll = {
@@ -678,7 +679,7 @@ if hssession_keys then
                     spoon.ModalMgr:deactivate({"HSSession"})
                     session:showCurrentSession()
     end)
-    -- Register countdownM with modal supervisor
+    -- Register session module with modal supervisor
     spoon.ModalMgr.supervisor:bind(hssession_keys[1], hssession_keys[2], "Enter HSSession Environment", function()
                                        spoon.ModalMgr:deactivateAll()
                                        -- Show the keybindings cheatsheet once countdownM is activated
@@ -832,6 +833,9 @@ local iterm_modal = appmodal.bind(
     }
 )
 
+-- Finally we initialize ModalMgr supervisor
+spoon.ModalMgr.supervisor:enter()
+
 spoon.AppBindings:bind(APP_GOODNOTES, {
   { {'ctrl'}, 'i', {}, 'up' },           -- Scroll message window
   { {'ctrl'}, 'k', {}, 'down' },          -- Scroll message window
@@ -861,15 +865,6 @@ spoon.AppBindings:bind("Preview", {
 })
 
 
--- Finally we initialize ModalMgr supervisor
-spoon.ModalMgr.supervisor:enter()
-
--- NOTE: Keep this the last.
-if __my_path then
-    hs.alert.show("Hammerspoon config loaded, path loaded.")
-else
-    hs.alert.show("Hammerspoon config loaded, load PATH failure")
-end
 
 -- Watch the configuration change.
 myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
@@ -878,4 +873,11 @@ myWatcher:start()
 hsreload_keys = hsreload_keys or {{"cmd", "shift", "ctrl"}, "R"}
 if string.len(hsreload_keys[2]) > 0 then
     hs.hotkey.bind(hsreload_keys[1], hsreload_keys[2], "Reload Configuration", function() hs.reload() end)
+end
+
+-- NOTE: Keep this the last.
+if __my_path then
+    hs.alert.show("Hammerspoon config loaded, path loaded.")
+else
+    hs.alert.show("Hammerspoon config loaded, load PATH failure")
 end
