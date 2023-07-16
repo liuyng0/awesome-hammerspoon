@@ -1,5 +1,4 @@
-hs.hotkey.alertDuration = 0
-hs.window.animationDuration = 0
+
 
 privatepath = hs.fs.pathToAbsolute(hs.configdir .. '/private')
 
@@ -530,6 +529,9 @@ if spoon.Screen then
 end
 
 if spoon.PopupTranslateSelection then
+    -- Register translateM with modal supervisor
+    hstranslateM_keys = hstranslateM_keys or {"cmd", "]"}
+
     spoon.ModalMgr:new("translateM")
     local cmodal = spoon.ModalMgr.modal_list["translateM"]
     cmodal:bind('', 'escape', 'Deactivate translateM', function()
@@ -553,16 +555,13 @@ if spoon.PopupTranslateSelection then
                         spoon.ModalMgr:activate({"translateM"})
                         spoon.PopupTranslateSelection:translateShell("zh", text)
         end)
-    else
-        cmodal:bind('', 'E', 'Translate the selection to English', function()
-                        spoon.PopupTranslateSelection:translateSelectionPopup("en", "auto")
-                        spoon.ModalMgr:deactivate({"translateM"})
-        end)
-        cmodal:bind('', 'C', 'Translate the selection to Chinese', function()
-                        spoon.PopupTranslateSelection:translateSelectionPopup("zh", "auto")
-                        spoon.ModalMgr:deactivate({"translateM"})
-        end)
     end
+
+    cmodal:bind(hstranslateM_keys[1], hstranslateM_keys[2], 'Google Translate', function()
+                    spoon.PopupTranslateSelection:toggleTranslatePopup("zh", "en")
+                    spoon.ModalMgr:deactivate({"translateM"})
+    end)
+
     cmodal:bind('', 'O', 'Toggle showing Eudic LightPeek', function()
                     if hs.window'^取词 $':isVisible() then
                         hs.window'^取词 $':application():hide()
@@ -593,8 +592,6 @@ if spoon.PopupTranslateSelection then
                     end
                     spoon.ModalMgr:deactivate({"translateM"})
     end)
-    -- Register translateM with modal supervisor
-    hstranslateM_keys = hstranslateM_keys or {"cmd", "]"}
     if string.len(hstranslateM_keys[2]) > 0 then
         spoon.ModalMgr.supervisor:bind(hstranslateM_keys[1], hstranslateM_keys[2], "Enter translateM Environment", function()
                                            spoon.ModalMgr:deactivateAll()

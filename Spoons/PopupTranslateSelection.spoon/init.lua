@@ -25,8 +25,11 @@ obj.popup_size = hs.geometry.size(770, 610)
 
 --- PopupTranslateSelection.popup_style
 --- Variable
---- Value representing the window style to be used for the translation popup window. This value needs to be a valid argument to [`hs.webview.setStyle()`](http://www.hammerspoon.org/docs/hs.webview.html#windowStyle) (i.e. a combination of values from [`hs.webview.windowMasks`](http://www.hammerspoon.org/docs/hs.webview.html#windowMasks[]). Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`
-obj.popup_style = hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable
+--- Value representing the window style to be used for the translation popup window.
+--- This value needs to be a valid argument to [`hs.webview.setStyle()`](http://www.hammerspoon.org/docs/hs.webview.html#windowStyle)
+--- (i.e. a combination of values from [`hs.webview.windowMasks`](http://www.hammerspoon.org/docs/hs.webview.html#windowMasks[]).
+--- Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`
+obj.popup_style = hs.webview.windowMasks.titled|hs.webview.windowMasks.closable|hs.webview.windowMasks.miniaturizable|hs.webview.windowMasks.closable|hs.webview.windowMasks.resizable
 
 --- PopupTranslateSelection.popup_close_on_escape
 --- Variable
@@ -87,6 +90,20 @@ function obj:translatePopup(text, to, from)
    return self
 end
 
+function obj:toggleTranslatePopup(to, from)
+  if self.webview ~= nil and self.webview:hswindow() ~= nil then
+    if self.webview:hswindow():isVisible() then
+      self.webview:hswindow():minimize()
+    else
+      self.webview:hswindow():raise():focus()
+    end
+
+    return self
+  end
+
+  self:translatePopup("Input text here!", to, from)
+  return self
+end
 -- Internal function to get the currently selected text.
 -- It tries through hs.uielement, but if that fails it
 -- tries issuing a Cmd-c and getting the pasteboard contents
@@ -185,8 +202,9 @@ end
 function obj:translateShell(to, text)
   local mainScreen = hs.screen.mainScreen()
   local mainRes = mainScreen:fullFrame()
-  local command = self.tsScriptPath .. " " .. to .. " " .. text
+  local command = hs.fs.pathToAbsolute(self.tsScriptPath) .. " " .. to .. " " .. text
   local translateOutput = hs.execute(command)
+  -- self.logger.ef("Run Command: " .. command .. ", got: " .. translateOutput .. " with path is: " .. hs.execute("echo $PATH"))
   local html = [[
     <!DOCTYPE html>
     <html>
