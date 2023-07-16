@@ -84,13 +84,6 @@ function reloadConfig(files)
     end
 end
 
-myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
-myWatcher:start()
-
-hsreload_keys = hsreload_keys or {{"cmd", "shift", "ctrl"}, "R"}
-if string.len(hsreload_keys[2]) > 0 then
-    hs.hotkey.bind(hsreload_keys[1], hsreload_keys[2], "Reload Configuration", function() hs.reload() end)
-end
 
 -- ModalMgr Spoon must be loaded explicitly, because this repository heavily relies upon it.
 hs.loadSpoon("ModalMgr")
@@ -613,47 +606,48 @@ local settingAll = {
     -- fitWindowsInBackground = false,
 }
 
+if hsexpose_keys then
+    local hsExposeInstanceDefaultAllSpaces = hs.expose.new(nil, settingAll)
+    spoon.ModalMgr:new("MCExpose")
+    local cmodal = spoon.ModalMgr.modal_list["MCExpose"]
+    cmodal:bind('', 'escape', 'Deactivate MCExpose', function() spoon.ModalMgr:deactivate({"MCExpose"}) end)
+    cmodal:bind('', 'Q', 'Deactivate MCExpose', function() spoon.ModalMgr:deactivate({"MCExpose"}) end)
+    cmodal:bind('', 'A', 'Show all', function()
+                    spoon.ModalMgr:deactivate({"MCExpose"})
+                    hsExposeInstanceDefaultAllSpaces:toggleShow(false)
+    end)
+    cmodal:bind('', 'C', 'Only current application', function()
+                    spoon.ModalMgr:deactivate({"MCExpose"})
+                    hsExposeInstanceDefaultAllSpaces:toggleShow(true)
+    end)
 
-local hsExposeInstanceDefaultAllSpaces = hs.expose.new(nil, settingAll)
-spoon.ModalMgr:new("MCExpose")
-local cmodal = spoon.ModalMgr.modal_list["MCExpose"]
-cmodal:bind('', 'escape', 'Deactivate MCExpose', function() spoon.ModalMgr:deactivate({"MCExpose"}) end)
-cmodal:bind('', 'Q', 'Deactivate MCExpose', function() spoon.ModalMgr:deactivate({"MCExpose"}) end)
-cmodal:bind('', 'A', 'Show all', function()
-                spoon.ModalMgr:deactivate({"MCExpose"})
-                hsExposeInstanceDefaultAllSpaces:toggleShow(false)
-end)
-cmodal:bind('', 'C', 'Only current application', function()
-                spoon.ModalMgr:deactivate({"MCExpose"})
-                hsExposeInstanceDefaultAllSpaces:toggleShow(true)
-end)
+    cmodal:bind('', 'E', 'Toggle App Expose Using Spaces', function()
+                    spoon.ModalMgr:deactivate({"MCExpose"})
+                    hs.spaces.toggleAppExpose()
+    end)
 
-cmodal:bind('', 'E', 'Toggle App Expose Using Spaces', function()
-                spoon.ModalMgr:deactivate({"MCExpose"})
-                hs.spaces.toggleAppExpose()
-end)
+    cmodal:bind('', 'D', 'Toggle Show Desktop Using Spaces', function()
+                    spoon.ModalMgr:deactivate({"MCExpose"})
+                    hs.spaces.toggleShowDesktop()
+    end)
 
-cmodal:bind('', 'D', 'Toggle Show Desktop Using Spaces', function()
-                spoon.ModalMgr:deactivate({"MCExpose"})
-                hs.spaces.toggleShowDesktop()
-end)
+    cmodal:bind('', 'M', 'Toggle Mission Control Using Spaces', function()
+                    spoon.ModalMgr:deactivate({"MCExpose"})
+                    hs.spaces.toggleMissionControl()
+    end)
 
-cmodal:bind('', 'M', 'Toggle Mission Control Using Spaces', function()
-                spoon.ModalMgr:deactivate({"MCExpose"})
-                hs.spaces.toggleMissionControl()
-end)
+    cmodal:bind('', 'L', 'Toggle Launch Pad', function()
+                    spoon.ModalMgr:deactivate({"MCExpose"})
+                    hs.spaces.toggleLaunchPad()
+    end)
 
-cmodal:bind('', 'L', 'Toggle Launch Pad', function()
-                spoon.ModalMgr:deactivate({"MCExpose"})
-                hs.spaces.toggleLaunchPad()
-end)
-
--- Register countdownM with modal supervisor
-spoon.ModalMgr.supervisor:bind(hsexpose_keys[1], hsexpose_keys[2], "Enter MCExpose Environment", function()
-                                   spoon.ModalMgr:deactivateAll()
-                                   -- Show the keybindings cheatsheet once countdownM is activated
-                                   spoon.ModalMgr:activate({"MCExpose"}, "#FF6347", true)
-end)
+    -- Register countdownM with modal supervisor
+    spoon.ModalMgr.supervisor:bind(hsexpose_keys[1], hsexpose_keys[2], "Enter MCExpose Environment", function()
+                                       spoon.ModalMgr:deactivateAll()
+                                       -- Show the keybindings cheatsheet once countdownM is activated
+                                       spoon.ModalMgr:activate({"MCExpose"}, "#FF6347", true)
+    end)
+end
 -- End MissionControlWithExpose
 
 
@@ -690,6 +684,8 @@ if hssession_keys then
                                        -- Show the keybindings cheatsheet once countdownM is activated
                                        spoon.ModalMgr:activate({"HSSession"}, "#FF6347", true)
     end)
+
+    hs.hotkey.bind(hyper2, "T", function() session:saveCurrentSession() end)
 end
 
 -- Change the test function to test
@@ -702,7 +698,6 @@ function testEmacs28()
 end
 
 -- hs.hotkey.bind(hyper2, "T", function() test() end)
-hs.hotkey.bind(hyper2, "T", function() session:saveCurrentSession() end)
 
 function copyEmailLink()
     status, data = hs.osascript.applescript([[tell application "Microsoft Outlook"
@@ -865,7 +860,7 @@ spoon.AppBindings:bind("Preview", {
   { {'ctrl'}, 'l', {}, 'right' },          -- Scroll message window
 })
 
-----------------------------------------------------------------------------------------------------
+
 -- Finally we initialize ModalMgr supervisor
 spoon.ModalMgr.supervisor:enter()
 
@@ -874,4 +869,13 @@ if __my_path then
     hs.alert.show("Hammerspoon config loaded, path loaded.")
 else
     hs.alert.show("Hammerspoon config loaded, load PATH failure")
+end
+
+-- Watch the configuration change.
+myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
+myWatcher:start()
+
+hsreload_keys = hsreload_keys or {{"cmd", "shift", "ctrl"}, "R"}
+if string.len(hsreload_keys[2]) > 0 then
+    hs.hotkey.bind(hsreload_keys[1], hsreload_keys[2], "Reload Configuration", function() hs.reload() end)
 end

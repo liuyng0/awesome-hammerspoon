@@ -152,7 +152,7 @@ hsconsole_keys = {"", ""}
 
 hsscreenM_keys = {hyper2, "J"}
 
-hsexpose_keys = {hyper2, ";"}
+-- hsexpose_keys = {hyper2, ";"}
 
 -- hsstay_keys = {hyper2, "u"}
 hssession_keys = {hyper2, "u"}
