@@ -335,6 +335,12 @@ if spoon.WinWin then
     cmodal:bind('', 'U', 'SouthWest Corner', function() spoon.WinWin:stash() spoon.WinWin:moveAndResize("cornerSW") end)
     cmodal:bind('', 'I', 'SouthEast Corner', function() spoon.WinWin:stash() spoon.WinWin:moveAndResize("cornerSE") end)
     cmodal:bind('', 'F', 'Fullscreen', function() spoon.WinWin:stash() spoon.WinWin:moveAndResize("fullscreen") end)
+    cmodal:bind(hyper2, 'F', 'Enter full screen', function()
+                    local win=hs.window.focusedWindow()
+                    if win ~= nil then
+                        win:setFullScreen(not win:isFullScreen())
+                    end
+    end)
     cmodal:bind('', 'C', 'Center Window', function() spoon.WinWin:stash() spoon.WinWin:moveAndResize("center") end)
     cmodal:bind(hyper2, 'M', 'Center Half Width', function() spoon.WinWin:stash() spoon.WinWin:moveAndResize("centerHalfWidth") end)
     cmodal:bind('', '=', 'Stretch Outward', function() spoon.WinWin:moveAndResize("expand") end, nil, function() spoon.WinWin:moveAndResize("expand") end)
