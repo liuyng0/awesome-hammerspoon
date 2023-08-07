@@ -29,7 +29,10 @@ obj.popup_size = hs.geometry.size(770, 610)
 --- This value needs to be a valid argument to [`hs.webview.setStyle()`](http://www.hammerspoon.org/docs/hs.webview.html#windowStyle)
 --- (i.e. a combination of values from [`hs.webview.windowMasks`](http://www.hammerspoon.org/docs/hs.webview.html#windowMasks[]).
 --- Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`
-obj.popup_style = hs.webview.windowMasks.titled|hs.webview.windowMasks.closable|hs.webview.windowMasks.miniaturizable|hs.webview.windowMasks.closable|hs.webview.windowMasks.resizable
+obj.popup_style = hs.webview.windowMasks.titled|
+  hs.webview.windowMasks.closable|
+  hs.webview.windowMasks.miniaturizable|
+  hs.webview.windowMasks.resizable
 
 --- PopupTranslateSelection.popup_close_on_escape
 --- Variable
@@ -84,18 +87,24 @@ function obj:translatePopup(text, to, from)
          :closeOnEscape(self.popup_close_on_escape)
    end
    self.webview:url(url)
-      :bringToFront()
-      :show()
-   self.webview:hswindow():focus()
+     :bringToFront()
+     :show()
+     :hswindow()
+     :focus()
    return self
 end
 
 function obj:toggleTranslatePopup(to, from)
   if self.webview ~= nil and self.webview:hswindow() ~= nil then
     if self.webview:hswindow():isVisible() then
-      self.webview:hswindow():minimize()
+      self.webview
+        :hide()
     else
-      self.webview:hswindow():raise():focus()
+      self.webview
+        :bringToFront()
+        :show()
+        :hswindow()
+        :focus()
     end
 
     return self
