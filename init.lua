@@ -125,6 +125,17 @@ if not hsapp_list then
         {key = 'y', id = 'com.apple.systempreferences'},
     }
 end
+
+function hideWebviewIfPresent()
+    local t = spoon.PopupTranslateSelection
+    if t ~= nil and
+        t.webview ~= nil and
+        t.webview:hswindow() ~= nil and
+        t.webview:hswindow():isVisible() then
+        t.webview:hide()
+    end
+end
+
 for _, v in ipairs(hsapp_list) do
     if v.id then
         local located_name = hs.application.nameForBundleID(v.id)
@@ -133,6 +144,7 @@ for _, v in ipairs(hsapp_list) do
             cmodal:bind(type(v.key) == 'table' and v.key[1] or '',
                         type(v.key) == 'table' and v.key[2] or v.key, located_name, function()
                             -- logger.d("launch by bundle id " .. v.id)
+                            hideWebviewIfPresent()
                             hs.application.launchOrFocusByBundleID(v.id)
                             spoon.ModalMgr:deactivate({"appM"})
             end)
@@ -142,6 +154,7 @@ for _, v in ipairs(hsapp_list) do
         cmodal:bind(type(v.key) == 'table' and v.key[1] or '',
                     type(v.key) == 'table' and v.key[2] or v.key, v.name, function()
                         -- logger.d("launch by name " .. v.name)
+                        hideWebviewIfPresent()
                         hs.application.launchOrFocus(v.name)
                         spoon.ModalMgr:deactivate({"appM"})
         end)
