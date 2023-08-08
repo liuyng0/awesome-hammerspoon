@@ -896,6 +896,8 @@ end
 -- Disable the alert key showing
 hs.hotkey.alertDuration = 0
 
+require("hs.ipc")
+
 -- NOTE: Keep this the last.
 if __my_path then
     hs.alert.show("Hammerspoon config loaded, path loaded.")
