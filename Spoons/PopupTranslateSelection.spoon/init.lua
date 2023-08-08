@@ -95,8 +95,8 @@ function obj:translatePopup(text, to, from)
 end
 
 function obj:toggleTranslatePopup(to, from)
-  if self.webview ~= nil and self.webview:hswindow() ~= nil then
-    if self.webview:hswindow():isVisible() then
+  if self.webview ~= nil then
+    if self.webview:isVisible() then
       self.webview
         :hide()
     else
