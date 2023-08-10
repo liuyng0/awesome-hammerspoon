@@ -884,7 +884,6 @@ spoon.AppBindings:bind("Preview", {
 })
 
 
-
 -- Watch the configuration change.
 myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
 myWatcher:start()
