@@ -113,6 +113,25 @@ function obj:toggleTranslatePopup(to, from)
   self:translatePopup("Input text here!", to, from)
   return self
 end
+
+function obj:updateText(text)
+  if self.webview == nil then
+    hs.alert("No webview for google translate")
+    return self
+  end
+  script = [[
+        var textarea = document.getElementsByClassName('er8xn')[0];
+        textarea.value = atob(]]
+    .. "'" ..
+      text
+    .. "');" ..
+    [[
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    ]]
+  -- self.logger.ef("execute command is '%s'", script)
+  self.webview:evaluateJavaScript(script)
+  return self
+end
 -- Internal function to get the currently selected text.
 -- It tries through hs.uielement, but if that fails it
 -- tries issuing a Cmd-c and getting the pasteboard contents
