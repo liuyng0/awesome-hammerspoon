@@ -17,4 +17,18 @@ function funext.imap(xs, fn)
     return rs
 end
 
+function funext.set(t)
+    local s = {}
+    for _,v in pairs(t) do s[v] = true end
+    return s
+end
+
+function funext.set_contains(t, e)
+    if t == nil or e == nil then
+        return false
+    end
+
+    return t[e]
+end
+
 return funext

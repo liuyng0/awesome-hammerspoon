@@ -7,6 +7,9 @@ if not privatepath then
     -- Create `~/.hammerspoon/private` directory if not exists.
     hs.fs.mkdir(hs.configdir .. '/private')
 end
+
+local funext = require 'hammers/funext'
+
 privateconf = hs.fs.pathToAbsolute(hs.configdir .. '/private/config.lua')
 customconf = hs.fs.pathToAbsolute(hs.configdir .. '/custom.lua')
 if privateconf then
@@ -137,7 +140,9 @@ function hideWebviewIfPresent()
 end
 
 for _, v in ipairs(hsapp_list) do
-    if v.id then
+    if funext.set_contains(hsapp_ignored_apps, v.id or v.name) then
+        -- do nothing
+    elseif v.id then
         local located_name = hs.application.nameForBundleID(v.id)
         if located_name then
             -- logger.d("bind " .. hs.inspect(v.key) .. " to bundle id: " .. v.id)
