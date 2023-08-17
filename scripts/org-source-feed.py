@@ -7,84 +7,124 @@ import json
 import logging
 import sys
 import itertools
+from abc import ABC, abstractmethod
+from typing import Generator
 
-ORG_SOURCE_DIR = os.path.expanduser("~/org/database")
 SOURCE_CODE_BLOCK_REGEX = (
     r"#\+NAME: *(?P<name>.*?) *\n"
     r"#\+begin_src *(?P<source_type>\w*) *.*?\n"
     r"(?P<source_code>.*?)\n"
     r"#\+end_src"
 )
-TARGET_ORG_FILE_REGEX = r"[a-zA-z_-]*\.org"
 
-SOURCE_TYPES = ["source-code", "links"]
+SOURCE_TYPES = {
+    "source-code": lambda filepaths: EntryCodeGenerator(filepaths),
+    "links": lambda filepaths: EntryLinkGenerator(filepaths),
+}
 
 logging.basicConfig(filename="/tmp/org-source-feed.log", level=logging.DEBUG)
-class EntryOfLinks(object):
-    def __init__(self, source_type, remain_args):
-        self.source_type = source_type
-        self.remain_args = remain_args
-        self.args = None
 
-    def get_sources(self):
-        useful_link_file = os.path.join(ORG_SOURCE_DIR, "useful-links.md")
-        if not os.path.exists(useful_link_file):
-            return []
 
-        result = []
-        with open(useful_link_file, "r") as f:
-            for line in f.readlines():
-                for matched_result in re.finditer(r"\[(?P<link_desc>.*?)\]\((?P<link>.*?)\)", line, re.M | re.I):
-                    logging.debug("Find a link link_desc=[{link_desc}], link=[{link}]".format(
-                        link_desc=matched_result["link_desc"],
-                        link=matched_result["link"],
-                    ))
-                    result.append({
-                        "source_file": "useful-links",
-                        "name": matched_result["link_desc"],
-                        "type": "link",
-                        "code": matched_result["link"],
-                    })
-            return result
+class GeneratorRunner(object):
+    def __init__(self):
+        self.parser = self.build_parser()
+        self.args, self.remain = self.parser.parse_known_args()
+        logging.debug(
+            "Main parse arguments result: args={} remain={}".format(
+                self.args, self.remain
+            )
+        )
 
-    def run(self):
+    def build_parser(self):
         parser = argparse.ArgumentParser()
         parser.add_argument(
-            "--operation",
-            "-o",
+            "--sourcetype",
+            "-t",
             required=True,
-            help="operation type"
+            help="source type",
+            choices=SOURCE_TYPES.keys(),
         )
-        self.args = parser.parse_args(self.remain_args)
-        logging.debug("EntryOfLinks get args: {}".format(self.args))
-        return EntryOfLinks.__dict__[self.args.operation.replace('-', '_')](self)
+        parser.add_argument(
+            "--filepaths", "-f", required=True, help="file path list", nargs="*"
+        )
 
-class EntryOfSourceCode(object):
-    def __init__(self, source_type, remain_args):
-        self.source_type = source_type
-        self.remain_args = remain_args
-        self.args = None
+        return parser
+
+    @staticmethod
+    def run() -> list[dict]:
+        runner = GeneratorRunner()
+        return [
+            entry
+            for entry in SOURCE_TYPES[runner.args.sourcetype](
+                runner.args.filepaths
+            ).get_sources()
+        ]
+
+
+class EntryGenerator(ABC):
+    def __init__(self, filepaths: list[str]):
+        self.filepaths = filepaths
+
+    # file: file descriptor
+    # filepath: the full path of file
+    @abstractmethod
+    def generate(self, filehandler, filepath) -> Generator[dict, None, None]:
+        pass
 
     def get_sources(self):
-        result = []
-        for file_name in filter(lambda s: re.match(TARGET_ORG_FILE_REGEX, s), os.listdir(ORG_SOURCE_DIR)):
-            file_full_path = os.path.join(ORG_SOURCE_DIR, file_name)
-            with open(file_full_path, "r") as f:
-                content = f.read()
-                for matched_result in re.finditer(SOURCE_CODE_BLOCK_REGEX, content, re.M | re.I | re.S | re.MULTILINE):
-                    logging.debug("Find a match {}".format(matched_result["name"]))
-                    result.append({
-                        "source_file": file_name,
-                        "name": matched_result["name"],
-                        "type": matched_result["source_type"],
-                        "code": EntryOfSourceCode.remove_prefix_ws(matched_result["source_code"]),
-                    })
-        return result
+        results = []
+        for filepath in self.filepaths:
+            filepath = os.path.expanduser(filepath)
+            if not os.path.isfile(filepath):
+                continue
+
+            with open(filepath, "r") as f:
+                for result in self.generate(f, filepath):
+                    results.append(result)
+        return results
+
+
+class EntryLinkGenerator(EntryGenerator):
+    # override
+    def generate(self, filehandler, filepath) -> Generator[dict, None, None]:
+        for line in filehandler.readlines():
+            for matched_result in re.finditer(
+                r"\[(?P<link_desc>.*?)\]\((?P<link>.*?)\)", line, re.M | re.I
+            ):
+                logging.debug(
+                    "Find a link link_desc=[{link_desc}], link=[{link}]".format(
+                        link_desc=matched_result["link_desc"],
+                        link=matched_result["link"],
+                    )
+                )
+                yield {
+                    "source_file": os.path.basename(filepath),
+                    "name": matched_result["link_desc"],
+                    "type": "link",
+                    "code": matched_result["link"],
+                }
+
+
+class EntryCodeGenerator(EntryGenerator):
+    def generate(self, filehandler, filepath) -> Generator[dict, None, None]:
+        content = filehandler.read()
+        for matched_result in re.finditer(
+            SOURCE_CODE_BLOCK_REGEX, content, re.M | re.I | re.S | re.MULTILINE
+        ):
+            logging.debug("Find a match {}".format(matched_result["name"]))
+            yield {
+                "source_file": os.path.basename(filepath),
+                "name": matched_result["name"],
+                "type": matched_result["source_type"],
+                "code": EntryCodeGenerator.remove_prefix_ws(
+                    matched_result["source_code"]
+                ),
+            }
 
     @staticmethod
     def remove_prefix_ws(content):
         lines = list(map(lambda s: s.rstrip(), content.split("\n")))
-        n = EntryOfSourceCode.count_prefix_ws(lines)
+        n = EntryCodeGenerator.count_prefix_ws(lines)
         # logging.debug(f"lines: {*lines,}, n: {n}")
         if n > 0:
             return "\n".join(map(lambda s: s[n:] if len(s) >= n else s, lines))
@@ -94,7 +134,7 @@ class EntryOfSourceCode(object):
     def count_prefix_ws(lines):
         n = sys.maxsize
         for line in lines:
-            if line == '':
+            if line == "":
                 continue
             num_prefix_ws = sum(1 for _ in itertools.takewhile(str.isspace, line))
             if num_prefix_ws < n:
@@ -103,34 +143,10 @@ class EntryOfSourceCode(object):
             return 0
         return n
 
-    def run(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument(
-            "--operation",
-            "-o",
-            required=True,
-            help="operation type"
-        )
-        self.args = parser.parse_args(self.remain_args)
-        logging.debug("EntryOfSourceCode get args: {}".format(self.args))
-        return EntryOfSourceCode.__dict__[self.args.operation.replace('-', '_')](self)
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--sourceType",
-        "-t",
-        required=True,
-        help="source type",
-        choices=SOURCE_TYPES,
-    )
-    args, remain = parser.parse_known_args()
-    logging.debug("Main parse arguments result: args={} remain={}".format(args, remain))
-    entry_name = 'EntryOf' + ''.join(
-        map(lambda s: s[:1].upper() + s[1:],
-            args.sourceType.split('-'))
-    )
-    print(json.dumps(globals()[entry_name](args, remain).run()))
+    print(json.dumps(GeneratorRunner.run()))
+
 
 if __name__ == "__main__":
     main()
