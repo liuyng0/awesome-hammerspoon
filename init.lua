@@ -9,14 +9,14 @@ if not privatepath then
 end
 
 local funext = require 'hammers/funext'
-
+require('private-config-default')
 privateconf = hs.fs.pathToAbsolute(hs.configdir .. '/private/config.lua')
-customconf = hs.fs.pathToAbsolute(hs.configdir .. '/custom.lua')
 if privateconf then
     -- Load awesomeconfig file if exists
     require('private/config')
 end
 
+customconf = hs.fs.pathToAbsolute(hs.configdir .. '/custom.lua')
 if customconf then
     require('custom')
 end
@@ -140,7 +140,7 @@ function hideWebviewIfPresent()
 end
 
 for _, v in ipairs(hsapp_list) do
-    if funext.set_contains(hsapp_ignored_apps, v.id or v.name) then
+    if funext.set_contains(privconf.hsapp_ignored_apps, v.id or v.name) then
         -- do nothing
     elseif v.id then
         local located_name = hs.application.nameForBundleID(v.id)

@@ -23,7 +23,7 @@ obj.notice = {text="Requesting data, please wait a while …"}
 obj.init_func = function ()
     local orgSourceFeedScript = getScript("org-source-feed.py")
 
-    local command = orgSourceFeedScript .. " " .. "-t links -o get-sources"
+    local command = orgSourceFeedScript .. " " .. "-t links -f " .. privconf.hssearch_links_filepaths
     -- logger:d("Start to call: " .. command)
     local output, status, exitType, rc = executeWithPathPopulated(command)
 
