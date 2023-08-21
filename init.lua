@@ -892,7 +892,7 @@ spoon.AppBindings:bind("iTerm2", {
   { {'ctrl'}, 'i', {}, 'up' },           -- Scroll message window
   { {'ctrl'}, 'k', {}, 'down' },          -- Scroll message window
   { {'ctrl'}, 'j', {}, 'left' },          -- Scroll message window
-  { {'ctrl'}, 'l', {}, 'right' },          -- Scroll message window
+  { {'ctrl'}, ';', {}, 'right' },          -- Scroll message window
 })
 
 -- Watch the configuration change.
