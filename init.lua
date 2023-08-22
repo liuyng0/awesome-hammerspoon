@@ -888,13 +888,6 @@ spoon.AppBindings:bind("Preview", {
   { {'ctrl'}, 'l', {}, 'right' },          -- Scroll message window
 })
 
-spoon.AppBindings:bind("iTerm2", {
-  { {'ctrl'}, 'i', {}, 'up' },           -- Scroll message window
-  { {'ctrl'}, 'k', {}, 'down' },          -- Scroll message window
-  { {'ctrl'}, 'j', {}, 'left' },          -- Scroll message window
-  { {'ctrl'}, ';', {}, 'right' },          -- Scroll message window
-})
-
 -- Watch the configuration change.
 myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
 myWatcher:start()
