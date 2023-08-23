@@ -49,7 +49,8 @@ hsapp_list = {
     {key = 'x', name = 'XMind'},
     {key = 'b', name = 'iBooks'},
     {key = 'n', name = 'GoodNotes'},
-    {key = 'z', name = 'zoom.us'}
+    {key = 'z', name = 'zoom.us'},
+    {key = 'p', name = "Parallels Desktop"}
     -- {key = 'a', name = 'Android Studio'},
     -- {key = 'f', name = 'Finder'},
     -- {key = 's', name = 'Visual Studio Code'},
