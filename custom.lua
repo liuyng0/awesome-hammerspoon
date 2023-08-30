@@ -38,6 +38,7 @@ hsapp_list = {
     {key = 'd', name = 'Dash'},
     {key = 'w', id = 'com.apple.ActivityMonitor'},
     {key = {hyper2, 'w'}, name = 'WeChat'},
+    {key = {hyper2, 'l'}, name = 'Calendar'},
     {key = 's', name = 'Slack'},
     {key = 'p', name = 'Preview'},
     {key = 'f', name = 'Firefox'},
