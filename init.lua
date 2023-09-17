@@ -825,8 +825,8 @@ local iterm_modal = appmodal.bind(
     }
 )
 
----- iTerm2
-local iterm_modal = appmodal.bind(
+---- Chrome
+local chrome_modal = appmodal.bind(
     "cmd", 'P',
     APP_CHROME,
     {
@@ -888,6 +888,10 @@ spoon.AppBindings:bind("Preview", {
   { {'ctrl'}, 'l', {}, 'right' },          -- Scroll message window
 })
 
+spoon.AppBindings:bind("Parallels Desktop", {
+  { {hyper2}, 'c', {'ctrl'}, 'c' },           -- Scroll message window
+  { {hyper2}, 'v', {'ctrl'}, 'v' },          -- Scroll message window
+})
 -- Watch the configuration change.
 myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
 myWatcher:start()
