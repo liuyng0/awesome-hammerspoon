@@ -888,10 +888,6 @@ spoon.AppBindings:bind("Preview", {
   { {'ctrl'}, 'l', {}, 'right' },          -- Scroll message window
 })
 
-spoon.AppBindings:bind("Parallels Desktop", {
-  { {hyper2}, 'c', {'ctrl'}, 'c' },
-  { {hyper2}, 'v', {'ctrl'}, 'v' },
-})
 -- Watch the configuration change.
 myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
 myWatcher:start()
