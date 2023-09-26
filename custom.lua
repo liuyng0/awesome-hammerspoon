@@ -77,13 +77,7 @@ if hs.fs.pathToAbsolute("/Applications/Kindle.app") then
 end
 
 
-if hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA.app") then
-    table.insert(hsapp_list, {key = 'i', name = 'IntelliJ IDEA'})
-elseif hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA CE.app") then
-    table.insert(hsapp_list, {key = "i", name = "IntelliJ IDEA CE"})
-elseif hs.fs.pathToAbsolute("/Applications/IntelliJ IDEA 2021.1 CE EAP.app") then
-    table.insert(hsapp_list, {key = "i", name = "IntelliJ IDEA 2021.1 CE EAP.app"})
-end
+table.insert(hsapp_list, {key = 'i', id = 'com.jetbrains.intellij'})
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
 hsupervisor_keys = {hyper1, "Q"}
