@@ -16,7 +16,7 @@ end
 obj.spoonPath = script_path()
 
 -- Define the source's overview. A unique `keyword` key should exist, so this source can be found.
-obj.overview = {text="Type t ⇥ to search safari/chrome Tabs.", image=hs.image.imageFromPath(obj.spoonPath .. "/resources/tabs.png"), keyword="t"}
+obj.overview = {text="Type t ⇥ to search chrome Tabs.", image=hs.image.imageFromPath(obj.spoonPath .. "/resources/tabs.png"), keyword="t"}
 -- Define the notice when a long-time request is being executed. It could be `nil`.
 obj.notice = {text="Requesting data, please wait a while …"}
 
