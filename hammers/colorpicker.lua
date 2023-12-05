@@ -10,8 +10,8 @@ local st = require('hs.styledtext')
 local color = require('hs.drawing.color')
 local funs = require('hs.fnutils')
 
-m.textSize = 18
-m.subTextSize = 16
+m.textSize = 16
+m.subTextSize = 14
 
 function m:x11Alpha(color, alpha)
   return {
@@ -26,14 +26,14 @@ m.lightStyle = {
     default = {
       text = {
         font = {
-          name='Arial Bold',
+          name='SF Pro Bold',
           size=m.textSize
         },
-        color = m:x11Alpha(color.x11.maroon, 0.8)
+        color = m:x11Alpha(color.x11.brown, 1.0)
       },
       subText = {
         font = {
-          name='Arial',
+          name='SF Pro',
           size=m.subTextSize
         },
         color=m:x11Alpha(color.x11.blue, 0.9)
@@ -42,13 +42,14 @@ m.lightStyle = {
     grayOut = {
       text = {
         font = {
-          name='Arial Bold',
+          name='SF Pro Bold',
           size=m.textSize
         },
         color=color.x11.steelblue
       },
       subText = {
         font = {
+          name='SF Pro',
           size=m.subTextSize
         },
         color=color.x11.dodgerblue
