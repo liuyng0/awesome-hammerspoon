@@ -353,7 +353,7 @@ if spoon.WinWin then
     cmodal:bind('', 'U', 'SouthWest Corner', function() spoon.WinWin:moveAndResize("cornerSW") end)
     cmodal:bind('', 'I', 'SouthEast Corner', function() spoon.WinWin:moveAndResize("cornerSE") end)
     cmodal:bind('', 'F', 'Fullscreen', function() spoon.WinWin:moveAndResize("maximize") end)
-    cmodal:bind(hyper2, 'F', 'Enter full screen', function() spoon.WinWin:moveAndResize("fullScreen") end)
+    cmodal:bind(hyper2, 'F', 'Enter full screen', function() spoon.WinWin:moveAndResize("fullscreen") end)
     cmodal:bind('', 'C', 'Center Window', function() spoon.WinWin:moveAndResize("center") end)
     cmodal:bind(hyper2, 'M', 'Center Half Width', function() spoon.WinWin:moveAndResize("centerHalfWidth") end)
     cmodal:bind('', '=', 'Stretch Outward', function() spoon.WinWin:moveAndResize("expand") end, nil, function() spoon.WinWin:moveAndResize("expand") end)

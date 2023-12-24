@@ -122,6 +122,7 @@ function obj:moveAndResize(option)
             center = function() cwin:centerOnScreen() end,
             expand = function() cwin:setFrame({x=wf.x-stepw, y=wf.y-steph, w=wf.w+(stepw*2), h=wf.h+(steph*2)}) end,
             shrink = function() cwin:setFrame({x=wf.x+stepw, y=wf.y+steph, w=wf.w-(stepw*2), h=wf.h-(steph*2)}) end,
+            centerHalfWidth = function() cwin:setFrame({x=cres.x+cres.w/4, y=cres.y, w=cres.w/2, h=cres.h}) end,
         }
         if options[option] == nil then
             hs.alert.show("Unknown option: " .. option)
