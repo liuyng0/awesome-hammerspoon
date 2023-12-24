@@ -18,5 +18,10 @@ privconf.hssearch_code_snippets_filepaths = string.gsub([[
 ]],
 "\n", " ")
 
+privconf.hssearch_copy_texts_filepaths = string.gsub([[
+~/org/database/useful-ids.md
+]],
+"\n", " ")
+
 privconf.default_loaded = "true"
 privconf.last_loaded = "default"

@@ -874,13 +874,6 @@ spoon.AppBindings:bind("Kindle", {
   { {'ctrl'}, 'l', {}, 'right' },          -- Scroll message window
 })
 
-spoon.AppBindings:bind("Google Chrome", {
-  { {'ctrl'}, 'i', {}, 'up' },           -- Scroll message window
-  { {'ctrl'}, 'k', {}, 'down' },          -- Scroll message window
-  { {'ctrl'}, 'j', {}, 'left' },          -- Scroll message window
-  { {'ctrl'}, 'l', {}, 'right' },          -- Scroll message window
-})
-
 spoon.AppBindings:bind("Preview", {
   { {'ctrl'}, 'i', {}, 'up' },           -- Scroll message window
   { {'ctrl'}, 'k', {}, 'down' },          -- Scroll message window
