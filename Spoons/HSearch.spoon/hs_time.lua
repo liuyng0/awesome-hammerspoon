@@ -44,7 +44,7 @@ local function timeRequest()
                 text = exec_result,
                 subText = "date " .. item,
                 image = hs.image.imageFromPath(obj.spoonPath .. "/resources/time.png"),
-                output = "keystrokes",
+                output = "clipboard",
                 arg = exec_result
             }
         end
