@@ -62,11 +62,15 @@ function obj:restoreOutput()
         cwin:focus()
         hs.eventtap.keyStrokes(arg)
     end
+    local function openChromeTab(arg)
+        hs.http.get('http://localhost:4000/chrome/tab/goto/' .. arg.winIndex .. '/' .. arg.tabIndex)
+    end
     obj.output_pool["browser"] = openWithBrowser
     obj.output_pool["safari"] = openWithSafari
     obj.output_pool["firefox"] = openWithFirefox
     obj.output_pool["clipboard"] = copyToClipboard
     obj.output_pool["keystrokes"] = sendKeyStrokes
+    obj.output_pool['chromeTab'] = openChromeTab
 end
 
 function obj:currentSourceMultipleOperationEnabled()
@@ -124,28 +128,12 @@ function obj:init()
             end
         end
         if chosen ~= nil then
-            if chosen.operation ~= nil and obj:currentSourceMultipleOperationEnabled() then
-                obj:operateOnMaybe(obj.sources_config[obj.source_kw].config, chosen.operation)
-                -- logger.d("Configuration become: " .. hs.inspect.inspect(obj.sources_config[obj.source_kw].config))
-                obj.sources[obj.source_kw]()
-                return
+            if chosen.arg ~= nil then
+                obj.output_pool[chosen.output](chosen.arg)
+            else
+                obj.output_pool[chosen.output](chosen)
             end
-            if chosen.output then
-                if obj:currentSourceMultipleOperationEnabled() then
-                    chosen.config = obj.sources_config[obj.source_kw].config
-                    local arguments = obj:filterParsableFieldsToJson(chosen)
-                    -- logger.d("Call with parameter: " .. arguments)
-                    if obj.sources_config[obj.source_kw].output_method ~= nil then
-                        obj.sources_config[obj.source_kw].output_method(arguments)
-                    else
-                        obj.output_pool[chosen.output](chosen.arg)
-                    end
-                    obj.sources[obj.source_kw]()
-                else
-                    obj.output_pool[chosen.output](chosen.arg)
-                end
-            end
-        end
+       end
     end)
     obj.chooser:searchSubText(true)
     obj.chooser:rows(9)
@@ -246,7 +234,7 @@ function obj:loadSources()
     obj.sources_overview = {}
     obj:restoreOutput()
     for _,dir in ipairs(obj.search_path) do
-        local file_list = io.popen("find " .. dir .. " -type f -name '*.lua'")
+        local file_list = io.popen("find " .. dir .. " -type f -name 'hs_*.lua'")
         for file in file_list:lines() do
             -- Exclude self
             if file ~= obj.spoonPath .. "/init.lua" then
