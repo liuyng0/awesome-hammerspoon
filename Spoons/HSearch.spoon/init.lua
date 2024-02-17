@@ -4,7 +4,7 @@
 ---
 --- Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/HSearch.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/HSearch.spoon.zip)
 
-local obj={}
+local obj = {}
 obj.__index = obj
 
 -- Metadata
@@ -29,29 +29,29 @@ obj.search_path = {hs.configdir .. "/private/hsearch_dir", obj.spoonPath}
 obj.hotkeys = {}
 obj.source_kw = nil
 
-local logger = hs.logger.new("HSearch", 'debug')
-local colorpicker = require('hammers.colorpicker')
+local logger = hs.logger.new("HSearch", "debug")
+local colorpicker = require("hammers.colorpicker")
 
 function obj:setChoices(chooser, choices)
-  if choices ~= nil then
-    colorpicker:setChooserUI(chooser, choices)
-  end
-  if chooser ~= nil then
-    chooser:choices(choices)
-  end
+    if choices ~= nil then
+        colorpicker:setChooserUI(chooser, choices)
+    end
+    if chooser ~= nil then
+        chooser:choices(choices)
+    end
 end
 
 function obj:restoreOutput()
     obj.output_pool = {}
     -- Define the built-in output type
     local function openWithBrowser(arg)
-        local default_browser = hs.urlevent.getDefaultHandler('http')
+        local default_browser = hs.urlevent.getDefaultHandler("http")
         hs.urlevent.openURLWithBundle(arg, default_browser)
     end
     local function openWithSafari(arg)
         hs.urlevent.openURLWithBundle(arg, "com.apple.Safari")
     end
-   local function openWithFirefox(arg)
+    local function openWithFirefox(arg)
         hs.urlevent.openURLWithBundle(arg, "org.mozilla.firefox")
     end
     local function copyToClipboard(arg)
@@ -63,14 +63,14 @@ function obj:restoreOutput()
         hs.eventtap.keyStrokes(arg)
     end
     local function openChromeTab(arg)
-        hs.http.get('http://localhost:4000/chrome/tab/goto/' .. arg.winIndex .. '/' .. arg.tabIndex)
+        hs.http.get("http://localhost:4000/chrome/tab/goto/" .. arg.winIndex .. "/" .. arg.tabIndex)
     end
     obj.output_pool["browser"] = openWithBrowser
     obj.output_pool["safari"] = openWithSafari
     obj.output_pool["firefox"] = openWithFirefox
     obj.output_pool["clipboard"] = copyToClipboard
     obj.output_pool["keystrokes"] = sendKeyStrokes
-    obj.output_pool['chromeTab'] = openChromeTab
+    obj.output_pool["chromeTab"] = openChromeTab
 end
 
 function obj:currentSourceMultipleOperationEnabled()
@@ -78,7 +78,8 @@ function obj:currentSourceMultipleOperationEnabled()
         return false
     end
     local source_config = obj.sources_config[obj.source_kw]
-    return source_config ~= nil and (type(source_config.config) == 'table' and type(source_config.config_writer) == 'table')
+    return source_config ~= nil and
+        (type(source_config.config) == "table" and type(source_config.config_writer) == "table")
 end
 
 function obj:appendOperationData(chooser_data)
@@ -86,17 +87,23 @@ function obj:appendOperationData(chooser_data)
     for _, writer in ipairs(source_config.config_writer) do
         local operation = writer.operation
         local operator = writer.operator
-        table.insert(chooser_data, {
-                         text = operation,
-                         subText = "This is a operation to manipulate the configuration.",
-                         operation = operation,
-        })
+        table.insert(
+            chooser_data,
+            {
+                text = operation,
+                subText = "This is a operation to manipulate the configuration.",
+                operation = operation
+            }
+        )
     end
-    table.insert(chooser_data, {
-                     text = ":viewConfig",
-                     subText = hs.inspect.inspect(source_config.config, {newline="  "}),
-                     operation = ":viewConfig",
-    })
+    table.insert(
+        chooser_data,
+        {
+            text = ":viewConfig",
+            subText = hs.inspect.inspect(source_config.config, {newline = "  "}),
+            operation = ":viewConfig"
+        }
+    )
 end
 
 function obj:operateOnMaybe(config, operation)
@@ -111,7 +118,7 @@ end
 function obj:filterParsableFieldsToJson(chosen)
     local newTable = {}
     for index, value in pairs(chosen) do
-        if type(value) == 'number' or type(value) == 'nil' or type(value) == 'string' or type(value) == 'table' then
+        if type(value) == "number" or type(value) == "nil" or type(value) == "string" or type(value) == "table" then
             newTable[index] = value
         end
     end
@@ -119,22 +126,25 @@ function obj:filterParsableFieldsToJson(chosen)
 end
 
 function obj:init()
-    obj.chooser = hs.chooser.new(function(chosen)
-        obj.trigger:disable()
-        -- Disable all hotkeys
-        for _,val in pairs(obj.hotkeys) do
-            for i=1,#val do
-                val[i]:disable()
+    obj.chooser =
+        hs.chooser.new(
+        function(chosen)
+            obj.trigger:disable()
+            -- Disable all hotkeys
+            for _, val in pairs(obj.hotkeys) do
+                for i = 1, #val do
+                    val[i]:disable()
+                end
+            end
+            if chosen ~= nil then
+                if chosen.arg ~= nil then
+                    obj.output_pool[chosen.output](chosen.arg)
+                else
+                    obj.output_pool[chosen.output](chosen)
+                end
             end
         end
-        if chosen ~= nil then
-            if chosen.arg ~= nil then
-                obj.output_pool[chosen.output](chosen.arg)
-            else
-                obj.output_pool[chosen.output](chosen)
-            end
-       end
-    end)
+    )
     obj.chooser:searchSubText(true)
     obj.chooser:rows(9)
 end
@@ -152,7 +162,7 @@ function obj:switchSource()
             -- First we try to switch source according to the querystr
             if obj.sources[querystr] then
                 obj.source_kw = querystr
-                obj.chooser:query('')
+                obj.chooser:query("")
                 obj:setChoices(obj.chooser, nil)
                 obj.chooser:queryChangedCallback()
                 obj.sources[querystr]()
@@ -162,15 +172,15 @@ function obj:switchSource()
                 -- Then try to switch source according to selected row
                 if obj.sources[row_kw] then
                     obj.source_kw = row_kw
-                    obj.chooser:query('')
+                    obj.chooser:query("")
                     obj:setChoices(obj.chooser, nil)
                     obj.chooser:queryChangedCallback()
                     obj.sources[row_kw]()
                 else
                     obj.source_kw = nil
                     local chooser_data = {
-                        {text="No source found!", subText="Maybe misspelled the keyword?"},
-                        {text="Want to add your own source?", subText="Feel free to read the code and open PRs. :)"}
+                        {text = "No source found!", subText = "Maybe misspelled the keyword?"},
+                        {text = "Want to add your own source?", subText = "Feel free to read the code and open PRs. :)"}
                     }
                     obj:setChoices(obj.chooser, chooser_data)
                     obj.chooser:queryChangedCallback()
@@ -180,7 +190,7 @@ function obj:switchSource()
         else
             obj.source_kw = nil
             local chooser_data = {
-                {text="Invalid Keyword", subText="Trigger keyword must only consist of alphanumeric characters."}
+                {text = "Invalid Keyword", subText = "Trigger keyword must only consist of alphanumeric characters."}
             }
             obj:setChoices(obj.chooser, chooser_data)
             obj.chooser:queryChangedCallback()
@@ -191,7 +201,7 @@ function obj:switchSource()
         local row_kw = row_content.keyword
         if obj.sources[row_kw] then
             obj.source_kw = row_kw
-            obj.chooser:query('')
+            obj.chooser:query("")
             obj:setChoices(obj.chooser, nil)
             obj.chooser:queryChangedCallback()
             obj.sources[row_kw]()
@@ -204,20 +214,20 @@ function obj:switchSource()
         end
     end
     if obj.source_kw then
-        for key,val in pairs(obj.hotkeys) do
+        for key, val in pairs(obj.hotkeys) do
             if key == obj.source_kw then
-                for i=1,#val do
+                for i = 1, #val do
                     val[i]:enable()
                 end
             else
-                for i=1,#val do
+                for i = 1, #val do
                     val[i]:disable()
                 end
             end
         end
     else
-        for _,val in pairs(obj.hotkeys) do
-            for i=1,#val do
+        for _, val in pairs(obj.hotkeys) do
+            for i = 1, #val do
                 val[i]:disable()
             end
         end
@@ -233,7 +243,7 @@ function obj:loadSources()
     obj.sources = {}
     obj.sources_overview = {}
     obj:restoreOutput()
-    for _,dir in ipairs(obj.search_path) do
+    for _, dir in ipairs(obj.search_path) do
         local file_list = io.popen("find " .. dir .. " -type f -name 'hs_*.lua'")
         for file in file_list:lines() do
             -- Exclude self
@@ -243,37 +253,43 @@ function obj:loadSources()
                     logger.i("Loading " .. file .. " successfully")
                     local source = f()
                     local output = source.new_output
-                    if output then obj.output_pool[output.name] = output.func end
+                    if output then
+                        obj.output_pool[output.name] = output.func
+                    end
                     local overview = source.overview
                     -- Gather souces overview from files
                     table.insert(obj.sources_overview, overview)
                     local hotkey = source.hotkeys
-                    if hotkey then obj.hotkeys[overview.keyword] = hotkey end
+                    if hotkey then
+                        obj.hotkeys[overview.keyword] = hotkey
+                    end
                     if source.config ~= nil and source.config_writer ~= nil then
                         if source.output_method ~= nil then
                             obj.sources_config[overview.keyword] = {
                                 config = source.config,
                                 config_writer = source.config_writer,
-                                output_method = source.output_method,
+                                output_method = source.output_method
                             }
                         else
                             obj.sources_config[overview.keyword] = {
                                 config = source.config,
-                                config_writer = source.config_writer,
+                                config_writer = source.config_writer
                             }
                         end
                     end
                     local function sourceFunc()
                         local notice = source.notice
                         if notice then
-                          obj:setChoices(obj.chooser, {notice})
+                            obj:setChoices(obj.chooser, {notice})
                         end
                         local request = source.init_func
                         if request then
                             local chooser_data = request()
                             if chooser_data then
                                 local desc = source.description
-                                if desc then table.insert(chooser_data, 1, desc) end
+                                if desc then
+                                    table.insert(chooser_data, 1, desc)
+                                end
                             end
                             if obj:currentSourceMultipleOperationEnabled() then
                                 obj:appendOperationData(chooser_data)
@@ -314,20 +330,28 @@ function obj:toggleShow()
     if obj.chooser:isVisible() then
         obj.chooser:hide()
         obj.trigger:disable()
-        for _,val in pairs(obj.hotkeys) do
-            for i=1,#val do
+        for _, val in pairs(obj.hotkeys) do
+            for i = 1, #val do
                 val[i]:disable()
             end
         end
     else
         if obj.trigger == nil then
-            obj.trigger = hs.hotkey.bind("", "tab", nil, function() obj:switchSource() end)
+            obj.trigger =
+                hs.hotkey.bind(
+                "",
+                "tab",
+                nil,
+                function()
+                    obj:switchSource()
+                end
+            )
         else
             obj.trigger:enable()
         end
-        for key,val in pairs(obj.hotkeys) do
+        for key, val in pairs(obj.hotkeys) do
             if key == obj.source_kw then
-                for i=1,#val do
+                for i = 1, #val do
                     val[i]:enable()
                 end
             end

@@ -1,4 +1,4 @@
-local obj={}
+local obj = {}
 obj.__index = obj
 
 obj.name = "Copy text"
@@ -16,11 +16,15 @@ end
 obj.spoonPath = script_path()
 
 -- Define the source's overview. A unique `keyword` key should exist, so this source can be found.
-obj.overview = {text="Type cp ⇥ to open links", image=hs.image.imageFromPath(obj.spoonPath .. "/resources/justnote.png"), keyword="cp"}
+obj.overview = {
+    text = "Type cp ⇥ to open links",
+    image = hs.image.imageFromPath(obj.spoonPath .. "/resources/justnote.png"),
+    keyword = "cp"
+}
 -- Define the notice when a long-time request is being executed. It could be `nil`.
-obj.notice = {text="Requesting data, please wait a while …"}
+obj.notice = {text = "Requesting data, please wait a while …"}
 
-obj.init_func = function ()
+obj.init_func = function()
     local orgSourceFeedScript = getScript("org-source-feed.py")
 
     local command = orgSourceFeedScript .. " " .. "-t links -f " .. privconf.hssearch_copy_texts_filepaths
@@ -34,15 +38,18 @@ obj.init_func = function ()
         local index = 1
         for _, s in pairs(snippets) do
             -- logger:d("get: " .. hs.inspect.inspect(s))
-            table.insert(chooser_data, {
-                             text = s.name,
-                             subText = s.type .. "/" .. s.source_file .. ": " .. s.code,
-                             output = "browser",
-                             arg = s.code,
-                             link = s.code,
-                             index = index,
-                             image=hs.image.imageFromPath(obj.spoonPath .. "/resources/justnote.png")
-            })
+            table.insert(
+                chooser_data,
+                {
+                    text = s.name,
+                    subText = s.type .. "/" .. s.source_file .. ": " .. s.code,
+                    output = "browser",
+                    arg = s.code,
+                    link = s.code,
+                    index = index,
+                    image = hs.image.imageFromPath(obj.spoonPath .. "/resources/justnote.png")
+                }
+            )
             index = index + 1
         end
     end
@@ -50,7 +57,11 @@ obj.init_func = function ()
     return chooser_data
 end
 
-obj.description = {text="Copy text", subText="Search and select one item to copy the item to clipboard", image=hs.image.imageFromPath(obj.spoonPath .. "/resources/justnote.png")}
+obj.description = {
+    text = "Copy text",
+    subText = "Search and select one item to copy the item to clipboard",
+    image = hs.image.imageFromPath(obj.spoonPath .. "/resources/justnote.png")
+}
 
 -- As the user is typing, the callback function will be called for every keypress. The returned value is a table.
 obj.callback = nil
@@ -58,22 +69,25 @@ obj.callback = nil
 local function writerGenerator(operations)
     local writer = {}
     for _, operation in pairs(operations) do
-        table.insert(writer, {
-                         operation = operation,
-                         operator = function(config)
-                             config.currentOperation = operation
-        end})
+        table.insert(
+            writer,
+            {
+                operation = operation,
+                operator = function(config)
+                    config.currentOperation = operation
+                end
+            }
+        )
     end
 
     return writer
 end
 
-
 obj.config = {
     currentOperation = ":copyToClipboard",
     allOperations = {
-        ":copyToClipboard",
-    },
+        ":copyToClipboard"
+    }
 }
 obj.config_writer = writerGenerator(obj.config.allOperations)
 

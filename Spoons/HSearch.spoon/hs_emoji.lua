@@ -1,4 +1,4 @@
-local obj={}
+local obj = {}
 obj.__index = obj
 
 obj.name = "MLemoji"
@@ -14,7 +14,11 @@ end
 obj.spoonPath = script_path()
 
 -- Define the source's overview. A unique `keyword` key should exist, so this source can be found.
-obj.overview = {text="Type e ⇥ to find relevant Emoji.", image=hs.image.imageFromPath(obj.spoonPath .. "/resources/emoji.png"), keyword="e"}
+obj.overview = {
+    text = "Type e ⇥ to find relevant Emoji.",
+    image = hs.image.imageFromPath(obj.spoonPath .. "/resources/emoji.png"),
+    keyword = "e"
+}
 -- Define the notice when a long-time request is being executed. It could be `nil`.
 obj.notice = nil
 
@@ -26,12 +30,16 @@ local function emojiTips()
     end
 
     for _, emoji in ipairs(hs.json.decode(io.open(obj.spoonPath .. "/emojis/emojis.json"):read())) do
-        table.insert(obj.choices,
-                     {text=emoji['name'],
-                      subText=table.concat(emoji['kwds'], ", "),
-                      image=hs.image.imageFromPath(obj.spoonPath .. "/emojis/" .. emoji['id'] .. ".png"),
-                      output="keystrokes",
-                      arg=emoji['chars']})
+        table.insert(
+            obj.choices,
+            {
+                text = emoji["name"],
+                subText = table.concat(emoji["kwds"], ", "),
+                image = hs.image.imageFromPath(obj.spoonPath .. "/emojis/" .. emoji["id"] .. ".png"),
+                output = "keystrokes",
+                arg = emoji["chars"]
+            }
+        )
     end
     return obj.choices
 end
@@ -43,7 +51,6 @@ obj.init_func = emojiTips
 obj.description = nil
 
 -- As the user is typing, the callback function will be called for every keypress. The returned value is a table.
-obj.canvas = hs.canvas.new({x=0, y=0, w=96, h=96})
-
+obj.canvas = hs.canvas.new({x = 0, y = 0, w = 96, h = 96})
 
 return obj
