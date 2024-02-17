@@ -1,0 +1,4 @@
+#+title: README
+
+* How to config a new source
+** check for hs_chrome for example

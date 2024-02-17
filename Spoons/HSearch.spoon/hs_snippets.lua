@@ -17,9 +17,9 @@ obj.spoonPath = script_path()
 
 -- Define the source's overview. A unique `keyword` key should exist, so this source can be found.
 obj.overview = {
-    text = "Type c ⇥ to view/copy code snippets.",
+    text = "Type s ⇥ to view/copy code snippets.",
     image = hs.image.imageFromPath(obj.spoonPath .. "/resources/justnote.png"),
-    keyword = "c"
+    keyword = "s"
 }
 -- Define the notice when a long-time request is being executed. It could be `nil`.
 obj.notice = {text = "Requesting data, please wait a while …"}

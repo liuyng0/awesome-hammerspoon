@@ -30,49 +30,47 @@ local function v2exRequest()
         nil,
         function(status, data)
             if status == 200 then
-                if
+                local retval, decoded_data =
                     pcall(
-                        function()
-                            hs.json.decode(data)
+                    function()
+                        return hs.json.decode(data)
+                    end
+                )
+                if retval and #decoded_data > 0 then
+                    local chooser_data =
+                        hs.fnutils.imap(
+                        decoded_data,
+                        function(item)
+                            local sub_content = string.gsub(item.content, "\r\n", " ")
+                            local function trim_content()
+                                if utf8.len(sub_content) > 40 then
+                                    return string.sub(sub_content, 1, utf8.offset(sub_content, 40) - 1)
+                                else
+                                    return sub_content
+                                end
+                            end
+                            local final_content = trim_content()
+                            return {
+                                text = item.title,
+                                subText = final_content,
+                                image = hs.image.imageFromPath(obj.spoonPath .. "/resources/v2ex.png"),
+                                output = "browser",
+                                arg = item.url
+                            }
                         end
                     )
-                 then
-                    local decoded_data = hs.json.decode(data)
-                    if #decoded_data > 0 then
-                        local chooser_data =
-                            hs.fnutils.imap(
-                            decoded_data,
-                            function(item)
-                                local sub_content = string.gsub(item.content, "\r\n", " ")
-                                local function trim_content()
-                                    if utf8.len(sub_content) > 40 then
-                                        return string.sub(sub_content, 1, utf8.offset(sub_content, 40) - 1)
-                                    else
-                                        return sub_content
-                                    end
-                                end
-                                local final_content = trim_content()
-                                return {
-                                    text = item.title,
-                                    subText = final_content,
-                                    image = hs.image.imageFromPath(obj.spoonPath .. "/resources/v2ex.png"),
-                                    outputType = "browser",
-                                    arg = item.url
-                                }
-                            end
-                        )
-                        local source_desc = {
-                            text = "v2ex Posts",
-                            subText = "Select some item to get it opened in default browser …",
-                            image = hs.image.imageFromPath(obj.spoonPath .. "/resources/v2ex.png")
-                        }
-                        table.insert(chooser_data, 1, source_desc)
-                        -- Because we don't know when asyncGet will return data, we have to refresh hs.chooser choices in this callback.
-                        if spoon.HSearch then
-                            -- Make sure HSearch spoon is running now
-                            spoon.HSearch.chooser:choices(chooser_data)
-                            spoon.HSearch.chooser:refreshChoicesCallback()
-                        end
+                    local source_desc = {
+                        text = "v2ex Posts",
+                        subText = "Select some item to get it opened in default browser …",
+                        image = hs.image.imageFromPath(obj.spoonPath .. "/resources/v2ex.png")
+                    }
+                    table.insert(chooser_data, 1, source_desc)
+                    -- Because we don't know when asyncGet will return data,
+                    -- we have to refresh hs.chooser choices in this callback.
+                    if spoon.HSearch then
+                        -- Make sure HSearch spoon is running now
+                        spoon.HSearch:setChoices(chooser_data)
+                        spoon.HSearch.chooser:refreshChoicesCallback()
                     end
                 end
             end

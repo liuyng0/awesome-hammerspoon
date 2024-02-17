@@ -31,12 +31,13 @@ obj.source_kw = nil
 local logger = hs.logger.new("HSearch", "debug")
 local colorpicker = require("hammers.colorpicker")
 
-function obj:setChoices(chooser, choices)
-    if choices ~= nil then
-        colorpicker:setChooserUI(chooser, choices)
+function obj:setChoices(choices)
+    -- render choice
+    if obj.chooser ~= nil and choices ~= nil then
+        colorpicker:setChooserUI(obj.chooser, choices)
     end
-    if chooser ~= nil then
-        chooser:choices(choices)
+    if obj.chooser ~= nil then
+        obj.chooser:choices(choices)
     end
 end
 
@@ -61,15 +62,11 @@ function obj:restoreOutput()
         cwin:focus()
         hs.eventtap.keyStrokes(arg)
     end
-    local function openChromeTab(arg)
-        hs.http.get("http://localhost:4000/chrome/tab/goto/" .. arg.winIndex .. "/" .. arg.tabIndex)
-    end
     obj.output_pool["browser"] = openWithBrowser
     obj.output_pool["safari"] = openWithSafari
     obj.output_pool["firefox"] = openWithFirefox
     obj.output_pool["clipboard"] = copyToClipboard
     obj.output_pool["keystrokes"] = sendKeyStrokes
-    obj.output_pool["chromeTab"] = openChromeTab
 end
 
 function obj:init()
@@ -110,7 +107,7 @@ function obj:switchSource()
             if obj.sources[querystr] then
                 obj.source_kw = querystr
                 obj.chooser:query("")
-                obj:setChoices(obj.chooser, nil)
+                obj:setChoices(nil)
                 obj.chooser:queryChangedCallback()
                 obj.sources[querystr]()
             else
@@ -120,7 +117,7 @@ function obj:switchSource()
                 if obj.sources[row_kw] then
                     obj.source_kw = row_kw
                     obj.chooser:query("")
-                    obj:setChoices(obj.chooser, nil)
+                    obj:setChoices(nil)
                     obj.chooser:queryChangedCallback()
                     obj.sources[row_kw]()
                 else
@@ -129,7 +126,7 @@ function obj:switchSource()
                         {text = "No source found!", subText = "Maybe misspelled the keyword?"},
                         {text = "Want to add your own source?", subText = "Feel free to read the code and open PRs. :)"}
                     }
-                    obj:setChoices(obj.chooser, chooser_data)
+                    obj:setChoices(chooser_data)
                     obj.chooser:queryChangedCallback()
                     hs.eventtap.keyStroke({"cmd"}, "a")
                 end
@@ -139,7 +136,7 @@ function obj:switchSource()
             local chooser_data = {
                 {text = "Invalid Keyword", subText = "Trigger keyword must only consist of alphanumeric characters."}
             }
-            obj:setChoices(obj.chooser, chooser_data)
+            obj:setChoices(chooser_data)
             obj.chooser:queryChangedCallback()
             hs.eventtap.keyStroke({"cmd"}, "a")
         end
@@ -149,14 +146,14 @@ function obj:switchSource()
         if obj.sources[row_kw] then
             obj.source_kw = row_kw
             obj.chooser:query("")
-            obj:setChoices(obj.chooser, nil)
+            obj:setChoices(nil)
             obj.chooser:queryChangedCallback()
             obj.sources[row_kw]()
         else
             obj.source_kw = nil
             -- If no matching source then show sources overview
             local chooser_data = obj.sources_overview
-            obj:setChoices(obj.chooser, chooser_data)
+            obj:setChoices(chooser_data)
             obj.chooser:queryChangedCallback()
         end
     end
@@ -200,7 +197,16 @@ function obj:loadSources()
                 local source = f()
                 local output = source.new_output
                 if output then
-                    obj.output_pool[output.name] = output.func
+                    if #output == 0 then
+                        obj.output_pool[output.name] = output.func
+                    else
+                        hs.fnutils.imap(
+                            output,
+                            function(nout)
+                                obj.output_pool[nout.name] = nout.func
+                            end
+                        )
+                    end
                 end
                 local overview = source.overview
                 -- Gather souces overview from files
@@ -212,7 +218,7 @@ function obj:loadSources()
                 local function sourceFunc()
                     local notice = source.notice
                     if notice then
-                        obj:setChoices(obj.chooser, {notice})
+                        obj:setChoices({notice})
                     end
                     local request = source.init_func
                     if request then
@@ -223,9 +229,9 @@ function obj:loadSources()
                                 table.insert(chooser_data, 1, desc)
                             end
                         end
-                        obj:setChoices(obj.chooser, chooser_data)
+                        obj:setChoices(chooser_data)
                     else
-                        obj:setChoices(obj.chooser, nil)
+                        obj:setChoices(nil)
                     end
                     if source.callback then
                         obj.chooser:queryChangedCallback(source.callback)
@@ -253,7 +259,7 @@ function obj:toggleShow()
         obj:loadSources()
         -- Show sources overview, so users know what to do next.
 
-        obj:setChoices(obj.chooser, obj.sources_overview)
+        obj:setChoices(obj.sources_overview)
     end
     if obj.chooser:isVisible() then
         obj.chooser:hide()
