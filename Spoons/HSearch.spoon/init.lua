@@ -23,7 +23,6 @@ end
 obj.spoonPath = script_path()
 
 obj.sources = {}
-obj.sources_config = {}
 obj.sources_overview = {}
 obj.search_path = {hs.configdir .. "/private/hsearch_dir", obj.spoonPath}
 obj.hotkeys = {}
@@ -71,58 +70,6 @@ function obj:restoreOutput()
     obj.output_pool["clipboard"] = copyToClipboard
     obj.output_pool["keystrokes"] = sendKeyStrokes
     obj.output_pool["chromeTab"] = openChromeTab
-end
-
-function obj:currentSourceMultipleOperationEnabled()
-    if obj.source_kw == nil then
-        return false
-    end
-    local source_config = obj.sources_config[obj.source_kw]
-    return source_config ~= nil and
-        (type(source_config.config) == "table" and type(source_config.config_writer) == "table")
-end
-
-function obj:appendOperationData(chooser_data)
-    local source_config = obj.sources_config[obj.source_kw]
-    for _, writer in ipairs(source_config.config_writer) do
-        local operation = writer.operation
-        local operator = writer.operator
-        table.insert(
-            chooser_data,
-            {
-                text = operation,
-                subText = "This is a operation to manipulate the configuration.",
-                operation = operation
-            }
-        )
-    end
-    table.insert(
-        chooser_data,
-        {
-            text = ":viewConfig",
-            subText = hs.inspect.inspect(source_config.config, {newline = "  "}),
-            operation = ":viewConfig"
-        }
-    )
-end
-
-function obj:operateOnMaybe(config, operation)
-    local source_config = obj.sources_config[obj.source_kw]
-    for _, writer in ipairs(source_config.config_writer) do
-        if writer.operation == operation then
-            writer.operator(config)
-        end
-    end
-end
-
-function obj:filterParsableFieldsToJson(chosen)
-    local newTable = {}
-    for index, value in pairs(chosen) do
-        if type(value) == "number" or type(value) == "nil" or type(value) == "string" or type(value) == "table" then
-            newTable[index] = value
-        end
-    end
-    return hs.json.encode(newTable)
 end
 
 function obj:init()
@@ -247,68 +194,49 @@ function obj:loadSources()
         local file_list = io.popen("find " .. dir .. " -type f -name 'hs_*.lua'")
         for file in file_list:lines() do
             -- Exclude self
-            if file ~= obj.spoonPath .. "/init.lua" then
-                local f = loadfile(file)
-                if f then
-                    logger.i("Loading " .. file .. " successfully")
-                    local source = f()
-                    local output = source.new_output
-                    if output then
-                        obj.output_pool[output.name] = output.func
-                    end
-                    local overview = source.overview
-                    -- Gather souces overview from files
-                    table.insert(obj.sources_overview, overview)
-                    local hotkey = source.hotkeys
-                    if hotkey then
-                        obj.hotkeys[overview.keyword] = hotkey
-                    end
-                    if source.config ~= nil and source.config_writer ~= nil then
-                        if source.output_method ~= nil then
-                            obj.sources_config[overview.keyword] = {
-                                config = source.config,
-                                config_writer = source.config_writer,
-                                output_method = source.output_method
-                            }
-                        else
-                            obj.sources_config[overview.keyword] = {
-                                config = source.config,
-                                config_writer = source.config_writer
-                            }
-                        end
-                    end
-                    local function sourceFunc()
-                        local notice = source.notice
-                        if notice then
-                            obj:setChoices(obj.chooser, {notice})
-                        end
-                        local request = source.init_func
-                        if request then
-                            local chooser_data = request()
-                            if chooser_data then
-                                local desc = source.description
-                                if desc then
-                                    table.insert(chooser_data, 1, desc)
-                                end
-                            end
-                            if obj:currentSourceMultipleOperationEnabled() then
-                                obj:appendOperationData(chooser_data)
-                            end
-                            obj:setChoices(obj.chooser, chooser_data)
-                        else
-                            obj:setChoices(obj.chooser, nil)
-                        end
-                        if source.callback then
-                            obj.chooser:queryChangedCallback(source.callback)
-                        else
-                            obj.chooser:queryChangedCallback()
-                        end
-                    end
-                    -- Add this source to sources pool, so it can found and triggered.
-                    obj.sources[overview.keyword] = sourceFunc
-                else
-                    logger.e("Load fail: " .. file)
+            local f = loadfile(file)
+            if f then
+                logger.i("Loading " .. file .. " successfully")
+                local source = f()
+                local output = source.new_output
+                if output then
+                    obj.output_pool[output.name] = output.func
                 end
+                local overview = source.overview
+                -- Gather souces overview from files
+                table.insert(obj.sources_overview, overview)
+                local hotkey = source.hotkeys
+                if hotkey then
+                    obj.hotkeys[overview.keyword] = hotkey
+                end
+                local function sourceFunc()
+                    local notice = source.notice
+                    if notice then
+                        obj:setChoices(obj.chooser, {notice})
+                    end
+                    local request = source.init_func
+                    if request then
+                        local chooser_data = request()
+                        if chooser_data then
+                            local desc = source.description
+                            if desc then
+                                table.insert(chooser_data, 1, desc)
+                            end
+                        end
+                        obj:setChoices(obj.chooser, chooser_data)
+                    else
+                        obj:setChoices(obj.chooser, nil)
+                    end
+                    if source.callback then
+                        obj.chooser:queryChangedCallback(source.callback)
+                    else
+                        obj.chooser:queryChangedCallback()
+                    end
+                end
+                -- Add this source to sources pool, so it can found and triggered.
+                obj.sources[overview.keyword] = sourceFunc
+            else
+                logger.e("Load fail: " .. file)
             end
         end
     end
