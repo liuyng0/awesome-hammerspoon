@@ -47,7 +47,7 @@ local function getChromeTabs()
                         winId = item.winId,
                         winIndex = item.winIndex,
                         tabIndex = item.tabIndex,
-                        image = hs.image.imageFromPath(obj.spoonPath .. "/resources/chrome.png"),
+                        image = hs.image.imageFromPath(obj.spoonPath .. "/resources/og/chrome-switch.png"),
                         output = "chromeSwitchTab"
                     }
                 end
@@ -76,7 +76,7 @@ local function getChromeBookmarks()
                         text = item.path,
                         subText = item.url,
                         url = item.url,
-                        image = hs.image.imageFromPath(obj.spoonPath .. "/resources/chrome.png"),
+                        image = hs.image.imageFromPath(obj.spoonPath .. "/resources/og/chrome-new.png"),
                         output = "chromeOpenBookmark"
                     }
                 end
