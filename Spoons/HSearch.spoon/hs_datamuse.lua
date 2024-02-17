@@ -15,9 +15,9 @@ obj.spoonPath = script_path()
 
 -- Define the source's overview. A unique `keyword` key should exist, so this source can be found.
 obj.overview = {
-    text = "Type s ⇥ to request English Thesaurus.",
+    text = "Type et ⇥ to request English Thesaurus.",
     image = hs.image.imageFromPath(obj.spoonPath .. "/resources/thesaurus.png"),
-    keyword = "s"
+    keyword = "et"
 }
 -- Define the notice when a long-time request is being executed. It could be `nil`.
 obj.notice = nil
