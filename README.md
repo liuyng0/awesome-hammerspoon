@@ -28,3 +28,10 @@ ln -sf /usr/local/share/lua/5.4/luarocks ~/.hammerspoon/
 # or
 ln -sf /opt/homebrew/share/lua/5.4/luarocks ~/.hammerspoon
 ```
+
+## Self compile projects
+### ~/repo/standalone/hammerspoon
+- Use the chooser schema to built the dylib and nib
+- Override the dylib and nib with script in ~/vif-bin/hs/
+  + First use base/back.sh to backup
+  + Override with override/copy-built.sh
