@@ -27,7 +27,7 @@ obj.sources_overview = {}
 obj.search_path = {hs.configdir .. "/private/hsearch_dir", obj.spoonPath}
 obj.hotkeys = {}
 obj.source_kw = nil
-
+obj.placeholderText = "default rapidfuzz, @ exact match, # trie, : trie (insert ws between)"
 local logger = hs.logger.new("HSearch", "debug")
 
 function obj:resourceImage(path)
@@ -148,6 +148,7 @@ function obj:switchSource()
             obj.source_kw = nil
             -- If no matching source then show sources overview
             local chooser_data = obj.sources_overview
+            obj.chooser:placeholderText(obj.placeholderText)
             obj:setChoices(chooser_data)
             obj.chooser:queryChangedCallback()
         end
