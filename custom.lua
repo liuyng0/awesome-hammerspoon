@@ -119,8 +119,8 @@ hsearch_keys = {hyper2, "I"}
 hsman_keys = {"", ""}
 
 -- countdownM environment keybinding: Visual countdown
--- hscountdM_keys = {"alt", "I"}
-hscountdM_keys = {hyper2, "N"}
+-- hscountdM_keys = {hyper2, "N"}
+hscountdM_keys = {"", ""}
 
 -- Lock computer's screen
 -- hslock_keys = {"alt", "L"}
