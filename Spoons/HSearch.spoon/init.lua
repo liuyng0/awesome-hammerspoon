@@ -96,44 +96,33 @@ end
 function obj:switchSource()
     local querystr = obj.chooser:query()
     if string.len(querystr) > 0 then
-        local matchstr = string.match(querystr, "^%w+")
-        if matchstr == querystr then
-            -- First we try to switch source according to the querystr
-            if obj.sources[querystr] then
-                obj.source_kw = querystr
+        -- First we try to switch source according to the querystr
+        if obj.sources[querystr] then
+            obj.source_kw = querystr
+            obj.chooser:query("")
+            obj:setChoices(nil)
+            obj.chooser:queryChangedCallback()
+            obj.sources[querystr]()
+        else
+            local row_content = obj.chooser:selectedRowContents()
+            local row_kw = row_content.keyword
+            -- Then try to switch source according to selected row
+            if obj.sources[row_kw] then
+                obj.source_kw = row_kw
                 obj.chooser:query("")
                 obj:setChoices(nil)
                 obj.chooser:queryChangedCallback()
-                obj.sources[querystr]()
+                obj.sources[row_kw]()
             else
-                local row_content = obj.chooser:selectedRowContents()
-                local row_kw = row_content.keyword
-                -- Then try to switch source according to selected row
-                if obj.sources[row_kw] then
-                    obj.source_kw = row_kw
-                    obj.chooser:query("")
-                    obj:setChoices(nil)
-                    obj.chooser:queryChangedCallback()
-                    obj.sources[row_kw]()
-                else
-                    obj.source_kw = nil
-                    local chooser_data = {
-                        {text = "No source found!", subText = "Maybe misspelled the keyword?"},
-                        {text = "Want to add your own source?", subText = "Feel free to read the code and open PRs. :)"}
-                    }
-                    obj:setChoices(chooser_data)
-                    obj.chooser:queryChangedCallback()
-                    hs.eventtap.keyStroke({"cmd"}, "a")
-                end
+                obj.source_kw = nil
+                local chooser_data = {
+                    {text = "No source found!", subText = "Maybe misspelled the keyword?"},
+                    {text = "Want to add your own source?", subText = "Feel free to read the code and open PRs. :)"}
+                }
+                obj:setChoices(chooser_data)
+                obj.chooser:queryChangedCallback()
+                hs.eventtap.keyStroke({"cmd"}, "a")
             end
-        else
-            obj.source_kw = nil
-            local chooser_data = {
-                {text = "Invalid Keyword", subText = "Trigger keyword must only consist of alphanumeric characters."}
-            }
-            obj:setChoices(chooser_data)
-            obj.chooser:queryChangedCallback()
-            hs.eventtap.keyStroke({"cmd"}, "a")
         end
     else
         local row_content = obj.chooser:selectedRowContents()
