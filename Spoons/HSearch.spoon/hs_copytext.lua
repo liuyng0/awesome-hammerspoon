@@ -14,6 +14,7 @@ local function script_path()
 end
 
 obj.spoonPath = script_path()
+obj.disabled = true
 
 -- Define the source's overview. A unique `keyword` key should exist, so this source can be found.
 obj.overview = {

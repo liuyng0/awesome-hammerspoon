@@ -11,6 +11,7 @@ local function script_path()
     return str:match("(.*/)")
 end
 
+obj.disabled = true
 obj.spoonPath = script_path()
 
 -- Define the source's overview. A unique `keyword` key should exist, so this source can be found.
@@ -84,7 +85,7 @@ end
 
 local store_trigger =
     hs.hotkey.new(
-    "",
+    "ctrl",
     "return",
     nil,
     function()

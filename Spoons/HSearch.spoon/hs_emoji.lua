@@ -36,7 +36,7 @@ local function emojiTips()
                 text = emoji["name"],
                 subText = table.concat(emoji["kwds"], ", "),
                 image = hs.image.imageFromPath(obj.spoonPath .. "/emojis/" .. emoji["id"] .. ".png"),
-                output = "clipboard",
+                output = "keystrokes",
                 arg = emoji["chars"]
             }
         )

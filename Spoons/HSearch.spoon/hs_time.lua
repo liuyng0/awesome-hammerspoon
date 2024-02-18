@@ -24,14 +24,18 @@ obj.notice = nil
 
 -- Some global objects
 obj.exec_args = {
-    '+"%Y-%m-%d"',
-    '+"%H:%M:%S %p"',
-    '+"%A, %B %d, %Y"',
-    '+"%Y-%m-%d %H:%M:%S %p"',
-    '+"%a, %b %d, %y"',
-    '+"%m/%d/%y %H:%M %p"',
-    "",
-    "-u"
+    {
+        tz = "UTC",
+        format = '+"%Y-%m-%d %H:%M:%S"'
+    },
+    {
+        tz = "America/Los_Angeles",
+        format = '+"%Y-%m-%d %H:%M:%S"'
+    },
+    {
+        tz = "Asia/Chongqing",
+        format = '+"%Y-%m-%d %H:%M:%S"'
+    }
 }
 
 local function timeRequest()
@@ -39,12 +43,13 @@ local function timeRequest()
         hs.fnutils.imap(
         obj.exec_args,
         function(item)
-            local exec_result = hs.execute("date " .. item)
+            local command = "TZ=" .. item.tz .. " /opt/homebrew/bin/gdate " .. item.format
+            local exec_result = hs.execute(command):match("^%s*(.-)%s*$")
             return {
                 text = exec_result,
-                subText = "date " .. item,
+                subText = command,
                 image = hs.image.imageFromPath(obj.spoonPath .. "/resources/time.png"),
-                output = "clipboard",
+                output = "keystrokes",
                 arg = exec_result
             }
         end
@@ -55,18 +60,16 @@ end
 obj.init_func = timeRequest
 -- Insert a friendly tip at the head so users know what to do next.
 -- As this source highly relys on queryChangedCallback, we'd better tip users in callback instead of here
-obj.description = {
-    text = "Date Query",
-    subText = "Type +/-1d (or y, m, w, H, M, S) to query date forward or backward.",
-    image = hs.image.imageFromPath(obj.spoonPath .. "/resources/time.png")
-}
-
+obj.description = nil
 -- As the user is typing, the callback function will be called for every keypress. The returned value is a table.
 
 local function splitBySpace(str)
     local tmptbl = {}
     for w in string.gmatch(str, "[+-]?%d+[ymdwHMS]") do
-        table.insert(tmptbl, w)
+        table.insert(tmptbl, {shift = w})
+    end
+    for w in string.gmatch(str, "@[0-9]+") do
+        table.insert(tmptbl, {epoch = w})
     end
     return tmptbl
 end
@@ -79,7 +82,11 @@ local function timeDeltaRequest(querystr)
                 hs.fnutils.imap(
                 valid_inputs,
                 function(item)
-                    return "-v" .. item
+                    if item.shift then
+                        return "-v" .. item.shift
+                    elseif item.epoch then
+                        return "-d " .. item.epoch
+                    end
                 end
             )
             local vv_var = table.concat(addv_before, " ")
@@ -87,8 +94,9 @@ local function timeDeltaRequest(querystr)
                 hs.fnutils.imap(
                 obj.exec_args,
                 function(item)
-                    local new_exec_command = "date " .. vv_var .. " " .. item
-                    local new_exec_result = hs.execute(new_exec_command)
+                    local new_exec_command =
+                        "TZ=" .. item.tz .. " /opt/homebrew/bin/gdate " .. vv_var .. " " .. item.format
+                    local new_exec_result = hs.execute(new_exec_command):match("^%s*(.-)%s*$")
                     return {
                         text = new_exec_result,
                         subText = new_exec_command,
@@ -98,12 +106,6 @@ local function timeDeltaRequest(querystr)
                     }
                 end
             )
-            local source_desc = {
-                text = "Date Query",
-                subText = "Type +/-1d (or y, m, w, H, M, S) to query date forward or backward.",
-                image = hs.image.imageFromPath(hs.configdir .. "/resources/time.png")
-            }
-            table.insert(chooser_data, 1, source_desc)
             if spoon.HSearch then
                 -- Make sure HSearch spoon is running now
                 spoon.HSearch.chooser:choices(chooser_data)
@@ -111,12 +113,6 @@ local function timeDeltaRequest(querystr)
         end
     else
         local chooser_data = timeRequest()
-        local source_desc = {
-            text = "Date Query",
-            subText = "Type +/-1d (or y, m, w, H, M, S) to query date forward or backward.",
-            image = hs.image.imageFromPath(hs.configdir .. "/resources/time.png")
-        }
-        table.insert(chooser_data, 1, source_desc)
         if spoon.HSearch then
             -- Make sure HSearch spoon is running now
             spoon.HSearch.chooser:choices(chooser_data)
@@ -124,6 +120,7 @@ local function timeDeltaRequest(querystr)
     end
 end
 
+obj.placeholderText = "type +/-1d (or y, m, w, H, M, S) ..."
 obj.callback = timeDeltaRequest
 
 return obj

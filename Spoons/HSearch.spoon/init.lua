@@ -30,6 +30,10 @@ obj.source_kw = nil
 
 local logger = hs.logger.new("HSearch", "debug")
 
+function obj:resourceImage(path)
+    return hs.image.imageFromPath(obj.spoonPath .. path)
+end
+
 function obj:setChoices(choices)
     -- render choice
     if obj.chooser ~= nil and choices ~= nil then
@@ -47,12 +51,6 @@ function obj:restoreOutput()
         local default_browser = hs.urlevent.getDefaultHandler("http")
         hs.urlevent.openURLWithBundle(arg, default_browser)
     end
-    local function openWithSafari(arg)
-        hs.urlevent.openURLWithBundle(arg, "com.apple.Safari")
-    end
-    local function openWithFirefox(arg)
-        hs.urlevent.openURLWithBundle(arg, "org.mozilla.firefox")
-    end
     local function copyToClipboard(arg)
         hs.pasteboard.setContents(arg)
     end
@@ -62,8 +60,6 @@ function obj:restoreOutput()
         hs.eventtap.keyStrokes(arg)
     end
     obj.output_pool["browser"] = openWithBrowser
-    obj.output_pool["safari"] = openWithSafari
-    obj.output_pool["firefox"] = openWithFirefox
     obj.output_pool["clipboard"] = copyToClipboard
     obj.output_pool["keystrokes"] = sendKeyStrokes
 end
@@ -177,6 +173,60 @@ function obj:switchSource()
     end
 end
 
+function obj:loadSource(source)
+    local output = source.new_output
+    if output then
+        if #output == 0 then
+            obj.output_pool[output.name] = output.func
+        else
+            hs.fnutils.imap(
+                output,
+                function(nout)
+                    obj.output_pool[nout.name] = nout.func
+                end
+            )
+        end
+    end
+    local overview = source.overview
+    -- Gather souces overview from files
+    table.insert(obj.sources_overview, overview)
+    local hotkey = source.hotkeys
+    if hotkey then
+        obj.hotkeys[overview.keyword] = hotkey
+    end
+    local function sourceFunc()
+        local notice = source.notice
+        if notice then
+            obj:setChoices({notice})
+        end
+        local request = source.init_func
+        if request then
+            local chooser_data = request()
+            if chooser_data then
+                local desc = source.description
+                if desc then
+                    table.insert(chooser_data, 1, desc)
+                end
+            end
+            obj:setChoices(chooser_data)
+        else
+            obj:setChoices(nil)
+        end
+        if source.callback then
+            obj.chooser:queryChangedCallback(source.callback)
+        else
+            obj.chooser:queryChangedCallback()
+        end
+        if source.placeholderText then
+            obj.chooser:placeholderText(source.placeholderText)
+        else
+            obj.chooser:placeholderText(nil)
+        end
+    end
+    -- Add this source to sources pool, so it can found and triggered.
+    obj.sources[overview.keyword] = sourceFunc
+end
+
 --- HSearch:loadSources()
 --- Method
 --- Load new sources from `HSearch.search_path`, the search_path defaults to `~/.hammerspoon/private/hsearch_dir` and the HSearch Spoon directory. Only for debug purpose in usual.
@@ -194,55 +244,18 @@ function obj:loadSources()
             if f then
                 logger.i("Loading " .. file .. " successfully")
                 local source = f()
-                local output = source.new_output
-                if output then
-                    if #output == 0 then
-                        obj.output_pool[output.name] = output.func
+                if source and source.disabled ~= true then
+                    if #source == 0 then
+                        obj:loadSource(source)
                     else
                         hs.fnutils.imap(
-                            output,
-                            function(nout)
-                                obj.output_pool[nout.name] = nout.func
+                            source,
+                            function(singleSource)
+                                obj:loadSource(singleSource)
                             end
                         )
                     end
                 end
-                local overview = source.overview
-                -- Gather souces overview from files
-                table.insert(obj.sources_overview, overview)
-                local hotkey = source.hotkeys
-                if hotkey then
-                    obj.hotkeys[overview.keyword] = hotkey
-                end
-                local function sourceFunc()
-                    local notice = source.notice
-                    if notice then
-                        obj:setChoices({notice})
-                    end
-                    local request = source.init_func
-                    if request then
-                        local chooser_data = request()
-                        if chooser_data then
-                            local desc = source.description
-                            if desc then
-                                table.insert(chooser_data, 1, desc)
-                            end
-                        end
-                        obj:setChoices(chooser_data)
-                    else
-                        obj:setChoices(nil)
-                    end
-                    if source.callback then
-                        obj.chooser:queryChangedCallback(source.callback)
-                    else
-                        obj.chooser:queryChangedCallback()
-                    end
-                    if source.placeholderText then
-                        obj.chooser:placeholderText(source.placeholderText)
-                    end
-                end
-                -- Add this source to sources pool, so it can found and triggered.
-                obj.sources[overview.keyword] = sourceFunc
             else
                 logger.e("Load fail: " .. file)
             end
@@ -294,6 +307,42 @@ function obj:toggleShow()
         end
         obj.chooser:show()
     end
+end
+
+-- overview: {text="Type v ⇥ to ...", image=hsearch:resourceImage("path"), keyword="v"}
+-- query_url: http get url
+-- item_mapping_func: convert item from post response
+-- output: the new output method {name, function(selectedItem)}
+-- placeholderText: the placeholderText show when no input
+function obj:makeRequestSource(options)
+    return {
+        overview = options.overview,
+        notice = {text = "Requesting data, please wait a while …"},
+        init_func = function()
+            hs.http.asyncGet(
+                options.query_url,
+                nil,
+                function(status, data)
+                    if status == 200 then
+                        local retval, decoded_data =
+                            pcall(
+                            function()
+                                return hs.json.decode(data)
+                            end
+                        )
+                        if retval and #decoded_data > 0 then
+                            local chooser_data = hs.fnutils.imap(decoded_data, options.item_mapping_func)
+                            -- Make sure HSearch spoon is running now
+                            obj:setChoices(chooser_data)
+                            obj.chooser:refreshChoicesCallback()
+                        end
+                    end
+                end
+            )
+        end,
+        new_output = options.output,
+        placeholderText = options.placeholderText
+    }
 end
 
 return obj

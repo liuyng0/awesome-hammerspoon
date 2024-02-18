@@ -3,7 +3,7 @@ obj.__index = obj
 
 obj.name = "thesaurusDM"
 obj.version = "1.0"
-obj.author = "ashfinal <ashfinal@gmail.com>"
+obj.author = "LY <liuyng0@outlook.com>"
 
 -- Internal function used to find our location, so we know where to load files from
 local function script_path()
@@ -15,9 +15,9 @@ obj.spoonPath = script_path()
 
 -- Define the source's overview. A unique `keyword` key should exist, so this source can be found.
 obj.overview = {
-    text = "Type et ⇥ to request English Thesaurus.",
+    text = "Type dm ⇥ to request Datamuse Thesaurus.",
     image = hs.image.imageFromPath(obj.spoonPath .. "/resources/thesaurus.png"),
-    keyword = "et"
+    keyword = "dm"
 }
 -- Define the notice when a long-time request is being executed. It could be `nil`.
 obj.notice = nil
