@@ -1,19 +1,29 @@
--- Stay replacement: Keep App windows in their places
+--- === ChooserStyle ===
+---
+--- A new Sample Spoon
+---
+--- Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/ChooserStyle.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/ChooserStyle.spoon.zip)
 
--- luacheck: globals hs
+local obj = {}
+obj.__index = obj
+
+-- Metadata
+obj.name = "ChooserStyle"
+obj.version = "0.1"
+obj.author = "liuyng0 <liuyng0@outlook.org>"
+obj.homepage = "https://github.com/Hammerspoon/Spoons"
+obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 local fun = require "luarocks/fun"
-local m = {}
-m.logger = hs.logger.new("colorpicker")
-
 local st = require("hs.styledtext")
 local color = require("hs.drawing.color")
 local funs = require("hs.fnutils")
 
-m.textSize = 15
-m.subTextSize = 13
+obj.logger = hs.logger.new("ChooserStyle")
+obj.textSize = 15
+obj.subTextSize = 13
 
-function m:x11Alpha(color, alpha)
+function obj:x11Alpha(color, alpha)
     return {
         red = color.red,
         green = color.green,
@@ -22,52 +32,68 @@ function m:x11Alpha(color, alpha)
     }
 end
 
-m.lightStyle = {
+function obj:hexAlpha(hex, alpha)
+    return {hex = hex, alpha = alpha}
+end
+
+obj.lightStyle = {
     default = {
         text = {
             font = {
                 name = "SF Pro Bold",
-                size = m.textSize
+                size = obj.textSize
             },
-            color = m:x11Alpha(color.x11.brown, 1.0)
+            color = obj:hexAlpha("#525868", 1.0),
+            paragraphStyle = {
+                lineBreak = "truncateTail"
+            }
         },
         subText = {
             font = {
                 name = "SF Pro",
-                size = m.subTextSize
+                size = obj.subTextSize
             },
-            color = m:x11Alpha(color.x11.blue, 0.9)
+            color = obj:hexAlpha("#3c4353", 1.0),
+            paragraphStyle = {
+                lineBreak = "truncateTail"
+            }
         }
     },
     grayOut = {
         text = {
             font = {
                 name = "SF Pro Bold",
-                size = m.textSize
+                size = obj.textSize
             },
-            color = color.x11.steelblue
+            color = color.x11.steelblue,
+            paragraphStyle = {
+                lineBreak = "truncateTail"
+            }
         },
         subText = {
             font = {
                 name = "SF Pro",
-                size = m.subTextSize
+                size = obj.subTextSize
             },
-            color = color.x11.dodgerblue
+            color = color.x11.dodgerblue,
+            paragraphStyle = {
+                lineBreak = "truncateTail"
+            }
         }
     }
 }
 
-m.darkStyle = {
+obj.darkStyle = {
     default = {
         text = {
             font = {
-                size = m.textSize
+                size = obj.textSize
             },
             color = color.x11.dodgerblue
         },
         subText = {
             font = {
-                size = m.subTextSize
+                size = obj.subTextSize
             },
             color = color.x11.royalblue
         }
@@ -75,13 +101,13 @@ m.darkStyle = {
     grayOut = {
         text = {
             font = {
-                size = m.textSize
+                size = obj.textSize
             },
             color = color.x11.lightsteelblue
         },
         subText = {
             font = {
-                size = m.subTextSize
+                size = obj.subTextSize
             },
             color = color.x11.steelblue
         }
@@ -93,11 +119,11 @@ m.darkStyle = {
 -- options.subTextKey, default "subText"
 -- options.grayOutKey, default "grayOut"
 -- Use private parameter __colorpicker_style to define whether need to reset
-function m:setChooserUI(chooser, choices, options)
-    local style = m.lightStyle
+function obj:setChooserUI(chooser, choices, options)
+    local style = obj.lightStyle
     if options ~= nil and options.darkStyle then
         chooser:bgDark(true)
-        style = m.darkStyle
+        style = obj.darkStyle
     end
 
     local textKey = "text"
@@ -118,8 +144,8 @@ function m:setChooserUI(chooser, choices, options)
     local isGrayOut = function(a)
         return (a[grayOutKey] ~= nil and a[grayOutKey] == true)
     end
-    if m:needRecolor(choices, style) then
-        m.logger.w("Need to recolor")
+    if obj:needRecolor(choices, style) then
+        obj.logger.w("Need to recolor")
         choices =
             funs.map(
             choices,
@@ -133,20 +159,20 @@ function m:setChooserUI(chooser, choices, options)
                 end
 
                 if choice[textKey] ~= nil then
-                    choice["text"] = m:styledTextCompatible(choice[textKey], textStyle.text)
+                    choice["text"] = obj:styledTextCompatible(choice[textKey], textStyle.text)
                 end
 
                 if choice[subTextKey] ~= nil then
-                    choice["subText"] = m:styledTextCompatible(choice[subTextKey], textStyle.subText)
+                    choice["subText"] = obj:styledTextCompatible(choice[subTextKey], textStyle.subText)
                 end
                 return choice
             end
         )
     end
-    -- m.logger.w("Choices after converted " .. hs.inspect(choices))
+    -- obj.logger.w("Choices after converted " .. hs.inspect(choices))
 end
 
-function m:needRecolor(choices, style)
+function obj:needRecolor(choices, style)
     return choices ~= nil and
         not funs.every(
             choices,
@@ -156,7 +182,7 @@ function m:needRecolor(choices, style)
         )
 end
 
-function m:styledTextCompatible(text, style)
+function obj:styledTextCompatible(text, style)
     if type(text) == "userdata" and text.__name == "hs.styledtext" then
         text:setStyle(style)
 
@@ -168,7 +194,7 @@ function m:styledTextCompatible(text, style)
     end
 end
 
-function m:getReorderedChoices(choices, grayOutKey)
+function obj:getReorderedChoices(choices, grayOutKey)
     local isGrayOut = function(a)
         return (a[grayOutKey] ~= nil and a[grayOutKey] == true)
     end
@@ -192,4 +218,4 @@ function m:getReorderedChoices(choices, grayOutKey)
     return notGrayOutChoices
 end
 
-return m
+return obj

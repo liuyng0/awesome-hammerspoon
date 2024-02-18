@@ -1,10 +1,9 @@
-local logger = hs.logger.new("custom.lua", 'debug')
+local logger = hs.logger.new("custom.lua", "debug")
 
 hyper1 = {"ctrl", "shift", "alt"}
 hyper2 = "cmd"
 hyper3 = {"ctrl", "alt"}
 hyper4 = {"ctrl", "cmd"}
-
 
 -- Specify Spoons which will be loaded
 hspoon_list = {
@@ -23,35 +22,36 @@ hspoon_list = {
     -- "TimeFlow",
     -- "UnsplashZ",
     "WinWin",
-    'Screen',
-    'Space',
-    'Links',
-    'PopupTranslateSelection',
-    'SplitView',
-    'AppBindings'
+    "Screen",
+    "Space",
+    "Links",
+    "PopupTranslateSelection",
+    "SplitView",
+    "AppBindings",
+    "ChooserStyle"
 }
 
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.
 hsapp_list = {
-    {key = 'space', name = 'Emacs'},
-    {key = 'c', id = 'com.google.Chrome'},
-    {key = 'd', name = 'Dash'},
-    {key = 'w', id = 'com.apple.ActivityMonitor'},
-    {key = {hyper2, 'w'}, name = 'WeChat'},
-    {key = {'ctrl', 'c'}, id = 'com.apple.iCal'},
-    {key = 's', name = 'Slack'},
-    {key = 'p', name = 'Preview'},
-    {key = 'f', name = 'Firefox'},
-    {key = 'o', name = 'OmniGraffle'},
-    {key = 't', name = 'iTerm'},
-    {key = 'q', name = "Quip"},
-    {key = 'h', name = "Hammerspoon"},
-    {key = ';', name = 'Xcode'},
-    {key = 'x', name = 'XMind'},
-    {key = 'b', name = 'iBooks'},
-    {key = 'n', name = 'GoodNotes'},
-    {key = 'z', name = 'zoom.us'},
-    {key = 'p', name = "Parallels Desktop"}
+    {key = "space", name = "Emacs"},
+    {key = "c", id = "com.google.Chrome"},
+    {key = "d", name = "Dash"},
+    {key = "w", id = "com.apple.ActivityMonitor"},
+    {key = {hyper2, "w"}, name = "WeChat"},
+    {key = {"ctrl", "c"}, id = "com.apple.iCal"},
+    {key = "s", name = "Slack"},
+    {key = "p", name = "Preview"},
+    {key = "f", name = "Firefox"},
+    {key = "o", name = "OmniGraffle"},
+    {key = "t", name = "iTerm"},
+    {key = "q", name = "Quip"},
+    {key = "h", name = "Hammerspoon"},
+    {key = ";", name = "Xcode"},
+    {key = "x", name = "XMind"},
+    {key = "b", name = "iBooks"},
+    {key = "n", name = "GoodNotes"},
+    {key = "z", name = "zoom.us"},
+    {key = "p", name = "Parallels Desktop"}
     -- {key = 'a', name = 'Android Studio'},
     -- {key = 'f', name = 'Finder'},
     -- {key = 's', name = 'Visual Studio Code'},
@@ -61,23 +61,22 @@ hsapp_list = {
 }
 
 if hs.fs.pathToAbsolute("/Applications/Android Studio.app") then
-    table.insert(hsapp_list, {key = 'a', name = 'Android Studio'})
+    table.insert(hsapp_list, {key = "a", name = "Android Studio"})
 else
-    table.insert(hsapp_list, {key = 'a', name = 'Amazon Chime'})
+    table.insert(hsapp_list, {key = "a", name = "Amazon Chime"})
 end
 
 if hs.fs.pathToAbsolute("/Applications/Microsoft Outlook.app") then
-    table.insert(hsapp_list, {key = 'm', name = 'Microsoft Outlook'})
+    table.insert(hsapp_list, {key = "m", name = "Microsoft Outlook"})
 else
-    table.insert(hsapp_list, {key = 'm', name = 'Mail'})
+    table.insert(hsapp_list, {key = "m", name = "Mail"})
 end
 
 if hs.fs.pathToAbsolute("/Applications/Kindle.app") then
-    table.insert(hsapp_list, {key = 'k', name = 'Kindle'})
+    table.insert(hsapp_list, {key = "k", name = "Kindle"})
 end
 
-
-table.insert(hsapp_list, {key = 'i', id = 'com.jetbrains.intellij'})
+table.insert(hsapp_list, {key = "i", id = "com.jetbrains.intellij"})
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
 hsupervisor_keys = {hyper1, "Q"}

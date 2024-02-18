@@ -29,12 +29,11 @@ obj.hotkeys = {}
 obj.source_kw = nil
 
 local logger = hs.logger.new("HSearch", "debug")
-local colorpicker = require("hammers.colorpicker")
 
 function obj:setChoices(choices)
     -- render choice
     if obj.chooser ~= nil and choices ~= nil then
-        colorpicker:setChooserUI(obj.chooser, choices)
+        spoon.ChooserStyle:setChooserUI(obj.chooser, choices)
     end
     if obj.chooser ~= nil then
         obj.chooser:choices(choices)
