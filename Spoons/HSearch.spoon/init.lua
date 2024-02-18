@@ -89,7 +89,7 @@ function obj:init()
         end
     )
     obj.chooser:searchSubText(true)
-    obj.chooser:rows(9)
+    obj.chooser:rows(12)
 end
 
 --- HSearch:switchSource()
@@ -236,6 +236,9 @@ function obj:loadSources()
                         obj.chooser:queryChangedCallback(source.callback)
                     else
                         obj.chooser:queryChangedCallback()
+                    end
+                    if source.placeholderText then
+                        obj.chooser:placeholderText(source.placeholderText)
                     end
                 end
                 -- Add this source to sources pool, so it can found and triggered.
