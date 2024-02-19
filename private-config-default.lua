@@ -1,27 +1,22 @@
-local funext = require 'hammers/funext'
+local funext = require "hammers/funext"
 privconf = {}
 
 -- Configure the ignored apps
-privconf.hsapp_ignored_apps = funext.set({
---    "Microsoft Outlook",
-})
+privconf.hsapp_ignored_apps = funext.set({})
 
 -- Configure filepaths to search links
 privconf.hssearch_links_filepaths = string.gsub([[
 ~/org/database/useful-links.md
-]],
-"\n", " ")
+]], "\n", " ")
 
 -- Configure filepaths to search code snippets
 privconf.hssearch_code_snippets_filepaths = string.gsub([[
 ~/org/database/source-code.org
-]],
-"\n", " ")
+]], "\n", " ")
 
 privconf.hssearch_copy_texts_filepaths = string.gsub([[
 ~/org/database/useful-ids.md
-]],
-"\n", " ")
+]], "\n", " ")
 
 privconf.default_loaded = "true"
 privconf.last_loaded = "default"

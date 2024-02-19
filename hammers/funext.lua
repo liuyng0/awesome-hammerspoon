@@ -2,9 +2,9 @@
 
 -- luacheck: globals hs
 
-local fun = require 'luarocks/fun'
+local fun = require "luarocks/fun"
 local funext = {}
-local logger = hs.logger.new('funext')
+local logger = hs.logger.new("funext")
 funext.logger = logger
 
 function funext.imap(xs, fn)
@@ -12,14 +12,16 @@ function funext.imap(xs, fn)
     local i = 1
     for k, v in pairs(xs) do
         rs[i] = fn(k, v)
-        i = i+1
+        i = i + 1
     end
     return rs
 end
 
 function funext.set(t)
     local s = {}
-    for _,v in pairs(t) do s[v] = true end
+    for _, v in pairs(t) do
+        s[v] = true
+    end
     return s
 end
 

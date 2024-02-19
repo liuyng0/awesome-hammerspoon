@@ -6,7 +6,7 @@
 ---
 --- Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/PopupTranslateSelection.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/PopupTranslateSelection.spoon.zip)
 
-local obj={}
+local obj = {}
 obj.__index = obj
 
 -- Metadata
@@ -29,10 +29,9 @@ obj.popup_size = hs.geometry.size(770, 610)
 --- This value needs to be a valid argument to [`hs.webview.setStyle()`](http://www.hammerspoon.org/docs/hs.webview.html#windowStyle)
 --- (i.e. a combination of values from [`hs.webview.windowMasks`](http://www.hammerspoon.org/docs/hs.webview.html#windowMasks[]).
 --- Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`
-obj.popup_style = hs.webview.windowMasks.titled|
-  hs.webview.windowMasks.closable|
-  hs.webview.windowMasks.miniaturizable|
-  hs.webview.windowMasks.resizable
+obj.popup_style =
+    hs.webview.windowMasks.titled | hs.webview.windowMasks.closable | hs.webview.windowMasks.miniaturizable |
+    hs.webview.windowMasks.resizable
 
 --- PopupTranslateSelection.popup_close_on_escape
 --- Variable
@@ -42,7 +41,7 @@ obj.popup_close_on_escape = true
 --- PopupTranslateSelection.logger
 --- Variable
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
-obj.logger = hs.logger.new('PopupTranslateSelection')
+obj.logger = hs.logger.new("PopupTranslateSelection")
 
 ----------------------------------------------------------------------
 
@@ -50,14 +49,14 @@ obj.logger = hs.logger.new('PopupTranslateSelection')
 obj.webview = nil
 
 function obj:init()
-  self.tsScriptPath = "~/repo/public/config/zsh/script/common/translate-shell.sh"
-  self.tsScriptExist = hs.fs.pathToAbsolute(self.tsScriptPath)
-  self.tsWebview = hs.webview.new({x=0, y=0, w=0, h=0})
-  self.tsWebview:windowTitle("Translate Shell")
-  self.tsWebview:windowStyle("utility")
-  self.tsWebview:allowGestures(true)
-  self.tsWebview:allowNewWindows(false)
-  self.tsWebview:level(hs.drawing.windowLevels.modalPanel)
+    self.tsScriptPath = "~/repo/public/config/zsh/script/common/translate-shell.sh"
+    self.tsScriptExist = hs.fs.pathToAbsolute(self.tsScriptPath)
+    self.tsWebview = hs.webview.new({x = 0, y = 0, w = 0, h = 0})
+    self.tsWebview:windowTitle("Translate Shell")
+    self.tsWebview:windowStyle("utility")
+    self.tsWebview:allowGestures(true)
+    self.tsWebview:allowNewWindows(false)
+    self.tsWebview:level(hs.drawing.windowLevels.modalPanel)
 end
 
 --- PopupTranslateSelection:translatePopup(text, to, from)
@@ -72,57 +71,47 @@ end
 --- Returns:
 ---  * The PopupTranslateSelection object
 function obj:translatePopup(text, to, from)
-   local query=hs.http.encodeForQuery(text)
-   local url = "http://translate.google.com/translate_t?" ..
-      (from and ("sl=" .. from .. "&") or "") ..
-      (to and ("tl=" .. to .. "&") or "") ..
-      "text=" .. query
-   -- Persist the window between calls to reduce startup time on subsequent calls
-   if self.webview == nil then
-      local rect = hs.geometry.rect(0, 0, self.popup_size.w, self.popup_size.h)
-      rect.center = hs.screen.mainScreen():frame().center
-      self.webview=hs.webview.new(rect)
-         :allowTextEntry(true)
-         :windowStyle(self.popup_style)
-         :closeOnEscape(self.popup_close_on_escape)
-   end
+    local query = hs.http.encodeForQuery(text)
+    local url =
+        "http://translate.google.com/translate_t?" ..
+        (from and ("sl=" .. from .. "&") or "") .. (to and ("tl=" .. to .. "&") or "") .. "text=" .. query
+    -- Persist the window between calls to reduce startup time on subsequent calls
+    if self.webview == nil then
+        local rect = hs.geometry.rect(0, 0, self.popup_size.w, self.popup_size.h)
+        rect.center = hs.screen.mainScreen():frame().center
+        self.webview =
+            hs.webview.new(rect):allowTextEntry(true):windowStyle(self.popup_style):closeOnEscape(
+            self.popup_close_on_escape
+        )
+    end
 
-   self.webview:url(url)
-     :bringToFront()
-     :show()
-     :hswindow()
-     :maximize()
-     :focus()
+    self.webview:url(url):bringToFront():show():hswindow():maximize():focus()
 
-   return self
+    return self
 end
 
 function obj:toggleTranslatePopup(to, from)
-  if self.webview ~= nil then
-    if self.webview:isVisible() then
-      self.webview
-        :hide()
-    else
-      self.webview
-        :bringToFront()
-        :show()
-        :hswindow()
-        :focus()
+    if self.webview ~= nil then
+        if self.webview:isVisible() then
+            self.webview:hide()
+        else
+            self.webview:bringToFront():show():hswindow():focus()
+        end
+
+        return self
     end
 
+    self:translatePopup("Input text here!", to, from)
     return self
-  end
-
-  self:translatePopup("Input text here!", to, from)
-  return self
 end
 
 function obj:updateText(text)
-  if self.webview == nil then
-    hs.alert("No webview for google translate")
-    return self
-  end
-  script = [[
+    if self.webview == nil then
+        hs.alert("No webview for google translate")
+        return self
+    end
+    script =
+        [[
         function b64DecodeUnicode(str) {
             // Going backwards: from bytestream, to percent-encoding, to original string.
             return decodeURIComponent(atob(str).split('')
@@ -132,23 +121,15 @@ function obj:updateText(text)
                    .join(''));
         }
         var textarea = document.getElementsByClassName('er8xn')[0];
-        textarea.value = b64DecodeUnicode(]]
-    .. "'" ..
-      text
-    .. "');" ..
-    [[
+        textarea.value = b64DecodeUnicode(]] ..
+        "'" .. text .. "');" .. [[
         textarea.dispatchEvent(new Event('input', { bubbles: true }));
     ]]
 
-  -- self.logger.ef("execute command is '%s'", script)
-  self.webview
-    :evaluateJavaScript(script)
-    :bringToFront()
-    :show()
-    :hswindow()
-    :focus()
+    -- self.logger.ef("execute command is '%s'", script)
+    self.webview:evaluateJavaScript(script):bringToFront():show():hswindow():focus()
 
-  return self
+    return self
 end
 
 -- Internal function to get the currently selected text.
@@ -156,17 +137,17 @@ end
 -- tries issuing a Cmd-c and getting the pasteboard contents
 -- afterwards.
 function current_selection()
-   local elem=hs.uielement.focusedElement()
-   local sel=nil
-   if elem then
-      sel=elem:selectedText()
-   end
-   if (not sel) or (sel == "") then
-      hs.eventtap.keyStroke({"cmd"}, "c")
-      hs.timer.usleep(20000)
-      sel=hs.pasteboard.getContents()
-   end
-   return (sel or "")
+    local elem = hs.uielement.focusedElement()
+    local sel = nil
+    if elem then
+        sel = elem:selectedText()
+    end
+    if (not sel) or (sel == "") then
+        hs.eventtap.keyStroke({"cmd"}, "c")
+        hs.timer.usleep(20000)
+        sel = hs.pasteboard.getContents()
+    end
+    return (sel or "")
 end
 
 --- PopupTranslateSelection:translateSelectionPopup(to, from)
@@ -179,9 +160,9 @@ end
 ---
 --- Returns:
 ---  * The PopupTranslateSelection object
-function obj:translateSelectionPopup(to,from)
-   local text=current_selection()
-   return self:translatePopup(text,to,from)
+function obj:translateSelectionPopup(to, from)
+    local text = current_selection()
+    return self:translatePopup(text, to, from)
 end
 
 --- PopupTranslateSelection:bindHotkeys(mapping)
@@ -206,77 +187,83 @@ end
 ---  }
 --- ```
 function obj:bindHotkeys(mapping)
-   local def = {}
-   for action,key in pairs(mapping) do
-      if action == "translate" then
-         def.translate = hs.fnutils.partial(self.translateSelectionPopup, self)
-      elseif action:match("^translate[-_](.*)[-_](.*)$") then
-         local from,to = nil,nil
-         local l1,l2 = action:match("^translate[-_](.*)[-_](.*)$")
-         if l1 == 'from' then
-            -- "translate_from_<lang>"
-            from=l2
-         elseif l1 == 'to' then
-            -- "translate_to_<lang>"
-            to=l2
-         else
-            -- "translate_<from>_<to>"
-            from,to = l1,l2
-         end
-         def[action] = hs.fnutils.partial(self.translateSelectionPopup, self, to, from)
-      else
-         self.logger.ef("Invalid hotkey action '%s'", action)
-      end
-   end
-   hs.spoons.bindHotkeysToSpec(def, mapping)
+    local def = {}
+    for action, key in pairs(mapping) do
+        if action == "translate" then
+            def.translate = hs.fnutils.partial(self.translateSelectionPopup, self)
+        elseif action:match("^translate[-_](.*)[-_](.*)$") then
+            local from, to = nil, nil
+            local l1, l2 = action:match("^translate[-_](.*)[-_](.*)$")
+            if l1 == "from" then
+                -- "translate_from_<lang>"
+                from = l2
+            elseif l1 == "to" then
+                -- "translate_to_<lang>"
+                to = l2
+            else
+                -- "translate_<from>_<to>"
+                from, to = l1, l2
+            end
+            def[action] = hs.fnutils.partial(self.translateSelectionPopup, self, to, from)
+        else
+            self.logger.ef("Invalid hotkey action '%s'", action)
+        end
+    end
+    hs.spoons.bindHotkeysToSpec(def, mapping)
 end
 
 function obj:translateShellEnabled()
-  return self.tsScriptExist
+    return self.tsScriptExist
 end
 
 function obj:selectionOrInput()
-  local text=current_selection()
-  text = text:gsub("^%s*(.-)%s*$", "%1")
-  if text == '' then
-    -- hs.timer.doAfter(5, function() hs.focus() hs.dialog.textPrompt("Main message.", "Please enter something:") end)
-    hs.focus()
-    _, text = hs.dialog.textPrompt("Translate shell input", "Input the text to translate")
-  end
-  return text
+    local text = current_selection()
+    text = text:gsub("^%s*(.-)%s*$", "%1")
+    if text == "" then
+        -- hs.timer.doAfter(5, function() hs.focus() hs.dialog.textPrompt("Main message.", "Please enter something:") end)
+        hs.focus()
+        _, text = hs.dialog.textPrompt("Translate shell input", "Input the text to translate")
+    end
+    return text
 end
 
 function obj:translateShell(to, text)
-  local mainScreen = hs.screen.mainScreen()
-  local mainRes = mainScreen:fullFrame()
-  local command = hs.fs.pathToAbsolute(self.tsScriptPath) .. " " .. to .. " " .. text
-  local translateOutput = hs.execute(command)
-  -- self.logger.ef("Run Command: " .. command .. ", got: " .. translateOutput .. " with path is: " .. hs.execute("echo $PATH"))
-  local html = [[
+    local mainScreen = hs.screen.mainScreen()
+    local mainRes = mainScreen:fullFrame()
+    local command = hs.fs.pathToAbsolute(self.tsScriptPath) .. " " .. to .. " " .. text
+    local translateOutput = hs.execute(command)
+    -- self.logger.ef("Run Command: " .. command .. ", got: " .. translateOutput .. " with path is: " .. hs.execute("echo $PATH"))
+    local html =
+        [[
     <!DOCTYPE html>
     <html>
     <body>
-    <p>Source: <hr/> ]] .. text ..  [[ </p> </br> </br>
-    <p>Result: <hr/> <span style="white-space: pre-line">]] .. translateOutput ..  [[</span> </p> </br> </br>
+    <p>Source: <hr/> ]] ..
+        text ..
+            [[ </p> </br> </br>
+    <p>Result: <hr/> <span style="white-space: pre-line">]] ..
+                translateOutput .. [[</span> </p> </br> </br>
     </body>
     </html>
     ]]
-  local capp = hs.application.frontmostApplication()
-  local cscreen = hs.screen.mainScreen()
-  local cres = cscreen:fullFrame()
-  self.tsWebview:frame({
-      x = cres.x+cres.w*0.15/2,
-      y = cres.y+cres.h*0.25/2,
-      w = cres.w*0.85,
-      h = cres.h*0.75
-  })
+    local capp = hs.application.frontmostApplication()
+    local cscreen = hs.screen.mainScreen()
+    local cres = cscreen:fullFrame()
+    self.tsWebview:frame(
+        {
+            x = cres.x + cres.w * 0.15 / 2,
+            y = cres.y + cres.h * 0.25 / 2,
+            w = cres.w * 0.85,
+            h = cres.h * 0.75
+        }
+    )
 
-  self.tsWebview:html(html)
-  self.tsWebview:show()
+    self.tsWebview:html(html)
+    self.tsWebview:show()
 end
 
 function obj:hide()
-  self.tsWebview:hide()
+    self.tsWebview:hide()
 end
 
 return obj

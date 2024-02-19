@@ -12,66 +12,69 @@ local logger = hs.logger.new("AppBindings", "debug")
 obj.logger = logger
 
 function obj:pressFn(mods, key)
-  if key == nil then
-    key = mods
-    mods = {}
-  end
+    if key == nil then
+        key = mods
+        mods = {}
+    end
 
-  return function() hs.eventtap.keyStroke(mods, key, 1000) end
+    return function()
+        hs.eventtap.keyStroke(mods, key, 1000)
+    end
 end
 
 function obj:appRemap(mods, key, remapMods, remapKey)
-  fn = self:pressFn(remapMods, remapKey)
-  return hs.hotkey.new(mods, key, fn, nil, fn)
+    fn = self:pressFn(remapMods, remapKey)
+    return hs.hotkey.new(mods, key, fn, nil, fn)
 end
 
 function obj:init()
-  self._init_done = true
-  return self
+    self._init_done = true
+    return self
 end
 
 -- Translate user input keymap to hs.hotkey functions
 function obj:keymapToHotkeys(keymap)
-  local hotkeys = {}
+    local hotkeys = {}
 
-  for i, item in pairs(keymap) do
-    metaFrom = item[1]
-    keyFrom = item[2]
-    metaTo = item[3]
-    keyTo = item[4]
+    for i, item in pairs(keymap) do
+        metaFrom = item[1]
+        keyFrom = item[2]
+        metaTo = item[3]
+        keyTo = item[4]
 
-    table.insert(hotkeys, self:appRemap(metaFrom, keyFrom, metaTo, keyTo))
+        table.insert(hotkeys, self:appRemap(metaFrom, keyFrom, metaTo, keyTo))
 
-    self.logger.d("Mapping " ..
-      tostring(metaFrom) .. tostring(keyFrom) .. " -> " ..
-      tostring(metaTo) .. tostring(keyTo))
-  end
+        self.logger.d(
+            "Mapping " .. tostring(metaFrom) .. tostring(keyFrom) .. " -> " .. tostring(metaTo) .. tostring(keyTo)
+        )
+    end
 
-  return hotkeys
+    return hotkeys
 end
 
 function obj:bind(appTitle, keymap)
-  self.logger.d("Found binding for app " .. appTitle)
+    self.logger.d("Found binding for app " .. appTitle)
 
-  local hotkeys = self:keymapToHotkeys(keymap)
+    local hotkeys = self:keymapToHotkeys(keymap)
 
-  local function enableKeys()
-    for i, hotkey in pairs(hotkeys) do
-      hotkey:enable()
+    local function enableKeys()
+        for i, hotkey in pairs(hotkeys) do
+            hotkey:enable()
+        end
     end
-  end
 
-  local function disableKeys()
-    for i, hotkey in pairs(hotkeys) do
-      hotkey:disable()
+    local function disableKeys()
+        for i, hotkey in pairs(hotkeys) do
+            hotkey:disable()
+        end
     end
-  end
 
-  local appFilter = hs.window.filter
+    local appFilter = hs.window.filter
 
-  appFilter.new(appTitle)
-  :subscribe(appFilter.windowFocused, enableKeys)
-  :subscribe(appFilter.windowUnfocused, disableKeys)
+    appFilter.new(appTitle):subscribe(appFilter.windowFocused, enableKeys):subscribe(
+        appFilter.windowUnfocused,
+        disableKeys
+    )
 end
 
 return obj

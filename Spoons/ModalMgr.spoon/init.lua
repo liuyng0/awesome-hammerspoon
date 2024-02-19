@@ -22,16 +22,30 @@ obj.supervisor = nil
 
 function obj:init()
     hsupervisor_keys = hsupervisor_keys or {{"cmd", "shift", "ctrl"}, "Q"}
-    obj.supervisor = hs.hotkey.modal.new(hsupervisor_keys[1], hsupervisor_keys[2], 'Initialize Modal Environment')
-    obj.supervisor:bind(hsupervisor_keys[1], hsupervisor_keys[2], "Reset Modal Environment", function() obj.supervisor:exit() end)
+    obj.supervisor = hs.hotkey.modal.new(hsupervisor_keys[1], hsupervisor_keys[2], "Initialize Modal Environment")
+    obj.supervisor:bind(
+        hsupervisor_keys[1],
+        hsupervisor_keys[2],
+        "Reset Modal Environment",
+        function()
+            obj.supervisor:exit()
+        end
+    )
     hshelp_keys = hshelp_keys or {{"alt", "shift"}, "/"}
-    obj.supervisor:bind(hshelp_keys[1], hshelp_keys[2], "Toggle Help Panel", function() obj:toggleCheatsheet({all=obj.supervisor}) end)
+    obj.supervisor:bind(
+        hshelp_keys[1],
+        hshelp_keys[2],
+        "Toggle Help Panel",
+        function()
+            obj:toggleCheatsheet({all = obj.supervisor})
+        end
+    )
     obj.modal_tray = hs.canvas.new({x = 0, y = 0, w = 0, h = 0})
     obj.modal_tray:level(hs.canvas.windowLevels.tornOffMenu)
     obj.modal_tray[1] = {
         type = "rectangle",
         action = "fill",
-        fillColor = {hex = "#FFFFFF", alpha = 0.7},
+        fillColor = {hex = "#FFFFFF", alpha = 0.7}
     }
     obj.which_key = hs.canvas.new({x = 0, y = 0, w = 0, h = 0})
     obj.which_key:level(hs.canvas.windowLevels.tornOffMenu)
@@ -39,7 +53,7 @@ function obj:init()
         type = "rectangle",
         action = "fill",
         fillColor = {hex = "#EEEEEE", alpha = 0.95},
-        roundedRectRadii = {xRadius = 10, yRadius = 10},
+        roundedRectRadii = {xRadius = 10, yRadius = 10}
     }
 end
 
@@ -68,12 +82,14 @@ function obj:toggleCheatsheet(iterList, force)
     else
         local cscreen = hs.screen.mainScreen()
         local cres = cscreen:fullFrame()
-        obj.which_key:frame({
-            x = cres.x + cres.w / 5,
-            y = cres.y + cres.h / 5,
-            w = cres.w / 5 * 3,
-            h = cres.h / 5 * 3
-        })
+        obj.which_key:frame(
+            {
+                x = cres.x + cres.w / 5,
+                y = cres.y + cres.h / 5,
+                w = cres.w / 5 * 3,
+                h = cres.h / 5 * 3
+            }
+        )
         local keys_pool = {}
         local tmplist = iterList or obj.active_list
         for i, v in pairs(tmplist) do
@@ -100,7 +116,10 @@ function obj:toggleCheatsheet(iterList, force)
                     textAlignment = "left",
                     frame = {
                         x = tostring(40 / (cres.w / 5 * 3)),
-                        y = tostring((30 + (idx - math.ceil(idx / 2)) * math.ceil((cres.h / 5 * 3 - 60) / #keys_pool) * 2) / (cres.h / 5 * 3)),
+                        y = tostring(
+                            (30 + (idx - math.ceil(idx / 2)) * math.ceil((cres.h / 5 * 3 - 60) / #keys_pool) * 2) /
+                                (cres.h / 5 * 3)
+                        ),
                         w = tostring((1 - 80 / (cres.w / 5 * 3)) / 2),
                         h = tostring(math.ceil((cres.h / 5 * 3 - 60) / #keys_pool) * 2 / (cres.h / 5 * 3))
                     }
@@ -115,7 +134,10 @@ function obj:toggleCheatsheet(iterList, force)
                     textAlignment = "right",
                     frame = {
                         x = "50%",
-                        y = tostring((30 + (idx - math.ceil(idx / 2) - 1) * math.ceil((cres.h / 5 * 3 - 60) / #keys_pool) * 2) / (cres.h / 5 * 3)),
+                        y = tostring(
+                            (30 + (idx - math.ceil(idx / 2) - 1) * math.ceil((cres.h / 5 * 3 - 60) / #keys_pool) * 2) /
+                                (cres.h / 5 * 3)
+                        ),
                         w = tostring((1 - 80 / (cres.w / 5 * 3)) / 2),
                         h = tostring(math.ceil((cres.h / 5 * 3 - 60) / #keys_pool) * 2 / (cres.h / 5 * 3))
                     }
@@ -145,7 +167,7 @@ function obj:activate(idList, trayColor, showKeys)
     if trayColor then
         local mainScreen = hs.screen.mainScreen()
         local mainRes = mainScreen:fullFrame()
-        obj.modal_tray:frame({x=mainRes.x, y=mainRes.y, w=mainRes.w, h=50})
+        obj.modal_tray:frame({x = mainRes.x, y = mainRes.y, w = mainRes.w, h = 50})
 
         obj.modal_tray[1].fillColor = {hex = trayColor, alpha = 0.7}
         obj.modal_tray:show()

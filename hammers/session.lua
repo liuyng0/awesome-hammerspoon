@@ -3,8 +3,8 @@
 -- luacheck: globals hs
 
 local hs_geometry = hs.geometry
-local funext = require 'hammers/funext'
-local fun = require 'luarocks/fun'
+local funext = require "hammers/funext"
+local fun = require "luarocks/fun"
 
 local M = {}
 
@@ -12,7 +12,7 @@ M.session_file = "~/.hs.session.json"
 
 local session_file_path = hs.fs.pathToAbsolute(M.session_file)
 
-M.logger = hs.logger.new('Session')
+M.logger = hs.logger.new("Session")
 if session_file_path then
     M.sessions = hs.json.read(M.session_file)
 else
@@ -22,32 +22,39 @@ end
 local logger = M.logger
 
 local function getVisibleWindows()
-    local filteredWindows = fun.filter(hs.window.orderedWindows(),
-                                       function(window)
-                                           return window:isStandard() and window:isVisible()
-    end)
+    local filteredWindows =
+        fun.filter(
+        hs.window.orderedWindows(),
+        function(window)
+            return window:isStandard() and window:isVisible()
+        end
+    )
 
     local rs = {}
     local index = 0
-    fun.map(filteredWindows, function(window)
-                local interacted = 0
-                for i = 1, #rs do
-                    -- logger.e(window.frame)
-                    -- logger.e(rs[i].frame)
-                    local x = window:frame():intersect(rs[i]:frame())
-                    if x.w ~= 0 and x.h ~= 0 then
-                        interacted = 1
-                    end
+    fun.map(
+        filteredWindows,
+        function(window)
+            local interacted = 0
+            for i = 1, #rs do
+                -- logger.e(window.frame)
+                -- logger.e(rs[i].frame)
+                local x = window:frame():intersect(rs[i]:frame())
+                if x.w ~= 0 and x.h ~= 0 then
+                    interacted = 1
                 end
-                if interacted == 0 then
-                    rs[index+1] = window
-                    index = index + 1
-                    return true
-                end
-                return false
-    end)
+            end
+            if interacted == 0 then
+                rs[index + 1] = window
+                index = index + 1
+                return true
+            end
+            return false
+        end
+    )
 
-    local windows = funext.imap(
+    local windows =
+        funext.imap(
         rs,
         function(_, window)
             return {
@@ -55,7 +62,7 @@ local function getVisibleWindows()
                 title = window:title(),
                 frame = window:frame().table,
                 appBundleId = window:application():bundleID(),
-                screenId = window:screen():id(),
+                screenId = window:screen():id()
             }
         end
     )
@@ -77,7 +84,14 @@ end
 function M:saveCurrentSession()
     local windows = getVisibleWindows()
     hs.focus()
-    local ok, text = hs.dialog.textPrompt("Enter a session name:", "the default text is provided", "title - description", "OK", "Cancel")
+    local ok, text =
+        hs.dialog.textPrompt(
+        "Enter a session name:",
+        "the default text is provided",
+        "title - description",
+        "OK",
+        "Cancel"
+    )
     if ok == "OK" then
         if M.sessions[text] == nil then
             M.sessions[text] = windows
@@ -111,9 +125,7 @@ function M:switchToSession()
         end
     end
 
-    local chooser = hs.chooser.new(callback):
-        choices(choiceFn):
-        searchSubText(true)
+    local chooser = hs.chooser.new(callback):choices(choiceFn):searchSubText(true)
 
     chooser:show()
 end
