@@ -37,13 +37,13 @@ function obj:stepMove(direction)
         local steph = cres.h / obj.gridparts
         local wtopleft = cwin:topLeft()
         if direction == "left" then
-            cwin:setTopLeft({x = wtopleft.x - stepw, y = wtopleft.y})
+            cwin:setTopLeft({ x = wtopleft.x - stepw, y = wtopleft.y })
         elseif direction == "right" then
-            cwin:setTopLeft({x = wtopleft.x + stepw, y = wtopleft.y})
+            cwin:setTopLeft({ x = wtopleft.x + stepw, y = wtopleft.y })
         elseif direction == "up" then
-            cwin:setTopLeft({x = wtopleft.x, y = wtopleft.y - steph})
+            cwin:setTopLeft({ x = wtopleft.x, y = wtopleft.y - steph })
         elseif direction == "down" then
-            cwin:setTopLeft({x = wtopleft.x, y = wtopleft.y + steph})
+            cwin:setTopLeft({ x = wtopleft.x, y = wtopleft.y + steph })
         else
             hs.alert.show("Unknown direction: " .. direction)
         end
@@ -67,13 +67,13 @@ function obj:stepResize(direction)
         local steph = cres.h / obj.gridparts
         local wsize = cwin:size()
         if direction == "left" then
-            cwin:setSize({w = wsize.w - stepw, h = wsize.h})
+            cwin:setSize({ w = wsize.w - stepw, h = wsize.h })
         elseif direction == "right" then
-            cwin:setSize({w = wsize.w + stepw, h = wsize.h})
+            cwin:setSize({ w = wsize.w + stepw, h = wsize.h })
         elseif direction == "up" then
-            cwin:setSize({w = wsize.w, h = wsize.h - steph})
+            cwin:setSize({ w = wsize.w, h = wsize.h - steph })
         elseif direction == "down" then
-            cwin:setSize({w = wsize.w, h = wsize.h + steph})
+            cwin:setSize({ w = wsize.w, h = wsize.h + steph })
         else
             hs.alert.show("Unknown direction: " .. direction)
         end
@@ -95,7 +95,7 @@ local function windowStash(window)
         -- Make sure the history doesn't reach the maximum (50 items).
         table.remove(obj.history) -- Remove the last item
     end
-    local winstru = {winid, winf}
+    local winstru = { winid, winf }
     table.insert(obj.history, winstru) -- Insert new item of window history
 end
 
@@ -109,28 +109,28 @@ function obj:moveAndResize(option)
         local wf = cwin:frame()
         options = {
             halfleft = function()
-                cwin:setFrame({x = cres.x, y = cres.y, w = cres.w / 2, h = cres.h})
+                cwin:setFrame({ x = cres.x, y = cres.y, w = cres.w / 2, h = cres.h })
             end,
             halfright = function()
-                cwin:setFrame({x = cres.x + cres.w / 2, y = cres.y, w = cres.w / 2, h = cres.h})
+                cwin:setFrame({ x = cres.x + cres.w / 2, y = cres.y, w = cres.w / 2, h = cres.h })
             end,
             halfup = function()
-                cwin:setFrame({x = cres.x, y = cres.y, w = cres.w, h = cres.h / 2})
+                cwin:setFrame({ x = cres.x, y = cres.y, w = cres.w, h = cres.h / 2 })
             end,
             halfdown = function()
-                cwin:setFrame({x = cres.x, y = cres.y + cres.h / 2, w = cres.w, h = cres.h / 2})
+                cwin:setFrame({ x = cres.x, y = cres.y + cres.h / 2, w = cres.w, h = cres.h / 2 })
             end,
             cornerNW = function()
-                cwin:setFrame({x = cres.x, y = cres.y, w = cres.w / 2, h = cres.h / 2})
+                cwin:setFrame({ x = cres.x, y = cres.y, w = cres.w / 2, h = cres.h / 2 })
             end,
             cornerNE = function()
-                cwin:setFrame({x = cres.x + cres.w / 2, y = cres.y, w = cres.w / 2, h = cres.h / 2})
+                cwin:setFrame({ x = cres.x + cres.w / 2, y = cres.y, w = cres.w / 2, h = cres.h / 2 })
             end,
             cornerSW = function()
-                cwin:setFrame({x = cres.x, y = cres.y + cres.h / 2, w = cres.w / 2, h = cres.h / 2})
+                cwin:setFrame({ x = cres.x, y = cres.y + cres.h / 2, w = cres.w / 2, h = cres.h / 2 })
             end,
             cornerSE = function()
-                cwin:setFrame({x = cres.x + cres.w / 2, y = cres.y + cres.h / 2, w = cres.w / 2, h = cres.h / 2})
+                cwin:setFrame({ x = cres.x + cres.w / 2, y = cres.y + cres.h / 2, w = cres.w / 2, h = cres.h / 2 })
             end,
             fullscreen = function()
                 cwin:setFullScreen(true)
@@ -145,13 +145,13 @@ function obj:moveAndResize(option)
                 cwin:centerOnScreen()
             end,
             expand = function()
-                cwin:setFrame({x = wf.x - stepw, y = wf.y - steph, w = wf.w + (stepw * 2), h = wf.h + (steph * 2)})
+                cwin:setFrame({ x = wf.x - stepw, y = wf.y - steph, w = wf.w + (stepw * 2), h = wf.h + (steph * 2) })
             end,
             shrink = function()
-                cwin:setFrame({x = wf.x + stepw, y = wf.y + steph, w = wf.w - (stepw * 2), h = wf.h - (steph * 2)})
+                cwin:setFrame({ x = wf.x + stepw, y = wf.y + steph, w = wf.w - (stepw * 2), h = wf.h - (steph * 2) })
             end,
             centerHalfWidth = function()
-                cwin:setFrame({x = cres.x + cres.w / 4, y = cres.y, w = cres.w / 2, h = cres.h})
+                cwin:setFrame({ x = cres.x + cres.w / 4, y = cres.y, w = cres.w / 2, h = cres.h })
             end
         }
         if options[option] == nil then
@@ -231,10 +231,10 @@ function obj:centerCursor()
     local cres = cscreen:frame()
     if cwin then
         -- Center the cursor one the focused window
-        hs.mouse.setAbsolutePosition({x = wf.x + wf.w / 2, y = wf.y + wf.h / 2})
+        hs.mouse.absolutePosition({ x = wf.x + wf.w / 2, y = wf.y + wf.h / 2 })
     else
         -- Center the cursor on the screen
-        hs.mouse.setAbsolutePosition({x = cres.x + cres.w / 2, y = cres.y + cres.h / 2})
+        hs.mouse.absolutePosition({ x = cres.x + cres.w / 2, y = cres.y + cres.h / 2 })
     end
 end
 

@@ -27,7 +27,7 @@ function pathInfo(path)
         local b = string.byte(path, pos)
         if b == 46 and extpos ~= len + 1 then -- 46 = char "."
             extpos = pos
-        elseif b == 47 then -- 47 = char "/"
+        elseif b == 47 then                   -- 47 = char "/"
             break
         end
         pos = pos - 1
@@ -119,7 +119,7 @@ cmodal:bind(
     "escape",
     "Deactivate appM",
     function()
-        spoon.ModalMgr:deactivate({"appM"})
+        spoon.ModalMgr:deactivate({ "appM" })
     end
 )
 cmodal:bind(
@@ -127,16 +127,16 @@ cmodal:bind(
     "tab",
     "Deactivate appM",
     function()
-        spoon.ModalMgr:deactivate({"appM"})
+        spoon.ModalMgr:deactivate({ "appM" })
     end
 )
 if not hsapp_list then
     hsapp_list = {
-        {key = "f", name = "Finder"},
-        {key = "s", name = "Safari"},
-        {key = "t", name = "Terminal"},
-        {key = "v", id = "com.apple.ActivityMonitor"},
-        {key = "y", id = "com.apple.systempreferences"}
+        { key = "f", name = "Finder" },
+        { key = "s", name = "Safari" },
+        { key = "t", name = "Terminal" },
+        { key = "v", id = "com.apple.ActivityMonitor" },
+        { key = "y", id = "com.apple.systempreferences" }
     }
 end
 
@@ -162,7 +162,7 @@ for _, v in ipairs(hsapp_list) do
                     -- logger.d("launch by bundle id " .. v.id)
                     hideWebviewIfPresent()
                     hs.application.launchOrFocusByBundleID(v.id)
-                    spoon.ModalMgr:deactivate({"appM"})
+                    spoon.ModalMgr:deactivate({ "appM" })
                 end
             )
         end
@@ -176,21 +176,21 @@ for _, v in ipairs(hsapp_list) do
                 -- logger.d("launch by name " .. v.name)
                 hideWebviewIfPresent()
                 hs.application.launchOrFocus(v.name)
-                spoon.ModalMgr:deactivate({"appM"})
+                spoon.ModalMgr:deactivate({ "appM" })
             end
         )
     end
 end
 
 -- Then we register some keybindings with modal supervisor
-hsappM_keys = hsappM_keys or {"alt", "A"}
+hsappM_keys = hsappM_keys or { "alt", "A" }
 if string.len(hsappM_keys[2]) > 0 then
     cmodal:bind(
         hsappM_keys[1],
         hsappM_keys[2],
         "Deactivate appM",
         function()
-            spoon.ModalMgr:deactivate({"appM"})
+            spoon.ModalMgr:deactivate({ "appM" })
         end
     )
     spoon.ModalMgr.supervisor:bind(
@@ -200,7 +200,7 @@ if string.len(hsappM_keys[2]) > 0 then
         function()
             spoon.ModalMgr:deactivateAll()
             -- Show the keybindings cheatsheet once appM is activated
-            spoon.ModalMgr:activate({"appM"}, "#FFBD2E", true)
+            spoon.ModalMgr:activate({ "appM" }, "#FFBD2E", true)
         end
     )
 end
@@ -216,7 +216,7 @@ if spoon.ClipShow then
         "Deactivate clipshowM",
         function()
             spoon.ClipShow:toggleShow()
-            spoon.ModalMgr:deactivate({"clipshowM"})
+            spoon.ModalMgr:deactivate({ "clipshowM" })
         end
     )
     cmodal:bind(
@@ -225,7 +225,7 @@ if spoon.ClipShow then
         "Deactivate clipshowM",
         function()
             spoon.ClipShow:toggleShow()
-            spoon.ModalMgr:deactivate({"clipshowM"})
+            spoon.ModalMgr:deactivate({ "clipshowM" })
         end
     )
     cmodal:bind(
@@ -251,7 +251,7 @@ if spoon.ClipShow then
         function()
             spoon.ClipShow:openInBrowserWithRef()
             spoon.ClipShow:toggleShow()
-            spoon.ModalMgr:deactivate({"clipshowM"})
+            spoon.ModalMgr:deactivate({ "clipshowM" })
         end
     )
     cmodal:bind(
@@ -261,7 +261,7 @@ if spoon.ClipShow then
         function()
             spoon.ClipShow:openInBrowserWithRef("https://www.bing.com/search?q=")
             spoon.ClipShow:toggleShow()
-            spoon.ModalMgr:deactivate({"clipshowM"})
+            spoon.ModalMgr:deactivate({ "clipshowM" })
         end
     )
     cmodal:bind(
@@ -271,7 +271,7 @@ if spoon.ClipShow then
         function()
             spoon.ClipShow:openWithCommand("/usr/local/bin/mvim")
             spoon.ClipShow:toggleShow()
-            spoon.ModalMgr:deactivate({"clipshowM"})
+            spoon.ModalMgr:deactivate({ "clipshowM" })
         end
     )
     cmodal:bind(
@@ -281,7 +281,7 @@ if spoon.ClipShow then
         function()
             spoon.ClipShow:saveToFile()
             spoon.ClipShow:toggleShow()
-            spoon.ModalMgr:deactivate({"clipshowM"})
+            spoon.ModalMgr:deactivate({ "clipshowM" })
         end
     )
     cmodal:bind(
@@ -291,7 +291,7 @@ if spoon.ClipShow then
         function()
             spoon.ClipShow:openInBrowserWithRef("https://github.com/search?q=")
             spoon.ClipShow:toggleShow()
-            spoon.ModalMgr:deactivate({"clipshowM"})
+            spoon.ModalMgr:deactivate({ "clipshowM" })
         end
     )
     cmodal:bind(
@@ -301,7 +301,7 @@ if spoon.ClipShow then
         function()
             spoon.ClipShow:openInBrowserWithRef("https://www.google.com/search?q=")
             spoon.ClipShow:toggleShow()
-            spoon.ModalMgr:deactivate({"clipshowM"})
+            spoon.ModalMgr:deactivate({ "clipshowM" })
         end
     )
     cmodal:bind(
@@ -311,12 +311,12 @@ if spoon.ClipShow then
         function()
             spoon.ClipShow:openWithCommand("/usr/local/bin/subl")
             spoon.ClipShow:toggleShow()
-            spoon.ModalMgr:deactivate({"clipshowM"})
+            spoon.ModalMgr:deactivate({ "clipshowM" })
         end
     )
 
     -- Register clipshowM with modal supervisor
-    hsclipsM_keys = hsclipsM_keys or {"alt", "C"}
+    hsclipsM_keys = hsclipsM_keys or { "alt", "C" }
     if string.len(hsclipsM_keys[2]) > 0 then
         spoon.ModalMgr.supervisor:bind(
             hsclipsM_keys[1],
@@ -328,7 +328,7 @@ if spoon.ClipShow then
                 -- Need a little trick here. Since the content type of system clipboard may be "URL", in which case we don't need to activate clipshowM.
                 if spoon.ClipShow.canvas:isShowing() then
                     spoon.ModalMgr:deactivateAll()
-                    spoon.ModalMgr:activate({"clipshowM"})
+                    spoon.ModalMgr:activate({ "clipshowM" })
                 end
             end
         )
@@ -343,7 +343,7 @@ if spoon.HSaria2 then
     hsaria2_secret = hsaria2_secret or "token"
     spoon.HSaria2:connectToHost(hsaria2_host, hsaria2_secret)
 
-    hsaria2_keys = hsaria2_keys or {"alt", "D"}
+    hsaria2_keys = hsaria2_keys or { "alt", "D" }
     if string.len(hsaria2_keys[2]) > 0 then
         spoon.ModalMgr.supervisor:bind(
             hsaria2_keys[1],
@@ -359,7 +359,7 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Register Hammerspoon Search
 if spoon.HSearch then
-    hsearch_keys = hsearch_keys or {"alt", "G"}
+    hsearch_keys = hsearch_keys or { "alt", "G" }
     if string.len(hsearch_keys[2]) > 0 then
         spoon.ModalMgr.supervisor:bind(
             hsearch_keys[1],
@@ -374,7 +374,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Register Hammerspoon API manual: Open Hammerspoon manual in default browser
-hsman_keys = hsman_keys or {"alt", "H"}
+hsman_keys = hsman_keys or { "alt", "H" }
 if string.len(hsman_keys[2]) > 0 then
     spoon.ModalMgr.supervisor:bind(
         hsman_keys[1],
@@ -398,7 +398,7 @@ if spoon.CountDown then
         "escape",
         "Deactivate countdownM",
         function()
-            spoon.ModalMgr:deactivate({"countdownM"})
+            spoon.ModalMgr:deactivate({ "countdownM" })
         end
     )
     cmodal:bind(
@@ -406,7 +406,7 @@ if spoon.CountDown then
         "Q",
         "Deactivate countdownM",
         function()
-            spoon.ModalMgr:deactivate({"countdownM"})
+            spoon.ModalMgr:deactivate({ "countdownM" })
         end
     )
     cmodal:bind(
@@ -423,7 +423,7 @@ if spoon.CountDown then
         "5 Minutes Countdown",
         function()
             spoon.CountDown:startFor(5)
-            spoon.ModalMgr:deactivate({"countdownM"})
+            spoon.ModalMgr:deactivate({ "countdownM" })
         end
     )
     for i = 1, 9 do
@@ -433,7 +433,7 @@ if spoon.CountDown then
             string.format("%s Minutes Countdown", 10 * i),
             function()
                 spoon.CountDown:startFor(10 * i)
-                spoon.ModalMgr:deactivate({"countdownM"})
+                spoon.ModalMgr:deactivate({ "countdownM" })
             end
         )
     end
@@ -443,7 +443,7 @@ if spoon.CountDown then
         "25 Minutes Countdown",
         function()
             spoon.CountDown:startFor(25)
-            spoon.ModalMgr:deactivate({"countdownM"})
+            spoon.ModalMgr:deactivate({ "countdownM" })
         end
     )
     cmodal:bind(
@@ -452,7 +452,7 @@ if spoon.CountDown then
         "Pause/Resume CountDown",
         function()
             spoon.CountDown:pauseOrResume()
-            spoon.ModalMgr:deactivate({"countdownM"})
+            spoon.ModalMgr:deactivate({ "countdownM" })
         end
     )
 
@@ -462,11 +462,11 @@ if spoon.CountDown then
         "0.1 Minutes - 6 seconds Countdown",
         function()
             spoon.CountDown:startFor(0.1)
-            spoon.ModalMgr:deactivate({"countdownM"})
+            spoon.ModalMgr:deactivate({ "countdownM" })
         end
     )
     -- Register countdownM with modal supervisor
-    hscountdM_keys = hscountdM_keys or {"alt", "I"}
+    hscountdM_keys = hscountdM_keys or { "alt", "I" }
     if string.len(hscountdM_keys[2]) > 0 then
         spoon.ModalMgr.supervisor:bind(
             hscountdM_keys[1],
@@ -475,7 +475,7 @@ if spoon.CountDown then
             function()
                 spoon.ModalMgr:deactivateAll()
                 -- Show the keybindings cheatsheet once countdownM is activated
-                spoon.ModalMgr:activate({"countdownM"}, "#FF6347", true)
+                spoon.ModalMgr:activate({ "countdownM" }, "#FF6347", true)
             end
         )
     end
@@ -483,7 +483,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Register lock screen
-hslock_keys = hslock_keys or {"alt", "L"}
+hslock_keys = hslock_keys or { "alt", "L" }
 if string.len(hslock_keys[2]) > 0 then
     spoon.ModalMgr.supervisor:bind(
         hslock_keys[1],
@@ -505,7 +505,7 @@ if spoon.WinWin then
         "escape",
         "Deactivate resizeM",
         function()
-            spoon.ModalMgr:deactivate({"resizeM"})
+            spoon.ModalMgr:deactivate({ "resizeM" })
         end
     )
     cmodal:bind(
@@ -513,7 +513,7 @@ if spoon.WinWin then
         "Q",
         "Deactivate resizeM",
         function()
-            spoon.ModalMgr:deactivate({"resizeM"})
+            spoon.ModalMgr:deactivate({ "resizeM" })
         end
     )
     cmodal:bind(
@@ -814,7 +814,7 @@ if spoon.WinWin then
     )
 
     -- Register resizeM with modal supervisor
-    hsresizeM_keys = hsresizeM_keys or {"alt", "R"}
+    hsresizeM_keys = hsresizeM_keys or { "alt", "R" }
     if string.len(hsresizeM_keys[2]) > 0 then
         spoon.ModalMgr.supervisor:bind(
             hsresizeM_keys[1],
@@ -824,7 +824,7 @@ if spoon.WinWin then
                 -- Deactivate some modal environments or not before activating a new one
                 spoon.ModalMgr:deactivateAll()
                 -- Show an status indicator so we know we're in some modal environment now
-                spoon.ModalMgr:activate({"resizeM"}, "#B22222")
+                spoon.ModalMgr:activate({ "resizeM" }, "#B22222")
             end
         )
     end
@@ -841,7 +841,7 @@ if spoon.KSheet then
         "Deactivate cheatsheetM",
         function()
             spoon.KSheet:hide()
-            spoon.ModalMgr:deactivate({"cheatsheetM"})
+            spoon.ModalMgr:deactivate({ "cheatsheetM" })
         end
     )
     cmodal:bind(
@@ -850,12 +850,12 @@ if spoon.KSheet then
         "Deactivate cheatsheetM",
         function()
             spoon.KSheet:hide()
-            spoon.ModalMgr:deactivate({"cheatsheetM"})
+            spoon.ModalMgr:deactivate({ "cheatsheetM" })
         end
     )
 
     -- Register cheatsheetM with modal supervisor
-    hscheats_keys = hscheats_keys or {"alt", "S"}
+    hscheats_keys = hscheats_keys or { "alt", "S" }
     if string.len(hscheats_keys[2]) > 0 then
         spoon.ModalMgr.supervisor:bind(
             hscheats_keys[1],
@@ -864,7 +864,7 @@ if spoon.KSheet then
             function()
                 spoon.KSheet:show()
                 spoon.ModalMgr:deactivateAll()
-                spoon.ModalMgr:activate({"cheatsheetM"})
+                spoon.ModalMgr:activate({ "cheatsheetM" })
             end
         )
     end
@@ -873,7 +873,7 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Register AClock
 if spoon.AClock then
-    hsaclock_keys = hsaclock_keys or {"alt", "T"}
+    hsaclock_keys = hsaclock_keys or { "alt", "T" }
     if string.len(hsaclock_keys[2]) > 0 then
         spoon.ModalMgr.supervisor:bind(
             hsaclock_keys[1],
@@ -888,7 +888,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Register browser tab typist: Type URL of current tab of running browser in markdown format. i.e. [title](link)
-hstype_keys = hstype_keys or {"alt", "V"}
+hstype_keys = hstype_keys or { "alt", "V" }
 if string.len(hstype_keys[2]) > 0 then
     spoon.ModalMgr.supervisor:bind(
         hstype_keys[1],
@@ -916,7 +916,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Register Hammerspoon console
-hsconsole_keys = hsconsole_keys or {"alt", "Z"}
+hsconsole_keys = hsconsole_keys or { "alt", "Z" }
 if string.len(hsconsole_keys[2]) > 0 then
     spoon.ModalMgr.supervisor:bind(
         hsconsole_keys[1],
@@ -936,7 +936,7 @@ if spoon.Screen then
         "escape",
         "Deactivate screenM",
         function()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -944,7 +944,7 @@ if spoon.Screen then
         "Q",
         "Deactivate screenM",
         function()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
 
@@ -954,7 +954,7 @@ if spoon.Screen then
         "select window from focused App",
         function()
             spoon.Screen:selectWindowFromFocusedApp()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -963,7 +963,7 @@ if spoon.Screen then
         "select window from all Windows",
         function()
             spoon.Screen:selectWindowFromAllWindows()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
 
@@ -973,7 +973,7 @@ if spoon.Screen then
         "Switch to the same app window in next Screen (Clockwise)",
         function()
             spoon.Screen:sameAppWindowInNextScreen(1)
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -982,7 +982,7 @@ if spoon.Screen then
         "Switch to the same app Window in previous Screen (Clockwise)",
         function()
             spoon.Screen:sameAppWindowInNextScreen(-1)
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -991,7 +991,7 @@ if spoon.Screen then
         "Switch to the focused app in next Screen (Clockwise)",
         function()
             spoon.Screen:focusWindowOnNextScreen(1)
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -1000,7 +1000,7 @@ if spoon.Screen then
         "Switch to the focused app in previous Screen (Clockwise)",
         function()
             spoon.Screen:focusWindowOnNextScreen(-1)
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
 
@@ -1010,7 +1010,7 @@ if spoon.Screen then
         "Toggle Window Highlight Mode",
         function()
             spoon.Screen:toggleWindowHighlightMode()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -1019,7 +1019,7 @@ if spoon.Screen then
         "Toggle Window Isolate Mode",
         function()
             hs.window.highlight.toggleIsolate()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -1028,7 +1028,7 @@ if spoon.Screen then
         "Swap Windows with next Screen",
         function()
             spoon.Screen:swapWithNext()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -1037,7 +1037,7 @@ if spoon.Screen then
         "Switch to Screen",
         function()
             spoon.Space:switchToScreen()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -1046,7 +1046,7 @@ if spoon.Screen then
         "Choose tile with SplitView",
         function()
             spoon.SplitView:choose()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -1055,7 +1055,7 @@ if spoon.Screen then
         "Swap windows with SplitView",
         function()
             spoon.SplitView:swapWindows()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -1064,7 +1064,7 @@ if spoon.Screen then
         "Switch Focus with SplitView",
         function()
             spoon.SplitView:switchFocus()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     cmodal:bind(
@@ -1073,11 +1073,11 @@ if spoon.Screen then
         "Removal desktop with SplitView",
         function()
             spoon.SplitView:removeCurrentFullScreenDesktop()
-            spoon.ModalMgr:deactivate({"screenM"})
+            spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
     -- Register screenM with modal supervisor
-    hsscreenM_keys = hsscreenM_keys or {"cmd", "J"}
+    hsscreenM_keys = hsscreenM_keys or { "cmd", "J" }
     if string.len(hsscreenM_keys[2]) > 0 then
         ---- Try to use hs.window.switcher, but seems not work well
         -- local nextWindow = function()
@@ -1105,7 +1105,7 @@ if spoon.Screen then
             function()
                 spoon.ModalMgr:deactivateAll()
                 -- Show the keybindings cheatsheet once screenM is activated
-                spoon.ModalMgr:activate({"screenM"}, "#FF6347", true)
+                spoon.ModalMgr:activate({ "screenM" }, "#FF6347", true)
             end
         )
     end
@@ -1113,7 +1113,7 @@ end
 
 if spoon.PopupTranslateSelection then
     -- Register translateM with modal supervisor
-    hstranslateM_keys = hstranslateM_keys or {"cmd", "]"}
+    hstranslateM_keys = hstranslateM_keys or { "cmd", "]" }
 
     spoon.ModalMgr:new("translateM")
     local cmodal = spoon.ModalMgr.modal_list["translateM"]
@@ -1123,7 +1123,7 @@ if spoon.PopupTranslateSelection then
         "Deactivate translateM",
         function()
             spoon.PopupTranslateSelection:hide()
-            spoon.ModalMgr:deactivate({"translateM"})
+            spoon.ModalMgr:deactivate({ "translateM" })
         end
     )
     cmodal:bind(
@@ -1132,7 +1132,7 @@ if spoon.PopupTranslateSelection then
         "Deactivate translateM",
         function()
             spoon.PopupTranslateSelection:hide()
-            spoon.ModalMgr:deactivate({"translateM"})
+            spoon.ModalMgr:deactivate({ "translateM" })
         end
     )
     if spoon.PopupTranslateSelection:translateShellEnabled() then
@@ -1141,9 +1141,9 @@ if spoon.PopupTranslateSelection then
             "E",
             "Translate Shell (to English)",
             function()
-                spoon.ModalMgr:deactivate({"translateM"})
+                spoon.ModalMgr:deactivate({ "translateM" })
                 local text = spoon.PopupTranslateSelection:selectionOrInput()
-                spoon.ModalMgr:activate({"translateM"})
+                spoon.ModalMgr:activate({ "translateM" })
                 spoon.PopupTranslateSelection:translateShell("en", text)
             end
         )
@@ -1152,9 +1152,9 @@ if spoon.PopupTranslateSelection then
             "C",
             "Translate Shell (to Chinese)",
             function()
-                spoon.ModalMgr:deactivate({"translateM"})
+                spoon.ModalMgr:deactivate({ "translateM" })
                 local text = spoon.PopupTranslateSelection:selectionOrInput()
-                spoon.ModalMgr:activate({"translateM"})
+                spoon.ModalMgr:activate({ "translateM" })
                 spoon.PopupTranslateSelection:translateShell("zh", text)
             end
         )
@@ -1170,7 +1170,7 @@ if spoon.PopupTranslateSelection then
             else
                 hs.window "^取词 $":raise()
             end
-            spoon.ModalMgr:deactivate({"translateM"})
+            spoon.ModalMgr:deactivate({ "translateM" })
         end
     )
     cmodal:bind(
@@ -1178,8 +1178,8 @@ if spoon.PopupTranslateSelection then
         "I",
         "Open 画词翻译",
         function()
-            if not hs.application("^Eudic$"):findMenuItem({"功能", "划词翻译"})["ticked"] then
-                hs.application("^Eudic$"):selectMenuItem({"功能", "划词翻译"})
+            if not hs.application("^Eudic$"):findMenuItem({ "功能", "划词翻译" })["ticked"] then
+                hs.application("^Eudic$"):selectMenuItem({ "功能", "划词翻译" })
                 hs.timer.doAfter(
                     1,
                     function()
@@ -1189,7 +1189,7 @@ if spoon.PopupTranslateSelection then
             else
                 hs.alert("欧路词典划词翻译已经打开")
             end
-            spoon.ModalMgr:deactivate({"translateM"})
+            spoon.ModalMgr:deactivate({ "translateM" })
         end
     )
     cmodal:bind(
@@ -1197,8 +1197,8 @@ if spoon.PopupTranslateSelection then
         "P",
         "Close 画词翻译",
         function()
-            if hs.application("^Eudic$"):findMenuItem({"功能", "划词翻译"})["ticked"] then
-                hs.application("^Eudic$"):selectMenuItem({"功能", "划词翻译"})
+            if hs.application("^Eudic$"):findMenuItem({ "功能", "划词翻译" })["ticked"] then
+                hs.application("^Eudic$"):selectMenuItem({ "功能", "划词翻译" })
                 hs.timer.doAfter(
                     1,
                     function()
@@ -1208,7 +1208,7 @@ if spoon.PopupTranslateSelection then
             else
                 hs.alert("欧路词典划词翻译已经关闭")
             end
-            spoon.ModalMgr:deactivate({"translateM"})
+            spoon.ModalMgr:deactivate({ "translateM" })
         end
     )
     if string.len(hstranslateM_keys[2]) > 0 then
@@ -1219,7 +1219,7 @@ if spoon.PopupTranslateSelection then
             function()
                 spoon.ModalMgr:deactivateAll()
                 -- Show the keybindings cheatsheet once translateM is activated
-                spoon.ModalMgr:activate({"translateM"}, "#FF6347", true)
+                spoon.ModalMgr:activate({ "translateM" }, "#FF6347", true)
             end
         )
     end
@@ -1230,7 +1230,7 @@ hs.hotkey.bind(
     "'",
     function()
         spoon.PopupTranslateSelection:toggleTranslatePopup("zh", "en")
-        spoon.ModalMgr:deactivate({"translateM"})
+        spoon.ModalMgr:deactivate({ "translateM" })
     end
 )
 
@@ -1254,7 +1254,7 @@ if hsexpose_keys then
         "escape",
         "Deactivate MCExpose",
         function()
-            spoon.ModalMgr:deactivate({"MCExpose"})
+            spoon.ModalMgr:deactivate({ "MCExpose" })
         end
     )
     cmodal:bind(
@@ -1262,7 +1262,7 @@ if hsexpose_keys then
         "Q",
         "Deactivate MCExpose",
         function()
-            spoon.ModalMgr:deactivate({"MCExpose"})
+            spoon.ModalMgr:deactivate({ "MCExpose" })
         end
     )
     cmodal:bind(
@@ -1270,7 +1270,7 @@ if hsexpose_keys then
         "A",
         "Show all",
         function()
-            spoon.ModalMgr:deactivate({"MCExpose"})
+            spoon.ModalMgr:deactivate({ "MCExpose" })
             hsExposeInstanceDefaultAllSpaces:toggleShow(false)
         end
     )
@@ -1279,7 +1279,7 @@ if hsexpose_keys then
         "C",
         "Only current application",
         function()
-            spoon.ModalMgr:deactivate({"MCExpose"})
+            spoon.ModalMgr:deactivate({ "MCExpose" })
             hsExposeInstanceDefaultAllSpaces:toggleShow(true)
         end
     )
@@ -1289,7 +1289,7 @@ if hsexpose_keys then
         "E",
         "Toggle App Expose Using Spaces",
         function()
-            spoon.ModalMgr:deactivate({"MCExpose"})
+            spoon.ModalMgr:deactivate({ "MCExpose" })
             hs.spaces.toggleAppExpose()
         end
     )
@@ -1299,7 +1299,7 @@ if hsexpose_keys then
         "D",
         "Toggle Show Desktop Using Spaces",
         function()
-            spoon.ModalMgr:deactivate({"MCExpose"})
+            spoon.ModalMgr:deactivate({ "MCExpose" })
             hs.spaces.toggleShowDesktop()
         end
     )
@@ -1309,7 +1309,7 @@ if hsexpose_keys then
         "M",
         "Toggle Mission Control Using Spaces",
         function()
-            spoon.ModalMgr:deactivate({"MCExpose"})
+            spoon.ModalMgr:deactivate({ "MCExpose" })
             hs.spaces.toggleMissionControl()
         end
     )
@@ -1319,7 +1319,7 @@ if hsexpose_keys then
         "L",
         "Toggle Launch Pad",
         function()
-            spoon.ModalMgr:deactivate({"MCExpose"})
+            spoon.ModalMgr:deactivate({ "MCExpose" })
             hs.spaces.toggleLaunchPad()
         end
     )
@@ -1332,7 +1332,7 @@ if hsexpose_keys then
         function()
             spoon.ModalMgr:deactivateAll()
             -- Show the keybindings cheatsheet once countdownM is activated
-            spoon.ModalMgr:activate({"MCExpose"}, "#FF6347", true)
+            spoon.ModalMgr:activate({ "MCExpose" }, "#FF6347", true)
         end
     )
 end
@@ -1342,12 +1342,12 @@ if hsstay_keys then
     local stay = require("hammers/stay")
     stay.hotkey =
         hs.hotkey.new(
-        hsstay_keys[1],
-        hsstay_keys[2],
-        function()
-            stay:toggle_or_choose()
-        end
-    )
+            hsstay_keys[1],
+            hsstay_keys[2],
+            function()
+                stay:toggle_or_choose()
+            end
+        )
     stay:start()
 end
 
@@ -1360,7 +1360,7 @@ if hssession_keys then
         "escape",
         "Deactivate HSSession",
         function()
-            spoon.ModalMgr:deactivate({"HSSession"})
+            spoon.ModalMgr:deactivate({ "HSSession" })
         end
     )
     cmodal:bind(
@@ -1368,7 +1368,7 @@ if hssession_keys then
         "Q",
         "Deactivate HSSession",
         function()
-            spoon.ModalMgr:deactivate({"HSSession"})
+            spoon.ModalMgr:deactivate({ "HSSession" })
         end
     )
     cmodal:bind(
@@ -1376,7 +1376,7 @@ if hssession_keys then
         "S",
         "Save current application",
         function()
-            spoon.ModalMgr:deactivate({"HSSession"})
+            spoon.ModalMgr:deactivate({ "HSSession" })
             session:saveCurrentSession()
         end
     )
@@ -1385,7 +1385,7 @@ if hssession_keys then
         "G",
         "Switch to session",
         function()
-            spoon.ModalMgr:deactivate({"HSSession"})
+            spoon.ModalMgr:deactivate({ "HSSession" })
             session:switchToSession()
         end
     )
@@ -1394,7 +1394,7 @@ if hssession_keys then
         "L",
         "[Debug] Show Current Session",
         function()
-            spoon.ModalMgr:deactivate({"HSSession"})
+            spoon.ModalMgr:deactivate({ "HSSession" })
             session:showCurrentSession()
         end
     )
@@ -1406,7 +1406,7 @@ if hssession_keys then
         function()
             spoon.ModalMgr:deactivateAll()
             -- Show the keybindings cheatsheet once countdownM is activated
-            spoon.ModalMgr:activate({"HSSession"}, "#FF6347", true)
+            spoon.ModalMgr:activate({ "HSSession" }, "#FF6347", true)
         end
     )
 
@@ -1433,14 +1433,14 @@ end
 function copyEmailLink()
     status, data =
         hs.osascript.applescript(
-        [[tell application "Microsoft Outlook"
+            [[tell application "Microsoft Outlook"
         set theMessages to selected objects
         repeat with theMessage in theMessages
         set toOpen to id of theMessage
         set the clipboard to toOpen
         end repeat
         end tell]]
-    )
+        )
     hs.alert.show("email link is copied")
 end
 
@@ -1463,19 +1463,19 @@ local APP_GOODNOTES = "GoodNotes"
 
 local app_model_global_actions = {
     {
-        key = {"cmd", "J"},
+        key = { "cmd", "J" },
         description = "Tile Window to Left of Screen",
         action = function()
             local cwin = hs.window.focusedWindow()
-            cwin:application():selectMenuItem({"Window", "Tile Window to Left of Screen"})
+            cwin:application():selectMenuItem({ "Window", "Tile Window to Left of Screen" })
         end
     },
     {
-        key = {"cmd", "L"},
+        key = { "cmd", "L" },
         description = "Tile Window to Right of Screen",
         action = function()
             local cwin = hs.window.focusedWindow()
-            cwin:application():selectMenuItem({"Window", "Tile Window to Right of Screen"})
+            cwin:application():selectMenuItem({ "Window", "Tile Window to Right of Screen" })
         end
     }
 }
@@ -1485,126 +1485,126 @@ appmodal:set_global_keys(app_model_global_actions)
 ---- OmniGraffle
 local omnigraffle_modal =
     appmodal.bind(
-    "cmd",
-    "P",
-    APP_OMNI_GRAFFLE_NAME,
-    {
+        "cmd",
+        "P",
+        APP_OMNI_GRAFFLE_NAME,
         {
-            key = "T",
-            description = "Toggle all Side bars",
-            action = function()
-                hs.eventtap.keyStroke({"cmd", "alt"}, "1")
-                hs.eventtap.keyStroke({"cmd", "shift"}, "I")
-            end
-        },
-        {
-            key = "L",
-            description = "Toggle left Side bars",
-            action = function()
-                hs.eventtap.keyStroke({"cmd", "alt"}, "1")
-            end
-        },
-        {
-            key = "R",
-            description = "Toggle right Side bars",
-            action = function()
-                hs.eventtap.keyStroke({"cmd", "shift"}, "I")
-            end
-        },
-        {
-            key = "E",
-            description = "Export to SVGs",
-            action = function()
-                local itemApp = hs.application.find(APP_OMNI_GRAFFLE_NAME)
-                itemApp:selectMenuItem({"File", "Export…"})
-            end
+            {
+                key = "T",
+                description = "Toggle all Side bars",
+                action = function()
+                    hs.eventtap.keyStroke({ "cmd", "alt" }, "1")
+                    hs.eventtap.keyStroke({ "cmd", "shift" }, "I")
+                end
+            },
+            {
+                key = "L",
+                description = "Toggle left Side bars",
+                action = function()
+                    hs.eventtap.keyStroke({ "cmd", "alt" }, "1")
+                end
+            },
+            {
+                key = "R",
+                description = "Toggle right Side bars",
+                action = function()
+                    hs.eventtap.keyStroke({ "cmd", "shift" }, "I")
+                end
+            },
+            {
+                key = "E",
+                description = "Export to SVGs",
+                action = function()
+                    local itemApp = hs.application.find(APP_OMNI_GRAFFLE_NAME)
+                    itemApp:selectMenuItem({ "File", "Export…" })
+                end
+            }
         }
-    }
-)
+    )
 
 ---- iTerm2
 local iterm_modal =
     appmodal.bind(
-    "cmd",
-    "P",
-    APP_ITERM_NAME,
-    {
+        "cmd",
+        "P",
+        APP_ITERM_NAME,
         {
-            key = "P",
-            description = "Select Previous Tab",
-            action = function()
-                local itemApp = hs.application.find(APP_ITERM_NAME)
-                itemApp:selectMenuItem({"Window", "Select Previous Tab"})
-            end
-        },
-        {
-            key = "N",
-            description = "Select Next Tab",
-            action = function()
-                local itemApp = hs.application.find(APP_ITERM_NAME)
-                itemApp:selectMenuItem({"Window", "Select Next Tab"})
-            end
-        },
-        {
-            key = "C",
-            description = "New Tab with Current Profile",
-            action = function()
-                local itemApp = hs.application.find(APP_ITERM_NAME)
-                itemApp:selectMenuItem({"Shell", "New Tab with Current Profile"})
-            end
-        },
-        {
-            key = "X",
-            description = "Close",
-            action = function()
-                local itemApp = hs.application.find(APP_ITERM_NAME)
-                itemApp:selectMenuItem({"Shell", "Close"})
-            end
+            {
+                key = "P",
+                description = "Select Previous Tab",
+                action = function()
+                    local itemApp = hs.application.find(APP_ITERM_NAME)
+                    itemApp:selectMenuItem({ "Window", "Select Previous Tab" })
+                end
+            },
+            {
+                key = "N",
+                description = "Select Next Tab",
+                action = function()
+                    local itemApp = hs.application.find(APP_ITERM_NAME)
+                    itemApp:selectMenuItem({ "Window", "Select Next Tab" })
+                end
+            },
+            {
+                key = "C",
+                description = "New Tab with Current Profile",
+                action = function()
+                    local itemApp = hs.application.find(APP_ITERM_NAME)
+                    itemApp:selectMenuItem({ "Shell", "New Tab with Current Profile" })
+                end
+            },
+            {
+                key = "X",
+                description = "Close",
+                action = function()
+                    local itemApp = hs.application.find(APP_ITERM_NAME)
+                    itemApp:selectMenuItem({ "Shell", "Close" })
+                end
+            }
         }
-    }
-)
+    )
 
 ---- Chrome
 local chrome_modal =
     appmodal.bind(
-    "cmd",
-    "P",
-    APP_CHROME,
-    {
+        "cmd",
+        "P",
+        APP_CHROME,
         {
-            key = "P",
-            description = "Select Previous Tab",
-            action = function()
-                local itemApp = hs.application.find(APP_CHROME)
-                itemApp:selectMenuItem({"Tab", "Select Previous Tab"})
-            end
-        },
-        {
-            key = "N",
-            description = "Select Next Tab",
-            action = function()
-                local itemApp = hs.application.find(APP_CHROME)
-                itemApp:selectMenuItem({"Tab", "Select Next Tab"})
-            end
-        },
-        {
-            key = {"cmd", "P"},
-            description = "Search Tabs",
-            action = function()
-                local itemApp = hs.application.find(APP_CHROME)
-                itemApp:selectMenuItem({"Tab", "Search Tabs…"})
-            end
-        },
-        {
-            key = "M",
-            description = "Task Manager",
-            action = function()
-                local itemApp = hs.application.find(APP_CHROME)
-                itemApp:selectMenuItem({"Window", "Task Manager"})
-            end
+            {
+                key = "P",
+                description = "Select Previous Tab",
+                action = function()
+                    local itemApp = hs.application.find(APP_CHROME)
+                    itemApp:selectMenuItem({ "Tab", "Select Previous Tab" })
+                end
+            },
+            {
+                key = "N",
+                description = "Select Next Tab",
+                action = function()
+                    local itemApp = hs.application.find(APP_CHROME)
+                    itemApp:selectMenuItem({ "Tab", "Select Next Tab" })
+                end
+            },
+            {
+                key = { "cmd", "P" },
+                description = "Search Tabs",
+                action = function()
+                    local itemApp = hs.application.find(APP_CHROME)
+                    itemApp:selectMenuItem({ "Tab", "Search Tabs…" })
+                end
+            },
+            {
+                key = "M",
+                description = "Task Manager",
+                action = function()
+                    local itemApp = hs.application.find(APP_CHROME)
+                    itemApp:selectMenuItem({ "Window", "Task Manager" })
+                end
+            }
         }
-    }
-)
+    )
 
 -- Finally we initialize ModalMgr supervisor
 spoon.ModalMgr.supervisor:enter()
@@ -1612,30 +1612,30 @@ spoon.ModalMgr.supervisor:enter()
 spoon.AppBindings:bind(
     APP_GOODNOTES,
     {
-        {{"ctrl"}, "i", {}, "up"}, -- Scroll message window
-        {{"ctrl"}, "k", {}, "down"}, -- Scroll message window
-        {{"ctrl"}, "j", {}, "left"}, -- Scroll message window
-        {{"ctrl"}, "l", {}, "right"} -- Scroll message window
+        { { "ctrl" }, "i", {}, "up" }, -- Scroll message window
+        { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
+        { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
+        { { "ctrl" }, "l", {}, "right" } -- Scroll message window
     }
 )
 
 spoon.AppBindings:bind(
     "Kindle",
     {
-        {{"ctrl"}, "i", {}, "up"}, -- Scroll message window
-        {{"ctrl"}, "k", {}, "down"}, -- Scroll message window
-        {{"ctrl"}, "j", {}, "left"}, -- Scroll message window
-        {{"ctrl"}, "l", {}, "right"} -- Scroll message window
+        { { "ctrl" }, "i", {}, "up" }, -- Scroll message window
+        { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
+        { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
+        { { "ctrl" }, "l", {}, "right" } -- Scroll message window
     }
 )
 
 spoon.AppBindings:bind(
     "Preview",
     {
-        {{"ctrl"}, "i", {}, "up"}, -- Scroll message window
-        {{"ctrl"}, "k", {}, "down"}, -- Scroll message window
-        {{"ctrl"}, "j", {}, "left"}, -- Scroll message window
-        {{"ctrl"}, "l", {}, "right"} -- Scroll message window
+        { { "ctrl" }, "i", {}, "up" }, -- Scroll message window
+        { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
+        { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
+        { { "ctrl" }, "l", {}, "right" } -- Scroll message window
     }
 )
 
@@ -1643,7 +1643,7 @@ spoon.AppBindings:bind(
 myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
 myWatcher:start()
 
-hsreload_keys = hsreload_keys or {{"cmd", "shift", "ctrl"}, "R"}
+hsreload_keys = hsreload_keys or { { "cmd", "shift", "ctrl" }, "R" }
 if string.len(hsreload_keys[2]) > 0 then
     hs.hotkey.bind(
         hsreload_keys[1],
