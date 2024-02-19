@@ -52,11 +52,11 @@ function obj:focusWindowOnNextScreen(nextCount)
                 hs.alert.closeAll()
                 local alertUUid =
                     hs.alert.show(
-                    string.format("Current Screen: %s, window: %s", nextScreen:name(), w:title()),
-                    hs.alert.defaultStyle,
-                    nextScreen,
-                    0.5
-                )
+                        string.format("Current Screen: %s, window: %s", nextScreen:name(), w:title()),
+                        hs.alert.defaultStyle,
+                        nextScreen,
+                        0.5
+                    )
             end
             w:unminimize()
             w:raise()
@@ -69,11 +69,11 @@ function obj:focusWindowOnNextScreen(nextCount)
     if not raiseAndFocusedWindow then
         local alertUUid =
             hs.alert.show(
-            string.format("Current Screen: %s, no Window", nextScreen:name()),
-            hs.alert.defaultStyle,
-            nextScreen,
-            2
-        )
+                string.format("Current Screen: %s, no Window", nextScreen:name()),
+                hs.alert.defaultStyle,
+                nextScreen,
+                2
+            )
     end
 end
 
@@ -130,16 +130,16 @@ end
 function selectWindowInList(allWindows, showAppNameAsPrefix)
     local chooser =
         hs.chooser.new(
-        function(choice)
-            if choice == nil then
-                return
+            function(choice)
+                if choice == nil then
+                    return
+                end
+                local chosenWindow = choice["windowObject"]
+                chosenWindow:unminimize()
+                chosenWindow:raise()
+                chosenWindow:focus()
             end
-            local chosenWindow = choice["windowObject"]
-            chosenWindow:unminimize()
-            chosenWindow:raise()
-            chosenWindow:focus()
-        end
-    )
+        )
     local chooserChoices = {}
     for _, w in pairs(allWindows) do
         table.insert(
@@ -181,11 +181,11 @@ end
 function obj:selectWindowFromAllWindows()
     local allWindows =
         hs.fnutils.filter(
-        hs.window.filter.default:getWindows(),
-        function(win)
-            return win ~= hs.window.focusedWindow()
-        end
-    )
+            hs.window.filter.default:getWindows(),
+            function(win)
+                return win ~= hs.window.focusedWindow()
+            end
+        )
     selectWindowInList(allWindows, true)
 end
 
@@ -194,7 +194,7 @@ function obj:_sameAppWindowsWithFocused()
     local focusedApp = focusedWindow:application()
     -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
 
-    return hs.window.filter.new {focusedApp:name()}:getWindows() -- focusedApp:allWindows()
+    return hs.window.filter.new { focusedApp:name() }:getWindows() -- focusedApp:allWindows()
 end
 
 function obj:_sameAppWindowsWithFocusedExceptFocused()
@@ -290,7 +290,7 @@ function obj:getVisibleWindowsGroupedByScreens()
     local rs = {}
     for i = 1, #wins do
         if rs[wins[i].screen:id()] == nil then
-            rs[wins[i].screen:id()] = {wins[i]}
+            rs[wins[i].screen:id()] = { wins[i] }
         else
             table.insert(rs[wins[i].screen:id()], wins[i])
         end
