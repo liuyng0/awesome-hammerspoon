@@ -8,18 +8,18 @@ obj.author = "LY <liuyng0@outlook.com>"
 local hsearch = spoon.HSearch
 local screen = spoon.Screen
 obj.overview = {
-  text = "Type ws ⇥ to search the windows.",
+  text = "Type sw ⇥ to search the windows.",
   image = hsearch:resourceImage("/resources/tabs.png"),
-  keyword = "ws"
+  keyword = "sw"
 }
 
 obj.notice = { text = "Search Windows" }
 
 obj.switchToSelectedWindow = "switchToSelectedWindow"
 obj.init_func = function()
-  local screenChoices = screen:getWindowChoices(hs.window.filter.default:getWindows(), true)
+  local screenChoices = screen:getWindowChoices(hs.window.filter.default:getWindows(), false)
   screenChoices = hs.fnutils.imap(screenChoices, function(item)
-    item.image = hsearch:resourceImage("/resources/tabs.png")
+    item.image = hs.image.imageFromAppBundle(item.bundleID)
     item.output = obj.switchToSelectedWindow
     return item
   end)

@@ -145,7 +145,8 @@ function obj:getWindowChoices(allWindows, showAppNameAsPrefix)
                 ["text"] = getWindowNameFromCache(w:id(), w:title()),
                 ["visible"] = w:isVisible(),
                 ["windowObject"] = w,
-                ["application"] = w:application():name()
+                ["application"] = w:application():name(),
+                ["bundleID"] = w:application():bundleID()
             }
         )
     end
@@ -164,10 +165,12 @@ function obj:getWindowChoices(allWindows, showAppNameAsPrefix)
         end
     )
 
-    if showAppNameAsPrefix then
-        for _, c in pairs(chooserChoices) do
+    for _, c in pairs(chooserChoices) do
+        if showAppNameAsPrefix then
             c["subText"] = c["application"] .. " | " .. c["text"]
             c["text"] = c["application"]
+        else
+            c["subText"] = c["application"]
         end
     end
     return chooserChoices
