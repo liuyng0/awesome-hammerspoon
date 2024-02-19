@@ -15,8 +15,10 @@
         "stripped_doc" : [
           "`hs.geometry` object representing the size to use for the translation popup window. Defaults to `hs.geometry.size(770, 610)`."
         ],
-        "desc" : "`hs.geometry` object representing the size to use for the translation popup window. Defaults to `hs.geometry.size(770, 610)`.",
         "def" : "PopupTranslateSelection.popup_size",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -26,17 +28,20 @@
 
         ],
         "name" : "popup_size",
-        "parameters" : [
-
-        ]
+        "desc" : "`hs.geometry` object representing the size to use for the translation popup window. Defaults to `hs.geometry.size(770, 610)`."
       },
       {
-        "doc" : "Value representing the window style to be used for the translation popup window. This value needs to be a valid argument to [`hs.webview.setStyle()`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowStyle) (i.e. a combination of values from [`hs.webview.windowMasks`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowMasks[]). Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`",
+        "doc" : "Value representing the window style to be used for the translation popup window.\nThis value needs to be a valid argument to [`hs.webview.setStyle()`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowStyle)\n(i.e. a combination of values from [`hs.webview.windowMasks`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowMasks[]).\nDefault value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`",
         "stripped_doc" : [
-          "Value representing the window style to be used for the translation popup window. This value needs to be a valid argument to [`hs.webview.setStyle()`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowStyle) (i.e. a combination of values from [`hs.webview.windowMasks`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowMasks[]). Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`"
+          "Value representing the window style to be used for the translation popup window.",
+          "This value needs to be a valid argument to [`hs.webview.setStyle()`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowStyle)",
+          "(i.e. a combination of values from [`hs.webview.windowMasks`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowMasks[]).",
+          "Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`"
         ],
-        "desc" : "Value representing the window style to be used for the translation popup window. This value needs to be a valid argument to [`hs.webview.setStyle()`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowStyle) (i.e. a combination of values from [`hs.webview.windowMasks`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowMasks[]). Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`",
         "def" : "PopupTranslateSelection.popup_style",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -46,17 +51,17 @@
 
         ],
         "name" : "popup_style",
-        "parameters" : [
-
-        ]
+        "desc" : "Value representing the window style to be used for the translation popup window."
       },
       {
         "doc" : "If true, pressing ESC on the popup window will close it. Defaults to `true`",
         "stripped_doc" : [
           "If true, pressing ESC on the popup window will close it. Defaults to `true`"
         ],
-        "desc" : "If true, pressing ESC on the popup window will close it. Defaults to `true`",
         "def" : "PopupTranslateSelection.popup_close_on_escape",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -66,17 +71,17 @@
 
         ],
         "name" : "popup_close_on_escape",
-        "parameters" : [
-
-        ]
+        "desc" : "If true, pressing ESC on the popup window will close it. Defaults to `true`"
       },
       {
         "doc" : "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
         "stripped_doc" : [
           "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon."
         ],
-        "desc" : "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
         "def" : "PopupTranslateSelection.logger",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -86,19 +91,17 @@
 
         ],
         "name" : "logger",
-        "parameters" : [
-
-        ]
+        "desc" : "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon."
       }
     ],
     "stripped_doc" : [
 
     ],
+    "type" : "Module",
     "desc" : "Show a popup window with the translation of the currently selected (or other) text",
     "Deprecated" : [
 
     ],
-    "type" : "Module",
     "Constructor" : [
 
     ],
@@ -110,8 +113,13 @@
           "Display a translation popup with the translation of the given text between the specified languages",
           ""
         ],
-        "desc" : "Display a translation popup with the translation of the given text between the specified languages",
         "def" : "PopupTranslateSelection:translatePopup(text, to, from)",
+        "parameters" : [
+          " * text - string containing the text to translate",
+          " * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English",
+          " * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it",
+          ""
+        ],
         "notes" : [
 
         ],
@@ -121,12 +129,7 @@
           " * The PopupTranslateSelection object"
         ],
         "name" : "translatePopup",
-        "parameters" : [
-          " * text - string containing the text to translate",
-          " * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English",
-          " * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it",
-          ""
-        ]
+        "desc" : "Display a translation popup with the translation of the given text between the specified languages"
       },
       {
         "doc" : "Get the current selected text in the frontmost window and display a translation popup with the translation between the specified languages\n\nParameters:\n * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English\n * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it\n\nReturns:\n * The PopupTranslateSelection object",
@@ -134,8 +137,12 @@
           "Get the current selected text in the frontmost window and display a translation popup with the translation between the specified languages",
           ""
         ],
-        "desc" : "Get the current selected text in the frontmost window and display a translation popup with the translation between the specified languages",
         "def" : "PopupTranslateSelection:translateSelectionPopup(to, from)",
+        "parameters" : [
+          " * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English",
+          " * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it",
+          ""
+        ],
         "notes" : [
 
         ],
@@ -145,11 +152,7 @@
           " * The PopupTranslateSelection object"
         ],
         "name" : "translateSelectionPopup",
-        "parameters" : [
-          " * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English",
-          " * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it",
-          ""
-        ]
+        "desc" : "Get the current selected text in the frontmost window and display a translation popup with the translation between the specified languages"
       },
       {
         "doc" : "Binds hotkeys for PopupTranslateSelection\n\nParameters:\n * mapping - A table containing hotkey modifier\/key details for the following items:\n  * `translate` - translate the selected text without specifying source\/destination languages (source defaults to auto-detect, destination defaults to your last choice or to English)\n  * `translate_to_<lang>` - translate the selected text to the given destination language. Source language will be auto-detected.\n  * `translate_from_<lang>` - translate the selected text from the given destination language. Destination language will default to your last choice, or to English.\n  * `translate_<from>_<to>` - translate the selected text between the given languages.\n\nSample value for `mapping`:\n```\n {\n    translate_to_en = { { \"ctrl\", \"alt\", \"cmd\" }, \"e\" },\n    translate_to_de = { { \"ctrl\", \"alt\", \"cmd\" }, \"d\" },\n    translate_to_es = { { \"ctrl\", \"alt\", \"cmd\" }, \"s\" },\n    translate_de_en = { { \"shift\", \"ctrl\", \"alt\", \"cmd\" }, \"e\" },\n    translate_en_de = { { \"shift\", \"ctrl\", \"alt\", \"cmd\" }, \"d\" },\n }\n```",
@@ -157,17 +160,7 @@
           "Binds hotkeys for PopupTranslateSelection",
           ""
         ],
-        "desc" : "Binds hotkeys for PopupTranslateSelection",
         "def" : "PopupTranslateSelection:bindHotkeys(mapping)",
-        "notes" : [
-
-        ],
-        "signature" : "PopupTranslateSelection:bindHotkeys(mapping)",
-        "type" : "Method",
-        "returns" : [
-
-        ],
-        "name" : "bindHotkeys",
         "parameters" : [
           " * mapping - A table containing hotkey modifier\/key details for the following items:",
           "  * `translate` - translate the selected text without specifying source\/destination languages (source defaults to auto-detect, destination defaults to your last choice or to English)",
@@ -185,10 +178,23 @@
           "    translate_en_de = { { \"shift\", \"ctrl\", \"alt\", \"cmd\" }, \"d\" },",
           " }",
           "```"
-        ]
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "PopupTranslateSelection:bindHotkeys(mapping)",
+        "type" : "Method",
+        "returns" : [
+
+        ],
+        "name" : "bindHotkeys",
+        "desc" : "Binds hotkeys for PopupTranslateSelection"
       }
     ],
     "Command" : [
+
+    ],
+    "Field" : [
 
     ],
     "items" : [
@@ -197,8 +203,10 @@
         "stripped_doc" : [
           "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon."
         ],
-        "desc" : "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
         "def" : "PopupTranslateSelection.logger",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -208,17 +216,17 @@
 
         ],
         "name" : "logger",
-        "parameters" : [
-
-        ]
+        "desc" : "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon."
       },
       {
         "doc" : "If true, pressing ESC on the popup window will close it. Defaults to `true`",
         "stripped_doc" : [
           "If true, pressing ESC on the popup window will close it. Defaults to `true`"
         ],
-        "desc" : "If true, pressing ESC on the popup window will close it. Defaults to `true`",
         "def" : "PopupTranslateSelection.popup_close_on_escape",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -228,17 +236,17 @@
 
         ],
         "name" : "popup_close_on_escape",
-        "parameters" : [
-
-        ]
+        "desc" : "If true, pressing ESC on the popup window will close it. Defaults to `true`"
       },
       {
         "doc" : "`hs.geometry` object representing the size to use for the translation popup window. Defaults to `hs.geometry.size(770, 610)`.",
         "stripped_doc" : [
           "`hs.geometry` object representing the size to use for the translation popup window. Defaults to `hs.geometry.size(770, 610)`."
         ],
-        "desc" : "`hs.geometry` object representing the size to use for the translation popup window. Defaults to `hs.geometry.size(770, 610)`.",
         "def" : "PopupTranslateSelection.popup_size",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -248,17 +256,20 @@
 
         ],
         "name" : "popup_size",
-        "parameters" : [
-
-        ]
+        "desc" : "`hs.geometry` object representing the size to use for the translation popup window. Defaults to `hs.geometry.size(770, 610)`."
       },
       {
-        "doc" : "Value representing the window style to be used for the translation popup window. This value needs to be a valid argument to [`hs.webview.setStyle()`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowStyle) (i.e. a combination of values from [`hs.webview.windowMasks`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowMasks[]). Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`",
+        "doc" : "Value representing the window style to be used for the translation popup window.\nThis value needs to be a valid argument to [`hs.webview.setStyle()`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowStyle)\n(i.e. a combination of values from [`hs.webview.windowMasks`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowMasks[]).\nDefault value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`",
         "stripped_doc" : [
-          "Value representing the window style to be used for the translation popup window. This value needs to be a valid argument to [`hs.webview.setStyle()`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowStyle) (i.e. a combination of values from [`hs.webview.windowMasks`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowMasks[]). Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`"
+          "Value representing the window style to be used for the translation popup window.",
+          "This value needs to be a valid argument to [`hs.webview.setStyle()`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowStyle)",
+          "(i.e. a combination of values from [`hs.webview.windowMasks`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowMasks[]).",
+          "Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`"
         ],
-        "desc" : "Value representing the window style to be used for the translation popup window. This value needs to be a valid argument to [`hs.webview.setStyle()`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowStyle) (i.e. a combination of values from [`hs.webview.windowMasks`](http:\/\/www.hammerspoon.org\/docs\/hs.webview.html#windowMasks[]). Default value: `hs.webview.windowMasks.utility|hs.webview.windowMasks.HUD|hs.webview.windowMasks.titled|hs.webview.windowMasks.closable`",
         "def" : "PopupTranslateSelection.popup_style",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -268,9 +279,7 @@
 
         ],
         "name" : "popup_style",
-        "parameters" : [
-
-        ]
+        "desc" : "Value representing the window style to be used for the translation popup window."
       },
       {
         "doc" : "Binds hotkeys for PopupTranslateSelection\n\nParameters:\n * mapping - A table containing hotkey modifier\/key details for the following items:\n  * `translate` - translate the selected text without specifying source\/destination languages (source defaults to auto-detect, destination defaults to your last choice or to English)\n  * `translate_to_<lang>` - translate the selected text to the given destination language. Source language will be auto-detected.\n  * `translate_from_<lang>` - translate the selected text from the given destination language. Destination language will default to your last choice, or to English.\n  * `translate_<from>_<to>` - translate the selected text between the given languages.\n\nSample value for `mapping`:\n```\n {\n    translate_to_en = { { \"ctrl\", \"alt\", \"cmd\" }, \"e\" },\n    translate_to_de = { { \"ctrl\", \"alt\", \"cmd\" }, \"d\" },\n    translate_to_es = { { \"ctrl\", \"alt\", \"cmd\" }, \"s\" },\n    translate_de_en = { { \"shift\", \"ctrl\", \"alt\", \"cmd\" }, \"e\" },\n    translate_en_de = { { \"shift\", \"ctrl\", \"alt\", \"cmd\" }, \"d\" },\n }\n```",
@@ -278,17 +287,7 @@
           "Binds hotkeys for PopupTranslateSelection",
           ""
         ],
-        "desc" : "Binds hotkeys for PopupTranslateSelection",
         "def" : "PopupTranslateSelection:bindHotkeys(mapping)",
-        "notes" : [
-
-        ],
-        "signature" : "PopupTranslateSelection:bindHotkeys(mapping)",
-        "type" : "Method",
-        "returns" : [
-
-        ],
-        "name" : "bindHotkeys",
         "parameters" : [
           " * mapping - A table containing hotkey modifier\/key details for the following items:",
           "  * `translate` - translate the selected text without specifying source\/destination languages (source defaults to auto-detect, destination defaults to your last choice or to English)",
@@ -306,7 +305,17 @@
           "    translate_en_de = { { \"shift\", \"ctrl\", \"alt\", \"cmd\" }, \"d\" },",
           " }",
           "```"
-        ]
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "PopupTranslateSelection:bindHotkeys(mapping)",
+        "type" : "Method",
+        "returns" : [
+
+        ],
+        "name" : "bindHotkeys",
+        "desc" : "Binds hotkeys for PopupTranslateSelection"
       },
       {
         "doc" : "Display a translation popup with the translation of the given text between the specified languages\n\nParameters:\n * text - string containing the text to translate\n * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English\n * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it\n\nReturns:\n * The PopupTranslateSelection object",
@@ -314,8 +323,13 @@
           "Display a translation popup with the translation of the given text between the specified languages",
           ""
         ],
-        "desc" : "Display a translation popup with the translation of the given text between the specified languages",
         "def" : "PopupTranslateSelection:translatePopup(text, to, from)",
+        "parameters" : [
+          " * text - string containing the text to translate",
+          " * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English",
+          " * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it",
+          ""
+        ],
         "notes" : [
 
         ],
@@ -325,12 +339,7 @@
           " * The PopupTranslateSelection object"
         ],
         "name" : "translatePopup",
-        "parameters" : [
-          " * text - string containing the text to translate",
-          " * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English",
-          " * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it",
-          ""
-        ]
+        "desc" : "Display a translation popup with the translation of the given text between the specified languages"
       },
       {
         "doc" : "Get the current selected text in the frontmost window and display a translation popup with the translation between the specified languages\n\nParameters:\n * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English\n * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it\n\nReturns:\n * The PopupTranslateSelection object",
@@ -338,8 +347,12 @@
           "Get the current selected text in the frontmost window and display a translation popup with the translation between the specified languages",
           ""
         ],
-        "desc" : "Get the current selected text in the frontmost window and display a translation popup with the translation between the specified languages",
         "def" : "PopupTranslateSelection:translateSelectionPopup(to, from)",
+        "parameters" : [
+          " * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English",
+          " * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it",
+          ""
+        ],
         "notes" : [
 
         ],
@@ -349,15 +362,8 @@
           " * The PopupTranslateSelection object"
         ],
         "name" : "translateSelectionPopup",
-        "parameters" : [
-          " * to - two-letter code for destination language. If `nil`, Google Translate will use your most recent selection, or default to English",
-          " * from - two-letter code for source language. If `nil`, Google Translate will try to auto-detect it",
-          ""
-        ]
+        "desc" : "Get the current selected text in the frontmost window and display a translation popup with the translation between the specified languages"
       }
-    ],
-    "Field" : [
-
     ],
     "name" : "PopupTranslateSelection"
   }

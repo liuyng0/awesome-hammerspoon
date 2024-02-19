@@ -15,40 +15,15 @@
     "stripped_doc" : [
 
     ],
+    "type" : "Module",
+    "desc" : "Just another clock, floating above all",
     "Deprecated" : [
 
     ],
-    "type" : "Module",
-    "desc" : "Just another clock, floating above all",
     "Constructor" : [
 
     ],
     "doc" : "Just another clock, floating above all\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/AClock.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/AClock.spoon.zip)",
-    "Field" : [
-
-    ],
-    "items" : [
-      {
-        "doc" : "Show AClock, if already showing, just hide it.",
-        "stripped_doc" : [
-          "Show AClock, if already showing, just hide it."
-        ],
-        "def" : "AClock:toggleShow()",
-        "parameters" : [
-
-        ],
-        "notes" : [
-
-        ],
-        "signature" : "AClock:toggleShow()",
-        "type" : "Method",
-        "returns" : [
-
-        ],
-        "name" : "toggleShow",
-        "desc" : "Show AClock, if already showing, just hide it."
-      }
-    ],
     "Method" : [
       {
         "doc" : "Show AClock, if already showing, just hide it.",
@@ -73,6 +48,31 @@
     ],
     "Command" : [
 
+    ],
+    "Field" : [
+
+    ],
+    "items" : [
+      {
+        "doc" : "Show AClock, if already showing, just hide it.",
+        "stripped_doc" : [
+          "Show AClock, if already showing, just hide it."
+        ],
+        "def" : "AClock:toggleShow()",
+        "parameters" : [
+
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "AClock:toggleShow()",
+        "type" : "Method",
+        "returns" : [
+
+        ],
+        "name" : "toggleShow",
+        "desc" : "Show AClock, if already showing, just hide it."
+      }
     ],
     "name" : "AClock"
   }

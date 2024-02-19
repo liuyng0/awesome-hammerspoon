@@ -15,11 +15,11 @@
     "stripped_doc" : [
 
     ],
+    "type" : "Module",
+    "desc" : "Modal keybindings environment management. Just an wrapper of `hs.hotkey.modal`.",
     "Deprecated" : [
 
     ],
-    "type" : "Module",
-    "desc" : "Modal keybindings environment management. Just an wrapper of `hs.hotkey.modal`.",
     "Constructor" : [
 
     ],
@@ -32,7 +32,9 @@
           ""
         ],
         "def" : "ModalMgr:new(id)",
-        "desc" : "Create a new modal keybindings environment",
+        "parameters" : [
+          " * id - A string specifying ID of new modal keybindings"
+        ],
         "notes" : [
 
         ],
@@ -42,9 +44,7 @@
 
         ],
         "name" : "new",
-        "parameters" : [
-          " * id - A string specifying ID of new modal keybindings"
-        ]
+        "desc" : "Create a new modal keybindings environment"
       },
       {
         "doc" : "Toggle the cheatsheet display of current modal environments's keybindings.\n\nParameters:\n * iterList - An table specifying IDs of modal environments or active_list. Optional, defaults to all active environments.\n * force - A optional boolean value to force show cheatsheet, defaults to `nil` (automatically).",
@@ -53,7 +53,10 @@
           ""
         ],
         "def" : "ModalMgr:toggleCheatsheet([idList], [force])",
-        "desc" : "Toggle the cheatsheet display of current modal environments's keybindings.",
+        "parameters" : [
+          " * iterList - An table specifying IDs of modal environments or active_list. Optional, defaults to all active environments.",
+          " * force - A optional boolean value to force show cheatsheet, defaults to `nil` (automatically)."
+        ],
         "notes" : [
 
         ],
@@ -63,10 +66,7 @@
 
         ],
         "name" : "toggleCheatsheet",
-        "parameters" : [
-          " * iterList - An table specifying IDs of modal environments or active_list. Optional, defaults to all active environments.",
-          " * force - A optional boolean value to force show cheatsheet, defaults to `nil` (automatically)."
-        ]
+        "desc" : "Toggle the cheatsheet display of current modal environments's keybindings."
       },
       {
         "doc" : "Activate all modal environment in `idList`.\n\nParameters:\n * idList - An table specifying IDs of modal environments\n * trayColor - An optional string (e.g. #000000) specifying the color of modalTray, defaults to `nil`.\n * showKeys - A optional boolean value to show all available keybindings, defaults to `nil`.",
@@ -75,7 +75,11 @@
           ""
         ],
         "def" : "ModalMgr:activate(idList, [trayColor], [showKeys])",
-        "desc" : "Activate all modal environment in `idList`.",
+        "parameters" : [
+          " * idList - An table specifying IDs of modal environments",
+          " * trayColor - An optional string (e.g. #000000) specifying the color of modalTray, defaults to `nil`.",
+          " * showKeys - A optional boolean value to show all available keybindings, defaults to `nil`."
+        ],
         "notes" : [
 
         ],
@@ -85,11 +89,7 @@
 
         ],
         "name" : "activate",
-        "parameters" : [
-          " * idList - An table specifying IDs of modal environments",
-          " * trayColor - An optional string (e.g. #000000) specifying the color of modalTray, defaults to `nil`.",
-          " * showKeys - A optional boolean value to show all available keybindings, defaults to `nil`."
-        ]
+        "desc" : "Activate all modal environment in `idList`."
       },
       {
         "doc" : "Deactivate modal environments in `idList`.\n\nParameters:\n * idList - An table specifying IDs of modal environments",
@@ -98,7 +98,9 @@
           ""
         ],
         "def" : "ModalMgr:deactivate(idList)",
-        "desc" : "Deactivate modal environments in `idList`.",
+        "parameters" : [
+          " * idList - An table specifying IDs of modal environments"
+        ],
         "notes" : [
 
         ],
@@ -108,9 +110,7 @@
 
         ],
         "name" : "deactivate",
-        "parameters" : [
-          " * idList - An table specifying IDs of modal environments"
-        ]
+        "desc" : "Deactivate modal environments in `idList`."
       },
       {
         "doc" : "Deactivate all active modal environments.",
@@ -118,7 +118,9 @@
           "Deactivate all active modal environments."
         ],
         "def" : "ModalMgr:deactivateAll()",
-        "desc" : "Deactivate all active modal environments.",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -128,9 +130,7 @@
 
         ],
         "name" : "deactivateAll",
-        "parameters" : [
-
-        ]
+        "desc" : "Deactivate all active modal environments."
       }
     ],
     "Command" : [
@@ -147,7 +147,11 @@
           ""
         ],
         "def" : "ModalMgr:activate(idList, [trayColor], [showKeys])",
-        "desc" : "Activate all modal environment in `idList`.",
+        "parameters" : [
+          " * idList - An table specifying IDs of modal environments",
+          " * trayColor - An optional string (e.g. #000000) specifying the color of modalTray, defaults to `nil`.",
+          " * showKeys - A optional boolean value to show all available keybindings, defaults to `nil`."
+        ],
         "notes" : [
 
         ],
@@ -157,11 +161,7 @@
 
         ],
         "name" : "activate",
-        "parameters" : [
-          " * idList - An table specifying IDs of modal environments",
-          " * trayColor - An optional string (e.g. #000000) specifying the color of modalTray, defaults to `nil`.",
-          " * showKeys - A optional boolean value to show all available keybindings, defaults to `nil`."
-        ]
+        "desc" : "Activate all modal environment in `idList`."
       },
       {
         "doc" : "Deactivate modal environments in `idList`.\n\nParameters:\n * idList - An table specifying IDs of modal environments",
@@ -170,7 +170,9 @@
           ""
         ],
         "def" : "ModalMgr:deactivate(idList)",
-        "desc" : "Deactivate modal environments in `idList`.",
+        "parameters" : [
+          " * idList - An table specifying IDs of modal environments"
+        ],
         "notes" : [
 
         ],
@@ -180,9 +182,7 @@
 
         ],
         "name" : "deactivate",
-        "parameters" : [
-          " * idList - An table specifying IDs of modal environments"
-        ]
+        "desc" : "Deactivate modal environments in `idList`."
       },
       {
         "doc" : "Deactivate all active modal environments.",
@@ -190,7 +190,9 @@
           "Deactivate all active modal environments."
         ],
         "def" : "ModalMgr:deactivateAll()",
-        "desc" : "Deactivate all active modal environments.",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -200,9 +202,7 @@
 
         ],
         "name" : "deactivateAll",
-        "parameters" : [
-
-        ]
+        "desc" : "Deactivate all active modal environments."
       },
       {
         "doc" : "Create a new modal keybindings environment\n\nParameters:\n * id - A string specifying ID of new modal keybindings",
@@ -211,7 +211,9 @@
           ""
         ],
         "def" : "ModalMgr:new(id)",
-        "desc" : "Create a new modal keybindings environment",
+        "parameters" : [
+          " * id - A string specifying ID of new modal keybindings"
+        ],
         "notes" : [
 
         ],
@@ -221,9 +223,7 @@
 
         ],
         "name" : "new",
-        "parameters" : [
-          " * id - A string specifying ID of new modal keybindings"
-        ]
+        "desc" : "Create a new modal keybindings environment"
       },
       {
         "doc" : "Toggle the cheatsheet display of current modal environments's keybindings.\n\nParameters:\n * iterList - An table specifying IDs of modal environments or active_list. Optional, defaults to all active environments.\n * force - A optional boolean value to force show cheatsheet, defaults to `nil` (automatically).",
@@ -232,7 +232,10 @@
           ""
         ],
         "def" : "ModalMgr:toggleCheatsheet([idList], [force])",
-        "desc" : "Toggle the cheatsheet display of current modal environments's keybindings.",
+        "parameters" : [
+          " * iterList - An table specifying IDs of modal environments or active_list. Optional, defaults to all active environments.",
+          " * force - A optional boolean value to force show cheatsheet, defaults to `nil` (automatically)."
+        ],
         "notes" : [
 
         ],
@@ -242,10 +245,7 @@
 
         ],
         "name" : "toggleCheatsheet",
-        "parameters" : [
-          " * iterList - An table specifying IDs of modal environments or active_list. Optional, defaults to all active environments.",
-          " * force - A optional boolean value to force show cheatsheet, defaults to `nil` (automatically)."
-        ]
+        "desc" : "Toggle the cheatsheet display of current modal environments's keybindings."
       }
     ],
     "name" : "ModalMgr"

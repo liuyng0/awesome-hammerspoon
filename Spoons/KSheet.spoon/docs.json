@@ -15,11 +15,11 @@
     "stripped_doc" : [
 
     ],
+    "type" : "Module",
     "desc" : "Keybindings cheatsheet for current application",
     "Deprecated" : [
 
     ],
-    "type" : "Module",
     "Constructor" : [
 
     ],
@@ -27,10 +27,12 @@
     "Method" : [
       {
         "doc" : "Show current application's keybindings in a webview",
-        "name" : "show",
-        "desc" : "Show current application's keybindings in a webview",
         "stripped_doc" : [
           "Show current application's keybindings in a webview"
+        ],
+        "def" : "KSheet:show()",
+        "parameters" : [
+
         ],
         "notes" : [
 
@@ -40,17 +42,17 @@
         "returns" : [
 
         ],
-        "def" : "KSheet:show()",
-        "parameters" : [
-
-        ]
+        "name" : "show",
+        "desc" : "Show current application's keybindings in a webview"
       },
       {
         "doc" : "Hide the cheatsheet webview",
-        "name" : "hide",
-        "desc" : "Hide the cheatsheet webview",
         "stripped_doc" : [
           "Hide the cheatsheet webview"
+        ],
+        "def" : "KSheet:hide()",
+        "parameters" : [
+
         ],
         "notes" : [
 
@@ -60,10 +62,8 @@
         "returns" : [
 
         ],
-        "def" : "KSheet:hide()",
-        "parameters" : [
-
-        ]
+        "name" : "hide",
+        "desc" : "Hide the cheatsheet webview"
       }
     ],
     "Command" : [
@@ -75,10 +75,12 @@
     "items" : [
       {
         "doc" : "Hide the cheatsheet webview",
-        "name" : "hide",
-        "desc" : "Hide the cheatsheet webview",
         "stripped_doc" : [
           "Hide the cheatsheet webview"
+        ],
+        "def" : "KSheet:hide()",
+        "parameters" : [
+
         ],
         "notes" : [
 
@@ -88,17 +90,17 @@
         "returns" : [
 
         ],
-        "def" : "KSheet:hide()",
-        "parameters" : [
-
-        ]
+        "name" : "hide",
+        "desc" : "Hide the cheatsheet webview"
       },
       {
         "doc" : "Show current application's keybindings in a webview",
-        "name" : "show",
-        "desc" : "Show current application's keybindings in a webview",
         "stripped_doc" : [
           "Show current application's keybindings in a webview"
+        ],
+        "def" : "KSheet:show()",
+        "parameters" : [
+
         ],
         "notes" : [
 
@@ -108,10 +110,8 @@
         "returns" : [
 
         ],
-        "def" : "KSheet:show()",
-        "parameters" : [
-
-        ]
+        "name" : "show",
+        "desc" : "Show current application's keybindings in a webview"
       }
     ],
     "name" : "KSheet"

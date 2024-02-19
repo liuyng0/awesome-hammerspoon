@@ -186,7 +186,7 @@ function M.create(jsonDocs, prefix)
     local fname = options.annotations .. "/" .. module.name .. ".lua"
     local fmtime = hs.fs.attributes(fname, "modification")
     if fmtime == nil or mtime > fmtime then
-      -- print("creating " .. fname)
+      print("creating " .. fname)
       local fd = io.open(fname, "w+")
       io.output(fd)
       M.processModule(module)

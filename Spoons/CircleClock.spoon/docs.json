@@ -16,26 +16,26 @@
 
     ],
     "type" : "Module",
+    "desc" : "A circleclock inset into the desktop",
     "Deprecated" : [
 
     ],
-    "desc" : "A circleclock inset into the desktop",
     "Constructor" : [
 
     ],
-    "Field" : [
-
-    ],
+    "doc" : "A circleclock inset into the desktop\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/CircleClock.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/CircleClock.spoon.zip)",
     "Method" : [
 
     ],
     "Command" : [
 
     ],
+    "Field" : [
+
+    ],
     "items" : [
 
     ],
-    "doc" : "A circleclock inset into the desktop\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/CircleClock.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/CircleClock.spoon.zip)",
     "name" : "CircleClock"
   }
 ]

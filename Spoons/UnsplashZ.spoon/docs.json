@@ -15,11 +15,11 @@
     "stripped_doc" : [
 
     ],
+    "type" : "Module",
+    "desc" : "Use unsplash images as wallpaper",
     "Deprecated" : [
 
     ],
-    "desc" : "Use unsplash images as wallpaper",
-    "type" : "Module",
     "Constructor" : [
 
     ],
@@ -30,10 +30,10 @@
     "Command" : [
 
     ],
-    "items" : [
+    "Field" : [
 
     ],
-    "Field" : [
+    "items" : [
 
     ],
     "name" : "UnsplashZ"

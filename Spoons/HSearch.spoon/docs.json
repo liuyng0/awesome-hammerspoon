@@ -15,27 +15,25 @@
     "stripped_doc" : [
 
     ],
+    "type" : "Module",
+    "desc" : "Hammerspoon Search",
     "Deprecated" : [
 
     ],
-    "type" : "Module",
-    "desc" : "Hammerspoon Search",
     "Constructor" : [
 
     ],
-    "Field" : [
-
-    ],
+    "doc" : "Hammerspoon Search\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HSearch.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HSearch.spoon.zip)",
     "Method" : [
       {
         "doc" : "Tigger new source according to hs.chooser's query string and keyword. Only for debug purpose in usual.",
         "stripped_doc" : [
           "Tigger new source according to hs.chooser's query string and keyword. Only for debug purpose in usual."
         ],
+        "def" : "HSearch:switchSource()",
         "parameters" : [
 
         ],
-        "def" : "HSearch:switchSource()",
         "notes" : [
 
         ],
@@ -44,18 +42,18 @@
         "returns" : [
 
         ],
-        "desc" : "Tigger new source according to hs.chooser's query string and keyword. Only for debug purpose in usual.",
-        "name" : "switchSource"
+        "name" : "switchSource",
+        "desc" : "Tigger new source according to hs.chooser's query string and keyword. Only for debug purpose in usual."
       },
       {
         "doc" : "Load new sources from `HSearch.search_path`, the search_path defaults to `~\/.hammerspoon\/private\/hsearch_dir` and the HSearch Spoon directory. Only for debug purpose in usual.",
         "stripped_doc" : [
           "Load new sources from `HSearch.search_path`, the search_path defaults to `~\/.hammerspoon\/private\/hsearch_dir` and the HSearch Spoon directory. Only for debug purpose in usual."
         ],
+        "def" : "HSearch:loadSources()",
         "parameters" : [
 
         ],
-        "def" : "HSearch:loadSources()",
         "notes" : [
 
         ],
@@ -64,18 +62,18 @@
         "returns" : [
 
         ],
-        "desc" : "Load new sources from `HSearch.search_path`, the search_path defaults to `~\/.hammerspoon\/private\/hsearch_dir` and the HSearch Spoon directory. Only for debug purpose in usual.",
-        "name" : "loadSources"
+        "name" : "loadSources",
+        "desc" : "Load new sources from `HSearch.search_path`, the search_path defaults to `~\/.hammerspoon\/private\/hsearch_dir` and the HSearch Spoon directory. Only for debug purpose in usual."
       },
       {
         "doc" : "Toggle the display of HSearch",
         "stripped_doc" : [
           "Toggle the display of HSearch"
         ],
+        "def" : "HSearch:toggleShow()",
         "parameters" : [
 
         ],
-        "def" : "HSearch:toggleShow()",
         "notes" : [
 
         ],
@@ -84,24 +82,54 @@
         "returns" : [
 
         ],
-        "desc" : "Toggle the display of HSearch",
-        "name" : "toggleShow"
+        "name" : "toggleShow",
+        "desc" : "Toggle the display of HSearch"
+      },
+      {
+        "doc" : "Make chooser source based on http request\n\nParameters:\n * overview - {text=\"Type v ⇥ to ...\", image=hsearch:resourceImage(\"path\"), keyword=\"v\"}\n * query_url -  http get url\n * item_mapping_func - convert item from post response\n * output - the new output method {name, function(selectedItem)}\n * placeholderText - the placeholderText show when no input\n\nReturn:\n * A chooser source which can feed to HSearch",
+        "stripped_doc" : [
+          "Make chooser source based on http request",
+          ""
+        ],
+        "def" : "HSearch:makeRequestSource(options)",
+        "parameters" : [
+          " * overview - {text=\"Type v ⇥ to ...\", image=hsearch:resourceImage(\"path\"), keyword=\"v\"}",
+          " * query_url -  http get url",
+          " * item_mapping_func - convert item from post response",
+          " * output - the new output method {name, function(selectedItem)}",
+          " * placeholderText - the placeholderText show when no input",
+          "",
+          "Return:",
+          " * A chooser source which can feed to HSearch"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "HSearch:makeRequestSource(options)",
+        "type" : "Method",
+        "returns" : [
+
+        ],
+        "name" : "makeRequestSource",
+        "desc" : "Make chooser source based on http request"
       }
     ],
     "Command" : [
 
     ],
-    "doc" : "Hammerspoon Search\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HSearch.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HSearch.spoon.zip)",
+    "Field" : [
+
+    ],
     "items" : [
       {
         "doc" : "Load new sources from `HSearch.search_path`, the search_path defaults to `~\/.hammerspoon\/private\/hsearch_dir` and the HSearch Spoon directory. Only for debug purpose in usual.",
         "stripped_doc" : [
           "Load new sources from `HSearch.search_path`, the search_path defaults to `~\/.hammerspoon\/private\/hsearch_dir` and the HSearch Spoon directory. Only for debug purpose in usual."
         ],
+        "def" : "HSearch:loadSources()",
         "parameters" : [
 
         ],
-        "def" : "HSearch:loadSources()",
         "notes" : [
 
         ],
@@ -110,18 +138,46 @@
         "returns" : [
 
         ],
-        "desc" : "Load new sources from `HSearch.search_path`, the search_path defaults to `~\/.hammerspoon\/private\/hsearch_dir` and the HSearch Spoon directory. Only for debug purpose in usual.",
-        "name" : "loadSources"
+        "name" : "loadSources",
+        "desc" : "Load new sources from `HSearch.search_path`, the search_path defaults to `~\/.hammerspoon\/private\/hsearch_dir` and the HSearch Spoon directory. Only for debug purpose in usual."
+      },
+      {
+        "doc" : "Make chooser source based on http request\n\nParameters:\n * overview - {text=\"Type v ⇥ to ...\", image=hsearch:resourceImage(\"path\"), keyword=\"v\"}\n * query_url -  http get url\n * item_mapping_func - convert item from post response\n * output - the new output method {name, function(selectedItem)}\n * placeholderText - the placeholderText show when no input\n\nReturn:\n * A chooser source which can feed to HSearch",
+        "stripped_doc" : [
+          "Make chooser source based on http request",
+          ""
+        ],
+        "def" : "HSearch:makeRequestSource(options)",
+        "parameters" : [
+          " * overview - {text=\"Type v ⇥ to ...\", image=hsearch:resourceImage(\"path\"), keyword=\"v\"}",
+          " * query_url -  http get url",
+          " * item_mapping_func - convert item from post response",
+          " * output - the new output method {name, function(selectedItem)}",
+          " * placeholderText - the placeholderText show when no input",
+          "",
+          "Return:",
+          " * A chooser source which can feed to HSearch"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "HSearch:makeRequestSource(options)",
+        "type" : "Method",
+        "returns" : [
+
+        ],
+        "name" : "makeRequestSource",
+        "desc" : "Make chooser source based on http request"
       },
       {
         "doc" : "Tigger new source according to hs.chooser's query string and keyword. Only for debug purpose in usual.",
         "stripped_doc" : [
           "Tigger new source according to hs.chooser's query string and keyword. Only for debug purpose in usual."
         ],
+        "def" : "HSearch:switchSource()",
         "parameters" : [
 
         ],
-        "def" : "HSearch:switchSource()",
         "notes" : [
 
         ],
@@ -130,18 +186,18 @@
         "returns" : [
 
         ],
-        "desc" : "Tigger new source according to hs.chooser's query string and keyword. Only for debug purpose in usual.",
-        "name" : "switchSource"
+        "name" : "switchSource",
+        "desc" : "Tigger new source according to hs.chooser's query string and keyword. Only for debug purpose in usual."
       },
       {
         "doc" : "Toggle the display of HSearch",
         "stripped_doc" : [
           "Toggle the display of HSearch"
         ],
+        "def" : "HSearch:toggleShow()",
         "parameters" : [
 
         ],
-        "def" : "HSearch:toggleShow()",
         "notes" : [
 
         ],
@@ -150,8 +206,8 @@
         "returns" : [
 
         ],
-        "desc" : "Toggle the display of HSearch",
-        "name" : "toggleShow"
+        "name" : "toggleShow",
+        "desc" : "Toggle the display of HSearch"
       }
     ],
     "name" : "HSearch"

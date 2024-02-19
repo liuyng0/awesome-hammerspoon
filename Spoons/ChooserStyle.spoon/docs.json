@@ -16,14 +16,14 @@
 
     ],
     "type" : "Module",
-    "desc" : "A horizonal calendar inset into the desktop",
+    "desc" : "A new Sample Spoon",
     "Deprecated" : [
 
     ],
     "Constructor" : [
 
     ],
-    "doc" : "A horizonal calendar inset into the desktop\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HCalendar.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HCalendar.spoon.zip)",
+    "doc" : "A new Sample Spoon\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/ChooserStyle.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/ChooserStyle.spoon.zip)",
     "Method" : [
 
     ],
@@ -36,6 +36,6 @@
     "items" : [
 
     ],
-    "name" : "HCalendar"
+    "name" : "ChooserStyle"
   }
 ]

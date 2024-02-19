@@ -11,12 +11,14 @@
     ],
     "Variable" : [
       {
-        "desc" : "How many items should be created on aria2 panel? Defaults to 5.",
+        "doc" : "How many items should be created on aria2 panel? Defaults to 5.",
         "stripped_doc" : [
           "How many items should be created on aria2 panel? Defaults to 5."
         ],
         "def" : "HSaria2.max_items",
-        "doc" : "How many items should be created on aria2 panel? Defaults to 5.",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -26,17 +28,17 @@
 
         ],
         "name" : "max_items",
-        "parameters" : [
-
-        ]
+        "desc" : "How many items should be created on aria2 panel? Defaults to 5."
       },
       {
-        "desc" : "How often should HSaria2 retrieve data from RPC server? Defaults to 1 (second).",
+        "doc" : "How often should HSaria2 retrieve data from RPC server? Defaults to 1 (second).",
         "stripped_doc" : [
           "How often should HSaria2 retrieve data from RPC server? Defaults to 1 (second)."
         ],
         "def" : "HSaria2.refresh_interval",
-        "doc" : "How often should HSaria2 retrieve data from RPC server? Defaults to 1 (second).",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -46,9 +48,7 @@
 
         ],
         "name" : "refresh_interval",
-        "parameters" : [
-
-        ]
+        "desc" : "How often should HSaria2 retrieve data from RPC server? Defaults to 1 (second)."
       }
     ],
     "stripped_doc" : [
@@ -62,14 +62,115 @@
     "Constructor" : [
 
     ],
+    "doc" : "Communicate with [aria2](https:\/\/github.com\/aria2\/aria2), an interactive panel included.\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HSaria2.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HSaria2.spoon.zip)",
+    "Method" : [
+      {
+        "doc" : "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations.\n\nParameters:\n * hostaddr - A sring specifying aria2 RPC host, including host name and port address. e.g. \"http:\/\/localhost:6800\/jsonrpc\".\n * secret - A string specifying host secret",
+        "stripped_doc" : [
+          "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations.",
+          ""
+        ],
+        "def" : "HSaria2:connectToHost(hostaddr, secret)",
+        "parameters" : [
+          " * hostaddr - A sring specifying aria2 RPC host, including host name and port address. e.g. \"http:\/\/localhost:6800\/jsonrpc\".",
+          " * secret - A string specifying host secret"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "HSaria2:connectToHost(hostaddr, secret)",
+        "type" : "Method",
+        "returns" : [
+
+        ],
+        "name" : "connectToHost",
+        "desc" : "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations."
+      },
+      {
+        "doc" : "Create new regular\/bt\/metalink task, and send notification when done.\n\nParameters:\n * tasktype - A string specifying task type. The value is one of these: `addUri`, `addTorrent`, `addMetalink`, `nil`. When tasktype is `nil`, aria2 will create a regular download task.\n * urls - A string or a table specifying URL. Multi URLs (table) are only available when tasktype is `addUri` or `nil`.\n * hostaddr - A optional sring specifying aria2 RPC host\n * secret - A optional string specifying host secret",
+        "stripped_doc" : [
+          "Create new regular\/bt\/metalink task, and send notification when done.",
+          ""
+        ],
+        "def" : "HSaria2:newTask(tasktype, urls, hostaddr, secret)",
+        "parameters" : [
+          " * tasktype - A string specifying task type. The value is one of these: `addUri`, `addTorrent`, `addMetalink`, `nil`. When tasktype is `nil`, aria2 will create a regular download task.",
+          " * urls - A string or a table specifying URL. Multi URLs (table) are only available when tasktype is `addUri` or `nil`.",
+          " * hostaddr - A optional sring specifying aria2 RPC host",
+          " * secret - A optional string specifying host secret"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "HSaria2:newTask(tasktype, urls, hostaddr, secret)",
+        "type" : "Method",
+        "returns" : [
+
+        ],
+        "name" : "newTask",
+        "desc" : "Create new regular\/bt\/metalink task, and send notification when done."
+      },
+      {
+        "doc" : "Send a command to `hostaddr`, only limited commands are supported.\n\nParameters:\n * command - A string specifying sending command. The value is one of these: `remove`, `forceRemove`, `pause`, `pauseAll`, `forcePause`, `forcePauseAll`, `unpause`, `unpauseAll`, `purgeDownloadResult`, `removeDownloadResult`.\n * gid - A string specifying GID (aria2 identifies each download by the ID called GID). This Parameter can be optional or not according to the value of `command`.\n * hostaddr - A optional sring specifying aria2 RPC host\n * secret - A optional string specifying host secret",
+        "stripped_doc" : [
+          "Send a command to `hostaddr`, only limited commands are supported.",
+          ""
+        ],
+        "def" : "HSaria2:sendCommand(command, gid, hostaddr, secret)",
+        "parameters" : [
+          " * command - A string specifying sending command. The value is one of these: `remove`, `forceRemove`, `pause`, `pauseAll`, `forcePause`, `forcePauseAll`, `unpause`, `unpauseAll`, `purgeDownloadResult`, `removeDownloadResult`.",
+          " * gid - A string specifying GID (aria2 identifies each download by the ID called GID). This Parameter can be optional or not according to the value of `command`.",
+          " * hostaddr - A optional sring specifying aria2 RPC host",
+          " * secret - A optional string specifying host secret"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "HSaria2:sendCommand(command, gid, hostaddr, secret)",
+        "type" : "Method",
+        "returns" : [
+
+        ],
+        "name" : "sendCommand",
+        "desc" : "Send a command to `hostaddr`, only limited commands are supported."
+      },
+      {
+        "doc" : "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.",
+        "stripped_doc" : [
+          "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc."
+        ],
+        "def" : "HSaria2:togglePanel()",
+        "parameters" : [
+
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "HSaria2:togglePanel()",
+        "type" : "Method",
+        "returns" : [
+
+        ],
+        "name" : "togglePanel",
+        "desc" : "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc."
+      }
+    ],
+    "Command" : [
+
+    ],
+    "Field" : [
+
+    ],
     "items" : [
       {
-        "desc" : "How many items should be created on aria2 panel? Defaults to 5.",
+        "doc" : "How many items should be created on aria2 panel? Defaults to 5.",
         "stripped_doc" : [
           "How many items should be created on aria2 panel? Defaults to 5."
         ],
         "def" : "HSaria2.max_items",
-        "doc" : "How many items should be created on aria2 panel? Defaults to 5.",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -79,17 +180,17 @@
 
         ],
         "name" : "max_items",
-        "parameters" : [
-
-        ]
+        "desc" : "How many items should be created on aria2 panel? Defaults to 5."
       },
       {
-        "desc" : "How often should HSaria2 retrieve data from RPC server? Defaults to 1 (second).",
+        "doc" : "How often should HSaria2 retrieve data from RPC server? Defaults to 1 (second).",
         "stripped_doc" : [
           "How often should HSaria2 retrieve data from RPC server? Defaults to 1 (second)."
         ],
         "def" : "HSaria2.refresh_interval",
-        "doc" : "How often should HSaria2 retrieve data from RPC server? Defaults to 1 (second).",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -99,18 +200,19 @@
 
         ],
         "name" : "refresh_interval",
-        "parameters" : [
-
-        ]
+        "desc" : "How often should HSaria2 retrieve data from RPC server? Defaults to 1 (second)."
       },
       {
-        "desc" : "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations.",
+        "doc" : "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations.\n\nParameters:\n * hostaddr - A sring specifying aria2 RPC host, including host name and port address. e.g. \"http:\/\/localhost:6800\/jsonrpc\".\n * secret - A string specifying host secret",
         "stripped_doc" : [
           "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations.",
           ""
         ],
         "def" : "HSaria2:connectToHost(hostaddr, secret)",
-        "doc" : "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations.\n\nParameters:\n * hostaddr - A sring specifying aria2 RPC host, including host name and port address. e.g. \"http:\/\/localhost:6800\/jsonrpc\".\n * secret - A string specifying host secret",
+        "parameters" : [
+          " * hostaddr - A sring specifying aria2 RPC host, including host name and port address. e.g. \"http:\/\/localhost:6800\/jsonrpc\".",
+          " * secret - A string specifying host secret"
+        ],
         "notes" : [
 
         ],
@@ -120,19 +222,21 @@
 
         ],
         "name" : "connectToHost",
-        "parameters" : [
-          " * hostaddr - A sring specifying aria2 RPC host, including host name and port address. e.g. \"http:\/\/localhost:6800\/jsonrpc\".",
-          " * secret - A string specifying host secret"
-        ]
+        "desc" : "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations."
       },
       {
-        "desc" : "Create new regular\/bt\/metalink task, and send notification when done.",
+        "doc" : "Create new regular\/bt\/metalink task, and send notification when done.\n\nParameters:\n * tasktype - A string specifying task type. The value is one of these: `addUri`, `addTorrent`, `addMetalink`, `nil`. When tasktype is `nil`, aria2 will create a regular download task.\n * urls - A string or a table specifying URL. Multi URLs (table) are only available when tasktype is `addUri` or `nil`.\n * hostaddr - A optional sring specifying aria2 RPC host\n * secret - A optional string specifying host secret",
         "stripped_doc" : [
           "Create new regular\/bt\/metalink task, and send notification when done.",
           ""
         ],
         "def" : "HSaria2:newTask(tasktype, urls, hostaddr, secret)",
-        "doc" : "Create new regular\/bt\/metalink task, and send notification when done.\n\nParameters:\n * tasktype - A string specifying task type. The value is one of these: `addUri`, `addTorrent`, `addMetalink`, `nil`. When tasktype is `nil`, aria2 will create a regular download task.\n * urls - A string or a table specifying URL. Multi URLs (table) are only available when tasktype is `addUri` or `nil`.\n * hostaddr - A optional sring specifying aria2 RPC host\n * secret - A optional string specifying host secret",
+        "parameters" : [
+          " * tasktype - A string specifying task type. The value is one of these: `addUri`, `addTorrent`, `addMetalink`, `nil`. When tasktype is `nil`, aria2 will create a regular download task.",
+          " * urls - A string or a table specifying URL. Multi URLs (table) are only available when tasktype is `addUri` or `nil`.",
+          " * hostaddr - A optional sring specifying aria2 RPC host",
+          " * secret - A optional string specifying host secret"
+        ],
         "notes" : [
 
         ],
@@ -142,21 +246,21 @@
 
         ],
         "name" : "newTask",
-        "parameters" : [
-          " * tasktype - A string specifying task type. The value is one of these: `addUri`, `addTorrent`, `addMetalink`, `nil`. When tasktype is `nil`, aria2 will create a regular download task.",
-          " * urls - A string or a table specifying URL. Multi URLs (table) are only available when tasktype is `addUri` or `nil`.",
-          " * hostaddr - A optional sring specifying aria2 RPC host",
-          " * secret - A optional string specifying host secret"
-        ]
+        "desc" : "Create new regular\/bt\/metalink task, and send notification when done."
       },
       {
-        "desc" : "Send a command to `hostaddr`, only limited commands are supported.",
+        "doc" : "Send a command to `hostaddr`, only limited commands are supported.\n\nParameters:\n * command - A string specifying sending command. The value is one of these: `remove`, `forceRemove`, `pause`, `pauseAll`, `forcePause`, `forcePauseAll`, `unpause`, `unpauseAll`, `purgeDownloadResult`, `removeDownloadResult`.\n * gid - A string specifying GID (aria2 identifies each download by the ID called GID). This Parameter can be optional or not according to the value of `command`.\n * hostaddr - A optional sring specifying aria2 RPC host\n * secret - A optional string specifying host secret",
         "stripped_doc" : [
           "Send a command to `hostaddr`, only limited commands are supported.",
           ""
         ],
         "def" : "HSaria2:sendCommand(command, gid, hostaddr, secret)",
-        "doc" : "Send a command to `hostaddr`, only limited commands are supported.\n\nParameters:\n * command - A string specifying sending command. The value is one of these: `remove`, `forceRemove`, `pause`, `pauseAll`, `forcePause`, `forcePauseAll`, `unpause`, `unpauseAll`, `purgeDownloadResult`, `removeDownloadResult`.\n * gid - A string specifying GID (aria2 identifies each download by the ID called GID). This Parameter can be optional or not according to the value of `command`.\n * hostaddr - A optional sring specifying aria2 RPC host\n * secret - A optional string specifying host secret",
+        "parameters" : [
+          " * command - A string specifying sending command. The value is one of these: `remove`, `forceRemove`, `pause`, `pauseAll`, `forcePause`, `forcePauseAll`, `unpause`, `unpauseAll`, `purgeDownloadResult`, `removeDownloadResult`.",
+          " * gid - A string specifying GID (aria2 identifies each download by the ID called GID). This Parameter can be optional or not according to the value of `command`.",
+          " * hostaddr - A optional sring specifying aria2 RPC host",
+          " * secret - A optional string specifying host secret"
+        ],
         "notes" : [
 
         ],
@@ -166,20 +270,17 @@
 
         ],
         "name" : "sendCommand",
-        "parameters" : [
-          " * command - A string specifying sending command. The value is one of these: `remove`, `forceRemove`, `pause`, `pauseAll`, `forcePause`, `forcePauseAll`, `unpause`, `unpauseAll`, `purgeDownloadResult`, `removeDownloadResult`.",
-          " * gid - A string specifying GID (aria2 identifies each download by the ID called GID). This Parameter can be optional or not according to the value of `command`.",
-          " * hostaddr - A optional sring specifying aria2 RPC host",
-          " * secret - A optional string specifying host secret"
-        ]
+        "desc" : "Send a command to `hostaddr`, only limited commands are supported."
       },
       {
-        "desc" : "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.",
+        "doc" : "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.",
         "stripped_doc" : [
           "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc."
         ],
         "def" : "HSaria2:togglePanel()",
-        "doc" : "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.",
+        "parameters" : [
+
+        ],
         "notes" : [
 
         ],
@@ -189,110 +290,9 @@
 
         ],
         "name" : "togglePanel",
-        "parameters" : [
-
-        ]
+        "desc" : "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc."
       }
     ],
-    "Method" : [
-      {
-        "desc" : "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations.",
-        "stripped_doc" : [
-          "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations.",
-          ""
-        ],
-        "def" : "HSaria2:connectToHost(hostaddr, secret)",
-        "doc" : "Try connect to `hostaddr` with `secret`. If succeed, they will become default values for following-up oprations.\n\nParameters:\n * hostaddr - A sring specifying aria2 RPC host, including host name and port address. e.g. \"http:\/\/localhost:6800\/jsonrpc\".\n * secret - A string specifying host secret",
-        "notes" : [
-
-        ],
-        "signature" : "HSaria2:connectToHost(hostaddr, secret)",
-        "type" : "Method",
-        "returns" : [
-
-        ],
-        "name" : "connectToHost",
-        "parameters" : [
-          " * hostaddr - A sring specifying aria2 RPC host, including host name and port address. e.g. \"http:\/\/localhost:6800\/jsonrpc\".",
-          " * secret - A string specifying host secret"
-        ]
-      },
-      {
-        "desc" : "Create new regular\/bt\/metalink task, and send notification when done.",
-        "stripped_doc" : [
-          "Create new regular\/bt\/metalink task, and send notification when done.",
-          ""
-        ],
-        "def" : "HSaria2:newTask(tasktype, urls, hostaddr, secret)",
-        "doc" : "Create new regular\/bt\/metalink task, and send notification when done.\n\nParameters:\n * tasktype - A string specifying task type. The value is one of these: `addUri`, `addTorrent`, `addMetalink`, `nil`. When tasktype is `nil`, aria2 will create a regular download task.\n * urls - A string or a table specifying URL. Multi URLs (table) are only available when tasktype is `addUri` or `nil`.\n * hostaddr - A optional sring specifying aria2 RPC host\n * secret - A optional string specifying host secret",
-        "notes" : [
-
-        ],
-        "signature" : "HSaria2:newTask(tasktype, urls, hostaddr, secret)",
-        "type" : "Method",
-        "returns" : [
-
-        ],
-        "name" : "newTask",
-        "parameters" : [
-          " * tasktype - A string specifying task type. The value is one of these: `addUri`, `addTorrent`, `addMetalink`, `nil`. When tasktype is `nil`, aria2 will create a regular download task.",
-          " * urls - A string or a table specifying URL. Multi URLs (table) are only available when tasktype is `addUri` or `nil`.",
-          " * hostaddr - A optional sring specifying aria2 RPC host",
-          " * secret - A optional string specifying host secret"
-        ]
-      },
-      {
-        "desc" : "Send a command to `hostaddr`, only limited commands are supported.",
-        "stripped_doc" : [
-          "Send a command to `hostaddr`, only limited commands are supported.",
-          ""
-        ],
-        "def" : "HSaria2:sendCommand(command, gid, hostaddr, secret)",
-        "doc" : "Send a command to `hostaddr`, only limited commands are supported.\n\nParameters:\n * command - A string specifying sending command. The value is one of these: `remove`, `forceRemove`, `pause`, `pauseAll`, `forcePause`, `forcePauseAll`, `unpause`, `unpauseAll`, `purgeDownloadResult`, `removeDownloadResult`.\n * gid - A string specifying GID (aria2 identifies each download by the ID called GID). This Parameter can be optional or not according to the value of `command`.\n * hostaddr - A optional sring specifying aria2 RPC host\n * secret - A optional string specifying host secret",
-        "notes" : [
-
-        ],
-        "signature" : "HSaria2:sendCommand(command, gid, hostaddr, secret)",
-        "type" : "Method",
-        "returns" : [
-
-        ],
-        "name" : "sendCommand",
-        "parameters" : [
-          " * command - A string specifying sending command. The value is one of these: `remove`, `forceRemove`, `pause`, `pauseAll`, `forcePause`, `forcePauseAll`, `unpause`, `unpauseAll`, `purgeDownloadResult`, `removeDownloadResult`.",
-          " * gid - A string specifying GID (aria2 identifies each download by the ID called GID). This Parameter can be optional or not according to the value of `command`.",
-          " * hostaddr - A optional sring specifying aria2 RPC host",
-          " * secret - A optional string specifying host secret"
-        ]
-      },
-      {
-        "desc" : "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.",
-        "stripped_doc" : [
-          "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc."
-        ],
-        "def" : "HSaria2:togglePanel()",
-        "doc" : "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.",
-        "notes" : [
-
-        ],
-        "signature" : "HSaria2:togglePanel()",
-        "type" : "Method",
-        "returns" : [
-
-        ],
-        "name" : "togglePanel",
-        "parameters" : [
-
-        ]
-      }
-    ],
-    "Command" : [
-
-    ],
-    "Field" : [
-
-    ],
-    "doc" : "Communicate with [aria2](https:\/\/github.com\/aria2\/aria2), an interactive panel included.\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HSaria2.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/HSaria2.spoon.zip)",
     "name" : "HSaria2"
   }
 ]
