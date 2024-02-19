@@ -18,7 +18,7 @@ obj.chromeTabs =
     spoon.HSearch:makeRequestSource {
     overview = {
         text = "Type ct ⇥ to select chrome tab",
-        image = hsearch:resourceImage("/resources/og/chrome-switch.png"),
+        image = hsearch:resourceImage("/resources/og/chrome-tab.png"),
         keyword = "ct"
     },
     query_url = "http://localhost:4000/chrome/tabs",
@@ -30,7 +30,7 @@ obj.chromeTabs =
             winId = item.winId,
             winIndex = item.winIndex,
             tabIndex = item.tabIndex,
-            image = hsearch:resourceImage("/resources/og/chrome-switch.png"),
+            image = hsearch:resourceImage("/resources/og/chrome-tab.png"),
             output = "chromeSwitchTab"
         }
     end,
@@ -45,7 +45,7 @@ obj.chromeBookmarks =
     spoon.HSearch:makeRequestSource {
     overview = {
         text = "Type cb ⇥ to open chrome bookmark",
-        image = hsearch:resourceImage("/resources/og/chrome-new.png"),
+        image = hsearch:resourceImage("/resources/og/chrome-bookmark.png"),
         keyword = "cb"
     },
     query_url = "http://localhost:4000/chrome/bookmarks",
@@ -54,7 +54,7 @@ obj.chromeBookmarks =
             text = item.path,
             subText = item.url,
             url = item.url,
-            image = hsearch:resourceImage("/resources/og/chrome-new.png"),
+            image = hsearch:resourceImage("/resources/og/chrome-bookmark.png"),
             output = "chromeOpenBookmark"
         }
     end,
