@@ -126,20 +126,17 @@ function getWindowNameFromCache(windowId, defaultWindowName)
     return defaultWindowName
 end
 
--- Except the focused window
-function selectWindowInList(allWindows, showAppNameAsPrefix)
-    local chooser =
-        hs.chooser.new(
-            function(choice)
-                if choice == nil then
-                    return
-                end
-                local chosenWindow = choice["windowObject"]
-                chosenWindow:unminimize()
-                chosenWindow:raise()
-                chosenWindow:focus()
-            end
-        )
+function obj.selectWindow(choice)
+    if choice == nil then
+        return
+    end
+    local chosenWindow = choice["windowObject"]
+    chosenWindow:unminimize()
+    chosenWindow:raise()
+    chosenWindow:focus()
+end
+
+function obj:getWindowChoices(allWindows, showAppNameAsPrefix)
     local chooserChoices = {}
     for _, w in pairs(allWindows) do
         table.insert(
@@ -173,6 +170,13 @@ function selectWindowInList(allWindows, showAppNameAsPrefix)
             c["text"] = c["application"]
         end
     end
+    return chooserChoices
+end
+
+-- Except the focused window
+function selectWindowInList(allWindows, showAppNameAsPrefix)
+    local chooser = hs.chooser.new(obj.selectWindow)
+    local chooserChoices = obj:getWindowChoices(allWindows, showAppNameAsPrefix)
     spoon.ChooserStyle:setChooserUI(chooser, chooserChoices)
     chooser:choices(chooserChoices)
     chooser:searchSubText(true):show()
