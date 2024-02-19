@@ -15,11 +15,11 @@
     "stripped_doc" : [
 
     ],
-    "type" : "Module",
     "desc" : "A widget showing time flown in one year.",
     "Deprecated" : [
 
     ],
+    "type" : "Module",
     "Constructor" : [
 
     ],
