@@ -50,6 +50,7 @@ local options = {
 }
 
 M.spoonPath = hs.spoons.scriptPath()
+local logger = hs.logger.new("EmmyLua", "debug")
 
 function M.comment(str, commentStr)
   commentStr = commentStr or "--"
@@ -176,7 +177,12 @@ end
 function M.create(jsonDocs, prefix)
   local mtime = hs.fs.attributes(jsonDocs, "modification")
   prefix = prefix or ""
+  logger.d("Reading: " .. jsonDocs)
   local data = hs.json.read(jsonDocs)
+  if data == nil then
+    logger.d("Empty json doc, skip: " .. jsonDocs)
+    return
+  end
   for _, module in ipairs(data) do
     if module.type ~= "Module" then
       error("Expected a module, but found type=" .. module.type)
@@ -186,7 +192,7 @@ function M.create(jsonDocs, prefix)
     local fname = options.annotations .. "/" .. module.name .. ".lua"
     local fmtime = hs.fs.attributes(fname, "modification")
     if fmtime == nil or mtime > fmtime then
-      print("creating " .. fname)
+      logger.d("creating " .. fname)
       local fd = io.open(fname, "w+")
       io.output(fd)
       M.processModule(module)
