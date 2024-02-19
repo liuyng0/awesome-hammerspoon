@@ -28,8 +28,7 @@ hspoon_list = {
     "PopupTranslateSelection",
     "SplitView",
     "AppBindings",
-    "ChooserStyle",
-    "EmmyLua"
+    "ChooserStyle"
 }
 
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.

@@ -24,7 +24,7 @@ obj.spoonPath = script_path()
 
 obj.sources = {}
 obj.sources_overview = {}
-obj.search_path = {hs.configdir .. "/private/hsearch_dir", obj.spoonPath}
+obj.search_path = { hs.configdir .. "/private/hsearch_dir", obj.spoonPath }
 obj.hotkeys = {}
 obj.source_kw = nil
 obj.placeholderText = "default rapidfuzz, @ exact match, # trie, : trie (insert ws between)"
@@ -67,23 +67,23 @@ end
 function obj:init()
     obj.chooser =
         hs.chooser.new(
-        function(chosen)
-            obj.trigger:disable()
-            -- Disable all hotkeys
-            for _, val in pairs(obj.hotkeys) do
-                for i = 1, #val do
-                    val[i]:disable()
+            function(chosen)
+                obj.trigger:disable()
+                -- Disable all hotkeys
+                for _, val in pairs(obj.hotkeys) do
+                    for i = 1, #val do
+                        val[i]:disable()
+                    end
+                end
+                if chosen ~= nil then
+                    if chosen.arg ~= nil then
+                        obj.output_pool[chosen.output](chosen.arg)
+                    else
+                        obj.output_pool[chosen.output](chosen)
+                    end
                 end
             end
-            if chosen ~= nil then
-                if chosen.arg ~= nil then
-                    obj.output_pool[chosen.output](chosen.arg)
-                else
-                    obj.output_pool[chosen.output](chosen)
-                end
-            end
-        end
-    )
+        )
     obj.chooser:searchSubText(true)
     obj.chooser:rows(12)
 end
@@ -116,12 +116,12 @@ function obj:switchSource()
             else
                 obj.source_kw = nil
                 local chooser_data = {
-                    {text = "No source found!", subText = "Maybe misspelled the keyword?"},
-                    {text = "Want to add your own source?", subText = "Feel free to read the code and open PRs. :)"}
+                    { text = "No source found!",             subText = "Maybe misspelled the keyword?" },
+                    { text = "Want to add your own source?", subText = "Feel free to read the code and open PRs. :)" }
                 }
                 obj:setChoices(chooser_data)
                 obj.chooser:queryChangedCallback()
-                hs.eventtap.keyStroke({"cmd"}, "a")
+                hs.eventtap.keyStroke({ "cmd" }, "a")
             end
         end
     else
@@ -187,7 +187,7 @@ function obj:loadSource(source)
     local function sourceFunc()
         local notice = source.notice
         if notice then
-            obj:setChoices({notice})
+            obj:setChoices({ notice })
         end
         local request = source.init_func
         if request then
@@ -278,13 +278,13 @@ function obj:toggleShow()
         if obj.trigger == nil then
             obj.trigger =
                 hs.hotkey.bind(
-                "",
-                "tab",
-                nil,
-                function()
-                    obj:switchSource()
-                end
-            )
+                    "",
+                    "tab",
+                    nil,
+                    function()
+                        obj:switchSource()
+                    end
+                )
         else
             obj.trigger:enable()
         end
@@ -299,15 +299,23 @@ function obj:toggleShow()
     end
 end
 
--- overview: {text="Type v ⇥ to ...", image=hsearch:resourceImage("path"), keyword="v"}
--- query_url: http get url
--- item_mapping_func: convert item from post response
--- output: the new output method {name, function(selectedItem)}
--- placeholderText: the placeholderText show when no input
+--- HSearch:makeRequestSource(options)
+--- Method
+--- Make chooser source based on http request
+---
+--- Parameters:
+---  * overview - {text="Type v ⇥ to ...", image=hsearch:resourceImage("path"), keyword="v"}
+---  * query_url -  http get url
+---  * item_mapping_func - convert item from post response
+---  * output - the new output method {name, function(selectedItem)}
+---  * placeholderText - the placeholderText show when no input
+---
+--- Return:
+---  * A chooser source which can feed to HSearch
 function obj:makeRequestSource(options)
     return {
         overview = options.overview,
-        notice = {text = "Requesting data, please wait a while …"},
+        notice = { text = "Requesting data, please wait a while …" },
         init_func = function()
             hs.http.asyncGet(
                 options.query_url,
@@ -316,10 +324,10 @@ function obj:makeRequestSource(options)
                     if status == 200 then
                         local retval, decoded_data =
                             pcall(
-                            function()
-                                return hs.json.decode(data)
-                            end
-                        )
+                                function()
+                                    return hs.json.decode(data)
+                                end
+                            )
                         if retval and #decoded_data > 0 then
                             local chooser_data = hs.fnutils.imap(decoded_data, options.item_mapping_func)
                             -- Make sure HSearch spoon is running now
