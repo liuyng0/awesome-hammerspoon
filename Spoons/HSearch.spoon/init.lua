@@ -27,7 +27,11 @@ obj.sources_overview = {}
 obj.search_path = { hs.configdir .. "/private/hsearch_dir", obj.spoonPath }
 obj.hotkeys = {}
 obj.source_kw = nil
-obj.placeholderText = "default rapidfuzz, @ exact match, # trie, : trie (insert ws between)"
+obj.searchSettingKey = "hs.chooser.algorithm"
+obj.placeholderGenerator = function()
+    return "algorithm: " .. (hs.settings.get(obj.searchSettingKey) or "default") .. ", @: text only, # subtext only"
+end
+
 local logger = hs.logger.new("HSearch", "debug")
 
 function obj:resourceImage(path)
@@ -137,7 +141,7 @@ function obj:switchSource()
             obj.source_kw = nil
             -- If no matching source then show sources overview
             local chooser_data = obj.sources_overview
-            obj.chooser:placeholderText(obj.placeholderText)
+            obj.chooser:placeholderText(obj.placeholderGenerator())
             obj:setChoices(chooser_data)
             obj.chooser:queryChangedCallback()
         end
@@ -207,7 +211,9 @@ function obj:loadSource(source)
         else
             obj.chooser:queryChangedCallback()
         end
-        if source.placeholderText then
+        if source.placeholderGenerator then
+            obj.chooser:placeholderText(source.placeholderGenerator())
+        elseif source.placeholderText then
             obj.chooser:placeholderText(source.placeholderText)
         else
             obj.chooser:placeholderText(nil)
@@ -230,7 +236,7 @@ function obj:loadSources()
         local file_list = io.popen("find " .. dir .. " -type f -name 'hs_*.lua'")
         for file in file_list:lines() do
             -- Exclude self
-            local f = loadfile(file)
+            local f, error_message = loadfile(file)
             if f then
                 logger.i("Loading " .. file .. " successfully")
                 local source = f()
@@ -247,7 +253,7 @@ function obj:loadSources()
                     end
                 end
             else
-                logger.e("Load fail: " .. file)
+                logger.e("Load fail: " .. file .. error_message)
             end
         end
     end

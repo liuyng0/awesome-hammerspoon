@@ -12,6 +12,7 @@ obj.overview = {
   image = hsearch:resourceImage("/resources/v2ex.png"),
   keyword = "v"
 }
+
 obj.query_url = "https://www.v2ex.com/api/topics/latest.json"
 
 return spoon.HSearch:makeRequestSource {
