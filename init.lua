@@ -71,19 +71,6 @@ function executeWithPathPopulated(command)
     end
 end
 
-function reloadConfig(files)
-    doReload = false
-    for _, file in pairs(files) do
-        if file:sub(-4) == ".lua" and pathInfo(file)["basename"]:sub(0, 2) ~= ".#" then
-            doReload = true
-        end
-    end
-    if doReload then
-        myWatcher:stop()
-        hs.reload()
-    end
-end
-
 -- ModalMgr Spoon must be loaded explicitly, because this repository heavily relies upon it.
 hs.loadSpoon("ModalMgr")
 
@@ -1612,7 +1599,7 @@ spoon.ModalMgr.supervisor:enter()
 spoon.AppBindings:bind(
     APP_GOODNOTES,
     {
-        { { "ctrl" }, "i", {}, "up" }, -- Scroll message window
+        { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
         { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
         { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
         { { "ctrl" }, "l", {}, "right" } -- Scroll message window
@@ -1622,7 +1609,7 @@ spoon.AppBindings:bind(
 spoon.AppBindings:bind(
     "Kindle",
     {
-        { { "ctrl" }, "i", {}, "up" }, -- Scroll message window
+        { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
         { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
         { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
         { { "ctrl" }, "l", {}, "right" } -- Scroll message window
@@ -1632,12 +1619,38 @@ spoon.AppBindings:bind(
 spoon.AppBindings:bind(
     "Preview",
     {
-        { { "ctrl" }, "i", {}, "up" }, -- Scroll message window
+        { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
         { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
         { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
         { { "ctrl" }, "l", {}, "right" } -- Scroll message window
     }
 )
+
+function anyNotIgnored(files)
+    local command = "cd ~/.hammerspoon && git check-ignore " .. table.concat(files, " ") .. " | wc -l"
+    local output, rc = hs.execute(command)
+    local not_ignored_exists = rc and tonumber(output) < #files
+    if not_ignored_exists then
+        logger.d("At least one file changed and not git ignored: " .. hs.inspect(files))
+    else
+        logger.d("All ignored: " .. hs.inspect(files))
+    end
+
+    return not_ignored_exists
+end
+
+function reloadConfig(files)
+    local mayReload = {}
+    for _, file in pairs(files) do
+        if file:sub(-4) == ".lua" and pathInfo(file)["basename"]:sub(0, 2) ~= ".#" then
+            table.insert(mayReload, file)
+        end
+    end
+    if #mayReload > 0 and anyNotIgnored(mayReload) then
+        myWatcher:stop()
+        hs.reload()
+    end
+end
 
 -- Watch the configuration change.
 myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
