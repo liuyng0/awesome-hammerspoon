@@ -23,7 +23,7 @@ obj.logger = hs.logger.new("ChooserStyle")
 obj.textSize = 15
 obj.subTextSize = 13
 
-function obj:x11Alpha(color, alpha)
+function obj:x11Alpha (color, alpha)
     return {
         red = color.red,
         green = color.green,
@@ -32,8 +32,8 @@ function obj:x11Alpha(color, alpha)
     }
 end
 
-function obj:hexAlpha(hex, alpha)
-    return {hex = hex, alpha = alpha}
+function obj:hexAlpha (hex, alpha)
+    return { hex = hex, alpha = alpha }
 end
 
 obj.lightStyle = {
@@ -114,12 +114,16 @@ obj.darkStyle = {
     }
 }
 
+function obj:smallText (text)
+    return hs.styledtext.new(text, { font = { size = 11 } })
+end
+
 -- options.darStyle: true or false
 -- options.textKey, default "text"
 -- options.subTextKey, default "subText"
 -- options.grayOutKey, default "grayOut"
 -- Use private parameter __colorpicker_style to define whether need to reset
-function obj:setChooserUI(chooser, choices, options)
+function obj:setChooserUI (chooser, choices, options)
     local style = obj.lightStyle
     if options ~= nil and options.darkStyle then
         chooser:bgDark(true)
@@ -148,31 +152,33 @@ function obj:setChooserUI(chooser, choices, options)
         obj.logger.w("Need to recolor")
         choices =
             funs.map(
-            choices,
-            function(choice)
-                choice.__colorpicker_style = style
-                local textStyle
-                if isGrayOut(choice) then
-                    textStyle = style.grayOut
-                else
-                    textStyle = style.default
-                end
+                choices,
+                function(choice)
+                    choice.__colorpicker_style = style
+                    local textStyle
+                    if isGrayOut(choice) then
+                        textStyle = style.grayOut
+                    else
+                        textStyle = style.default
+                    end
 
-                if choice[textKey] ~= nil then
-                    choice["text"] = obj:styledTextCompatible(choice[textKey], textStyle.text)
-                end
+                    if choice[textKey] ~= nil then
+                        choice["text"] = obj:styledTextCompatible(
+                        choice[textKey], textStyle.text)
+                    end
 
-                if choice[subTextKey] ~= nil then
-                    choice["subText"] = obj:styledTextCompatible(choice[subTextKey], textStyle.subText)
+                    if choice[subTextKey] ~= nil then
+                        choice["subText"] = obj:styledTextCompatible(
+                        choice[subTextKey], textStyle.subText)
+                    end
+                    return choice
                 end
-                return choice
-            end
-        )
+            )
     end
     -- obj.logger.w("Choices after converted " .. hs.inspect(choices))
 end
 
-function obj:needRecolor(choices, style)
+function obj:needRecolor (choices, style)
     return choices ~= nil and
         not funs.every(
             choices,
@@ -182,7 +188,7 @@ function obj:needRecolor(choices, style)
         )
 end
 
-function obj:styledTextCompatible(text, style)
+function obj:styledTextCompatible (text, style)
     if type(text) == "userdata" and text.__name == "hs.styledtext" then
         text:setStyle(style)
 
@@ -194,7 +200,7 @@ function obj:styledTextCompatible(text, style)
     end
 end
 
-function obj:getReorderedChoices(choices, grayOutKey)
+function obj:getReorderedChoices (choices, grayOutKey)
     local isGrayOut = function(a)
         return (a[grayOutKey] ~= nil and a[grayOutKey] == true)
     end
@@ -202,11 +208,11 @@ function obj:getReorderedChoices(choices, grayOutKey)
     local grayOutChoices = funs.filter(choices, isGrayOut)
     local notGrayOutChoices =
         funs.filter(
-        choices,
-        function(a)
-            return not isGrayOut(a)
-        end
-    )
+            choices,
+            function(a)
+                return not isGrayOut(a)
+            end
+        )
 
     funs.map(
         grayOutChoices,
