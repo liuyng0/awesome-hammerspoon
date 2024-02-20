@@ -20,3 +20,4 @@ privconf.hssearch_copy_texts_filepaths = string.gsub([[
 
 privconf.default_loaded = "true"
 privconf.last_loaded = "default"
+privconf.emacs_vterm_frame_title = "*Emacs VTerm*"

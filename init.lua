@@ -19,7 +19,7 @@ if customconf then
     require("custom")
 end
 
-function pathInfo(path)
+function pathInfo (path)
     local len = string.len(path)
     local pos = len
     local extpos = len + 1
@@ -45,16 +45,16 @@ function pathInfo(path)
     }
 end
 
-function getScript(filename)
+function getScript (filename)
     return os.getenv("HOME") .. "/.hammerspoon/scripts/" .. filename
 end
 
-function getVifFile(filename)
+function getVifFile (filename)
     return os.getenv("HOME") .. "/vif/" .. filename
 end
 
 __my_path = nil
-function populatePathMaybe()
+function populatePathMaybe ()
     if not __my_path then
         local output, status, exitType, rc = hs.execute("echo \\$PATH", true)
         if status and output ~= "" then
@@ -64,7 +64,7 @@ function populatePathMaybe()
     end
 end
 
-function executeWithPathPopulated(command)
+function executeWithPathPopulated (command)
     populatePathMaybe()
     if __my_path then
         return hs.execute("export PATH=" .. __my_path .. " && " .. command)
@@ -127,7 +127,7 @@ if not hsapp_list then
     }
 end
 
-function hideWebviewIfPresent()
+function hideWebviewIfPresent ()
     local t = spoon.PopupTranslateSelection
     if t ~= nil and t.webview ~= nil and t.webview:hswindow() ~= nil and t.webview:hswindow():isVisible() then
         t.webview:hide()
@@ -163,6 +163,18 @@ for _, v in ipairs(hsapp_list) do
                 -- logger.d("launch by name " .. v.name)
                 hideWebviewIfPresent()
                 hs.application.launchOrFocus(v.name)
+                spoon.ModalMgr:deactivate({ "appM" })
+            end
+        )
+    elseif v.func then
+        cmodal:bind(
+            type(v.key) == "table" and v.key[1] or "",
+            type(v.key) == "table" and v.key[2] or v.key,
+            v.func_name,
+            function()
+                -- logger.d("launch by name " .. v.name)
+                hideWebviewIfPresent()
+                v.func()
                 spoon.ModalMgr:deactivate({ "appM" })
             end
         )
@@ -286,7 +298,8 @@ if spoon.ClipShow then
         "G",
         "Search with Google",
         function()
-            spoon.ClipShow:openInBrowserWithRef("https://www.google.com/search?q=")
+            spoon.ClipShow:openInBrowserWithRef(
+            "https://www.google.com/search?q=")
             spoon.ClipShow:toggleShow()
             spoon.ModalMgr:deactivate({ "clipshowM" })
         end
@@ -882,19 +895,25 @@ if string.len(hstype_keys[2]) > 0 then
         hstype_keys[2],
         "Type Browser Link",
         function()
-            local safari_running = hs.application.applicationsForBundleID("com.apple.Safari")
-            local chrome_running = hs.application.applicationsForBundleID("com.google.Chrome")
+            local safari_running = hs.application.applicationsForBundleID(
+            "com.apple.Safari")
+            local chrome_running = hs.application.applicationsForBundleID(
+            "com.google.Chrome")
             if #safari_running > 0 then
                 local stat, data =
-                    hs.applescript('tell application "Safari" to get {URL, name} of current tab of window 1')
+                    hs.applescript(
+                    'tell application "Safari" to get {URL, name} of current tab of window 1')
                 if stat then
-                    hs.eventtap.keyStrokes("[" .. data[2] .. "](" .. data[1] .. ")")
+                    hs.eventtap.keyStrokes("[" ..
+                    data[2] .. "](" .. data[1] .. ")")
                 end
             elseif #chrome_running > 0 then
                 local stat, data =
-                    hs.applescript('tell application "Google Chrome" to get {URL, title} of active tab of window 1')
+                    hs.applescript(
+                    'tell application "Google Chrome" to get {URL, title} of active tab of window 1')
                 if stat then
-                    hs.eventtap.keyStrokes("[" .. data[2] .. "](" .. data[1] .. ")")
+                    hs.eventtap.keyStrokes("[" ..
+                    data[2] .. "](" .. data[1] .. ")")
                 end
             end
         end
@@ -1407,17 +1426,17 @@ if hssession_keys then
 end
 
 -- Change the test function to test
-function test()
+function test ()
     hs.alert.show("this is a test")
 end
 
-function testEmacs28()
+function testEmacs28 ()
     hs.execute("open /Applications/Emacs28.app")
 end
 
 -- hs.hotkey.bind(hyper2, "T", function() test() end)
 
-function copyEmailLink()
+function copyEmailLink ()
     status, data =
         hs.osascript.applescript(
             [[tell application "Microsoft Outlook"
@@ -1454,7 +1473,8 @@ local app_model_global_actions = {
         description = "Tile Window to Left of Screen",
         action = function()
             local cwin = hs.window.focusedWindow()
-            cwin:application():selectMenuItem({ "Window", "Tile Window to Left of Screen" })
+            cwin:application():selectMenuItem({ "Window",
+                "Tile Window to Left of Screen" })
         end
     },
     {
@@ -1462,7 +1482,8 @@ local app_model_global_actions = {
         description = "Tile Window to Right of Screen",
         action = function()
             local cwin = hs.window.focusedWindow()
-            cwin:application():selectMenuItem({ "Window", "Tile Window to Right of Screen" })
+            cwin:application():selectMenuItem({ "Window",
+                "Tile Window to Right of Screen" })
         end
     }
 }
@@ -1537,7 +1558,8 @@ local iterm_modal =
                 description = "New Tab with Current Profile",
                 action = function()
                     local itemApp = hs.application.find(APP_ITERM_NAME)
-                    itemApp:selectMenuItem({ "Shell", "New Tab with Current Profile" })
+                    itemApp:selectMenuItem({ "Shell",
+                        "New Tab with Current Profile" })
                 end
             },
             {
@@ -1626,12 +1648,14 @@ spoon.AppBindings:bind(
     }
 )
 
-function anyNotIgnored(files)
-    local command = "cd ~/.hammerspoon && git check-ignore " .. table.concat(files, " ") .. " | wc -l"
+function anyNotIgnored (files)
+    local command = "cd ~/.hammerspoon && git check-ignore " ..
+    table.concat(files, " ") .. " | wc -l"
     local output, rc = hs.execute(command)
     local not_ignored_exists = rc and tonumber(output) < #files
     if not_ignored_exists then
-        logger.d("At least one file changed and not git ignored: " .. hs.inspect(files))
+        logger.d("At least one file changed and not git ignored: " ..
+        hs.inspect(files))
     else
         logger.d("All ignored: " .. hs.inspect(files))
     end
@@ -1639,7 +1663,7 @@ function anyNotIgnored(files)
     return not_ignored_exists
 end
 
-function reloadConfig(files)
+function reloadConfig (files)
     local mayReload = {}
     for _, file in pairs(files) do
         if file:sub(-4) == ".lua" and pathInfo(file)["basename"]:sub(0, 2) ~= ".#" then
@@ -1653,7 +1677,8 @@ function reloadConfig(files)
 end
 
 -- Watch the configuration change.
-myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig)
+myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/",
+    reloadConfig)
 myWatcher:start()
 
 hsreload_keys = hsreload_keys or { { "cmd", "shift", "ctrl" }, "R" }

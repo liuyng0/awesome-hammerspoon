@@ -28,12 +28,23 @@ hspoon_list = {
     "PopupTranslateSelection",
     "SplitView",
     "AppBindings",
-    "ChooserStyle"
+    "ChooserStyle",
+    "Emacs"
 }
 
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.
 hsapp_list = {
-    { key = "space",         name = "Emacs" },
+    {
+        key = "space",
+        func_name = "Emacs(Main)",
+        func = function()
+            if spoon.Emacs:app() ~= nil then
+                spoon.Emacs:switch_to_main_window()
+            else
+                hs.application.launchOrFocus(spoon.Emacs.emacs_bundle)
+            end
+        end
+    },
     { key = "c",             id = "com.google.Chrome" },
     { key = "d",             name = "Dash" },
     { key = "w",             id = "com.apple.ActivityMonitor" },
@@ -43,15 +54,25 @@ hsapp_list = {
     { key = "p",             name = "Preview" },
     { key = "f",             name = "Firefox" },
     { key = "o",             name = "OmniGraffle" },
-    { key = "t",             name = "iTerm" },
-    { key = "q",             name = "Quip" },
-    { key = "h",             name = "Hammerspoon" },
-    { key = ";",             name = "Xcode" },
-    { key = "x",             name = "XMind" },
-    { key = "b",             name = "iBooks" },
-    { key = "n",             name = "GoodNotes" },
-    { key = "z",             name = "zoom.us" },
-    { key = "p",             name = "Parallels Desktop" }
+    {
+        key = "t",
+        func_name = "Emacs(Vterm)",
+        func = function()
+            if spoon.Emacs:app() ~= nil then
+                spoon.Emacs:switch_to_vterm_window()
+            else
+                hs.application.launchOrFocus(spoon.Emacs.emacs_bundle)
+            end
+        end
+    },
+    { key = "q", name = "Quip" },
+    { key = "h", name = "Hammerspoon" },
+    { key = ";", name = "Xcode" },
+    { key = "x", name = "XMind" },
+    { key = "b", name = "iBooks" },
+    { key = "n", name = "GoodNotes" },
+    { key = "z", name = "zoom.us" },
+    { key = "p", name = "Parallels Desktop" }
     -- {key = 'a', name = 'Android Studio'},
     -- {key = 'f', name = 'Finder'},
     -- {key = 's', name = 'Visual Studio Code'},
