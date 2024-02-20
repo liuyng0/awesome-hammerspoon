@@ -8,6 +8,7 @@
   "format.defaultConfig": {
     "indent_style": "space",
     "max_line_length": "80",
-    "indent_size": "2"
+    "indent_size": "2",
+    "space_before_function_open_parenthesis": "true"
   }
 }
