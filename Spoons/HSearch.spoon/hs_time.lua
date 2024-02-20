@@ -46,19 +46,20 @@ obj.clock_time_format = {
 local function timeRequest()
     local chooser_data =
         hs.fnutils.imap(
-        obj.exec_args,
-        function(item)
-            local command = "TZ=" .. item.tz .. " /bin/date " .. item.format
-            local exec_result = hs.execute(command):match("^%s*(.-)%s*$")
-            return {
-                text = exec_result,
-                subText = command,
-                image = hs.image.imageFromPath(obj.spoonPath .. "/resources/time.png"),
-                output = "keystrokes",
-                arg = exec_result
-            }
-        end
-    )
+            obj.exec_args,
+            function(item)
+                local command = "TZ=" .. item.tz .. " /bin/date " .. item.format
+                local exec_result = hs.execute(command):match("^%s*(.-)%s*$")
+                return {
+                    text = exec_result,
+                    subText = command,
+                    image = hs.image.imageFromPath(obj.spoonPath ..
+                        "/resources/time.png"),
+                    output = "keystrokes",
+                    arg = exec_result
+                }
+            end
+        )
     return chooser_data
 end
 -- Define the function which will be called when the `keyword` triggers a new source. The returned value is a table. Read more: http://www.hammerspoon.org/docs/hs.chooser.html#choices
@@ -104,17 +105,17 @@ local function timeDeltaRequest(querystr)
         if valid_inputs and #valid_inputs > 0 then
             local addv_before =
                 hs.fnutils.imap(
-                valid_inputs,
-                function(item)
-                    if input_type == "shift" then
-                        return "-v" .. item
-                    elseif input_type == "epoch" then
-                        return "-d " .. item
-                    elseif input_type == "countdown" then
-                        return "-v+" .. item .. "M"
+                    valid_inputs,
+                    function(item)
+                        if input_type == "shift" then
+                            return "-v" .. item
+                        elseif input_type == "epoch" then
+                            return "-d " .. item
+                        elseif input_type == "countdown" then
+                            return "-v+" .. item .. "M"
+                        end
                     end
-                end
-            )
+                )
             local vv_var = table.concat(addv_before, " ")
             local chooser_data = nil
             if input_type == "countdown" then
@@ -126,14 +127,18 @@ local function timeDeltaRequest(querystr)
                     local command =
                         "TZ=" ..
                         obj.clock_time_format.tz ..
-                            " /bin/date " .. "-v" .. valid_inputs[1] .. "M " .. obj.clock_time_format.format
-                    subText = "Alarm @ " .. hs.execute(command):match("^%s*(.-)%s*$")
+                        " /bin/date " ..
+                        "-v" ..
+                        valid_inputs[1] .. "M " .. obj.clock_time_format.format
+                    subText = "Alarm @ " ..
+                        hs.execute(command):match("^%s*(.-)%s*$")
                 end
                 chooser_data = {
                     [1] = {
                         text = text,
                         subText = subText,
-                        image = hs.image.imageFromPath(obj.spoonPath .. "/resources/time.png"),
+                        image = hs.image.imageFromPath(obj.spoonPath ..
+                            "/resources/time.png"),
                         output = "clock",
                         input_text = valid_inputs[1]
                     }
@@ -141,24 +146,29 @@ local function timeDeltaRequest(querystr)
             else
                 chooser_data =
                     hs.fnutils.imap(
-                    obj.exec_args,
-                    function(item)
-                        local program = "/bin/date"
-                        if input_type == "epoch" then
-                            program = "/opt/homebrew/bin/gdate"
+                        obj.exec_args,
+                        function(item)
+                            local program = "/bin/date"
+                            if input_type == "epoch" then
+                                program = "/opt/homebrew/bin/gdate"
+                            end
+                            local new_exec_command =
+                                "TZ=" ..
+                                item.tz ..
+                                " " ..
+                                program .. " " .. vv_var .. " " .. item.format
+                            local new_exec_result = hs.execute(new_exec_command)
+                                :match("^%s*(.-)%s*$")
+                            return {
+                                text = new_exec_result,
+                                subText = new_exec_command,
+                                image = hs.image.imageFromPath(obj.spoonPath ..
+                                    "/resources/time.png"),
+                                output = "keystrokes",
+                                arg = new_exec_result
+                            }
                         end
-                        local new_exec_command =
-                            "TZ=" .. item.tz .. " " .. program .. " " .. vv_var .. " " .. item.format
-                        local new_exec_result = hs.execute(new_exec_command):match("^%s*(.-)%s*$")
-                        return {
-                            text = new_exec_result,
-                            subText = new_exec_command,
-                            image = hs.image.imageFromPath(obj.spoonPath .. "/resources/time.png"),
-                            output = "keystrokes",
-                            arg = new_exec_result
-                        }
-                    end
-                )
+                    )
             end
             if spoon.HSearch then
                 -- Make sure HSearch spoon is running now

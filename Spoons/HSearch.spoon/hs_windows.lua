@@ -17,7 +17,8 @@ obj.notice = { text = "Search Windows" }
 
 obj.switchToSelectedWindow = "switchToSelectedWindow"
 obj.init_func = function()
-  local screenChoices = screen:getWindowChoices(hs.window.filter.default:getWindows(), false)
+  local screenChoices = screen:getWindowChoices(
+    hs.window.filter.default:getWindows(), false)
   screenChoices = hs.fnutils.imap(screenChoices, function(item)
     item.image = hs.image.imageFromAppBundle(item.bundleID)
     item.output = obj.switchToSelectedWindow
