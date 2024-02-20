@@ -15,7 +15,7 @@ obj.overview = {
 obj.notice = { text = "Select Terminal" }
 
 obj.selectTerminal = "selectTerminal"
-obj.init_func = function()
+obj.init_func = function ()
   output, succeed = hs.execute("/opt/homebrew/bin/tmux list-windows")
   choices = {}
   if succeed then
@@ -38,12 +38,14 @@ end
 --- }
 obj.new_output = {
   name = obj.selectTerminal,
-  func = function(item)
+  func = function (item)
     hs.execute("/opt/homebrew/bin/tmux select-window -t " .. item.terminal_id)
-    local window = hs.window.filter.new(false):setAppFilter('Emacs', { allowTitles = 'vterminal' }):getWindows()
-    if #window > 0 then
-      window[1]:unminimize():raise():focus()
-    end
+    hs.timer.doAfter(0.1, function ()
+      local window = hs.window.filter.new(false):setAppFilter('Emacs', { allowTitles = 'vterminal' }):getWindows()
+      if #window > 0 then
+        window[1]:unminimize():raise():focus()
+      end
+    end)
   end
 }
 
