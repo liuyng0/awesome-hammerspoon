@@ -1,0 +1,13 @@
+{
+  "workspace.library": [
+    "~/.hammerspoon/Spoons/EmmyLua.spoon/annotations"
+  ],
+  "runtime.version": "Lua 5.4",
+  "hint.enable": true,
+  "format.enable": true,
+  "format.defaultConfig": {
+    "indent_style": "space",
+    "max_line_length": "80",
+    "indent_size": "2"
+  }
+}
