@@ -23,6 +23,7 @@ obj.init_func = function()
       local strip_line = line:match("^%s*(.-)%s*$")
       table.insert(choices, {
         text = strip_line,
+        image = hs.image.imageFromAppBundle("org.gnu.Emacs"),
         output = obj.selectTerminal,
         terminal_id = string.sub(strip_line, 1, 1)
       })
