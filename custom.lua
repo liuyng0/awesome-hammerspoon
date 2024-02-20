@@ -41,7 +41,7 @@ hsapp_list = {
             if spoon.Emacs:app() ~= nil then
                 spoon.Emacs:switch_to_main_window()
             else
-                hs.application.launchOrFocus(spoon.Emacs.emacs_bundle)
+                hs.application.launchOrFocusByBundleID(spoon.Emacs.emacs_bundle)
             end
         end
     },
@@ -61,7 +61,7 @@ hsapp_list = {
             if spoon.Emacs:app() ~= nil then
                 spoon.Emacs:switch_to_vterm_window()
             else
-                hs.application.launchOrFocus(spoon.Emacs.emacs_bundle)
+                hs.application.launchOrFocusByBundleID(spoon.Emacs.emacs_bundle)
             end
         end
     },
