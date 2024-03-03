@@ -58,10 +58,8 @@ hsapp_list = {
         key = "t",
         func_name = "Emacs(Vterm)",
         func = function()
-            if spoon.Emacs:app() ~= nil then
-                spoon.Emacs:switch_to_vterm_window()
-            else
-                hs.application.launchOrFocusByBundleID(spoon.Emacs.emacs_bundle)
+            if spoon.Emacs:app() == nil or not spoon.Emacs:switch_to_vterm_window() then
+                hs.application.launchOrFocusByBundleID('com.googlecode.iterm2')
             end
         end
     },

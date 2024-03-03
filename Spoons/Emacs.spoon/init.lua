@@ -40,6 +40,9 @@ function obj:switch_to_vterm_window ()
     local vterm_window = obj:vterm_window()
     if vterm_window ~= nil then
         vterm_window:unminimize():raise():focus()
+        return true
+    else
+        return false
     end
 end
 
