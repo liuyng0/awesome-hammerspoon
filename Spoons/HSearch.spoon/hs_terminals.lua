@@ -41,7 +41,9 @@ obj.new_output = {
   name = obj.selectTerminal,
   func = function(item)
     hs.execute("/opt/homebrew/bin/tmux select-window -t " .. item.terminal_id)
-    spoon.Emacs:switch_to_vterm_window()
+    if spoon.Emacs:app() == nil or not spoon.Emacs:switch_to_vterm_window() then
+      hs.application.launchOrFocusByBundleID('com.googlecode.iterm2')
+    end
   end
 }
 
