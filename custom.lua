@@ -91,11 +91,11 @@ else
     table.insert(hsapp_list, { key = "m", name = "Mail" })
 end
 
-if hs.fs.pathToAbsolute("/Applications/Kindle.app") then
-    table.insert(hsapp_list, { key = "k", name = "Kindle" })
+if hs.fs.pathToAbsolute("/Applications/Amazon Kindle.app") then
+    table.insert(hsapp_list, { key = "k", name = "Amazon Kindle" })
 end
 
-table.insert(hsapp_list, { key = "i", id = "com.jetbrains.intellij" })
+table.insert(hsapp_list, { key = "i", id = "com.jetbrains.intellij.ce" })
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
 hsupervisor_keys = { hyper1, "Q" }
