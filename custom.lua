@@ -95,7 +95,7 @@ if hs.fs.pathToAbsolute("/Applications/Amazon Kindle.app") then
     table.insert(hsapp_list, { key = "k", name = "Amazon Kindle" })
 end
 
-table.insert(hsapp_list, { key = "i", id = "com.jetbrains.intellij.ce" })
+table.insert(hsapp_list, { key = "i", id = "com.jetbrains.intellij" })
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
 hsupervisor_keys = { hyper1, "Q" }
