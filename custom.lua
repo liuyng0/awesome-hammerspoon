@@ -51,7 +51,6 @@ hsapp_list = {
     { key = { hyper2, "w" }, name = "WeChat" },
     { key = { "ctrl", "c" }, id = "com.apple.iCal" },
     { key = "s",             name = "Slack" },
-    { key = "p",             name = "Preview" },
     { key = "f",             name = "Firefox" },
     { key = "o",             name = "OmniGraffle" },
     {
@@ -63,14 +62,15 @@ hsapp_list = {
             end
         end
     },
-    { key = "q", name = "Quip" },
-    { key = "h", name = "Hammerspoon" },
-    { key = ";", name = "Xcode" },
-    { key = "x", name = "XMind" },
-    { key = "b", name = "iBooks" },
-    { key = "n", name = "GoodNotes" },
-    { key = "z", name = "zoom.us" },
-    { key = "p", name = "Parallels Desktop" }
+    { key = "q",            name = "Quip" },
+    { key = "h",            name = "Hammerspoon" },
+    { key = ";",            name = "Xcode" },
+    { key = "x",            name = "XMind" },
+    { key = "b",            name = "iBooks" },
+    { key = "n",            name = "GoodNotes" },
+    { key = "z",            name = "zoom.us" },
+    { key = { hyper2, "p" }, name = "Parallels Desktop" },
+    { key = "p",            name = "PyCharm" }
     -- {key = 'a', name = 'Android Studio'},
     -- {key = 'f', name = 'Finder'},
     -- {key = 's', name = 'Visual Studio Code'},
