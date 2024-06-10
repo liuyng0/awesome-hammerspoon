@@ -299,7 +299,7 @@ if spoon.ClipShow then
         "Search with Google",
         function()
             spoon.ClipShow:openInBrowserWithRef(
-            "https://www.google.com/search?q=")
+                "https://www.google.com/search?q=")
             spoon.ClipShow:toggleShow()
             spoon.ModalMgr:deactivate({ "clipshowM" })
         end
@@ -896,24 +896,24 @@ if string.len(hstype_keys[2]) > 0 then
         "Type Browser Link",
         function()
             local safari_running = hs.application.applicationsForBundleID(
-            "com.apple.Safari")
+                "com.apple.Safari")
             local chrome_running = hs.application.applicationsForBundleID(
-            "com.google.Chrome")
+                "com.google.Chrome")
             if #safari_running > 0 then
                 local stat, data =
                     hs.applescript(
-                    'tell application "Safari" to get {URL, name} of current tab of window 1')
+                        'tell application "Safari" to get {URL, name} of current tab of window 1')
                 if stat then
                     hs.eventtap.keyStrokes("[" ..
-                    data[2] .. "](" .. data[1] .. ")")
+                        data[2] .. "](" .. data[1] .. ")")
                 end
             elseif #chrome_running > 0 then
                 local stat, data =
                     hs.applescript(
-                    'tell application "Google Chrome" to get {URL, title} of active tab of window 1')
+                        'tell application "Google Chrome" to get {URL, title} of active tab of window 1')
                 if stat then
                     hs.eventtap.keyStrokes("[" ..
-                    data[2] .. "](" .. data[1] .. ")")
+                        data[2] .. "](" .. data[1] .. ")")
                 end
             end
         end
@@ -1042,7 +1042,34 @@ if spoon.Screen then
         "S",
         "Switch to Screen",
         function()
-            spoon.Space:switchToScreen()
+            spoon.Space:switchToSpace()
+            spoon.ModalMgr:deactivate({ "screenM" })
+        end
+    )
+    cmodal:bind(
+        hsscreenM_keys[1],
+        "N",
+        "Next Space",
+        function()
+            spoon.Space:nextSpace()
+            spoon.ModalMgr:deactivate({ "screenM" })
+        end
+    )
+    cmodal:bind(
+        hsscreenM_keys[1],
+        "W",
+        "Move focused window to Next Space",
+        function()
+            spoon.Space:moveCurrentWindowToNextSpace()
+            spoon.ModalMgr:deactivate({ "screenM" })
+        end
+    )
+    cmodal:bind(
+        hsscreenM_keys[1],
+        "E",
+        "Move focused window to Next Space",
+        function()
+            spoon.Space:moveCurrentWindowToNextSpaceYabai()
             spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
@@ -1650,12 +1677,12 @@ spoon.AppBindings:bind(
 
 function anyNotIgnored (files)
     local command = "cd ~/.hammerspoon && git check-ignore " ..
-    table.concat(files, " ") .. " | wc -l"
+        table.concat(files, " ") .. " | wc -l"
     local output, rc = hs.execute(command)
     local not_ignored_exists = rc and tonumber(output) < #files
     if not_ignored_exists then
         logger.d("At least one file changed and not git ignored: " ..
-        hs.inspect(files))
+            hs.inspect(files))
     else
         logger.d("All ignored: " .. hs.inspect(files))
     end
