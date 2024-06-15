@@ -1029,7 +1029,8 @@ if spoon.Screen then
         "I",
         "Toggle Window Isolate Mode",
         function()
-            hs.window.highlight.toggleIsolate()
+            spoon.Screen:toggleCrossSpaces()
+            -- hs.window.highlight.toggleIsolate()
             spoon.ModalMgr:deactivate({ "screenM" })
         end
     )

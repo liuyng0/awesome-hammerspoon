@@ -9,7 +9,7 @@ obj.author = "Chophi <chophi@foxmail.com>"
 obj.windowHighlightMode = false
 obj.logger = hs.logger.new("Screen")
 
-function obj:focusWindowOnNextScreen(nextCount)
+function obj:focusWindowOnNextScreen (nextCount)
     local screens = hs.screen.allScreens()
     local currentScreen = hs.screen.mainScreen()
     local screenAngle = {}
@@ -41,7 +41,8 @@ function obj:focusWindowOnNextScreen(nextCount)
             break
         end
     end
-    local nextIndex = ((thisScreenIndex - 1 + numScreens + nextCount) % numScreens) + 1
+    local nextIndex = ((thisScreenIndex - 1 + numScreens + nextCount) % numScreens) +
+        1
     local nextScreen = screenAngle[nextIndex]["screen"]
 
     local raiseAndFocusedWindow = false
@@ -52,7 +53,8 @@ function obj:focusWindowOnNextScreen(nextCount)
                 hs.alert.closeAll()
                 local alertUUid =
                     hs.alert.show(
-                        string.format("Current Screen: %s, window: %s", nextScreen:name(), w:title()),
+                        string.format("Current Screen: %s, window: %s",
+                            nextScreen:name(), w:title()),
                         hs.alert.defaultStyle,
                         nextScreen,
                         0.5
@@ -77,7 +79,7 @@ function obj:focusWindowOnNextScreen(nextCount)
     end
 end
 
-function obj:sortedWindows(wins)
+function obj:sortedWindows (wins)
     local windowAngle = obj:_sortedWindows(wins)
     local windows = {}
     for _, w in pairs(windowAngle) do
@@ -91,7 +93,7 @@ function obj:sortedWindows(wins)
     return windows
 end
 
-function obj:_sortedWindows(wins)
+function obj:_sortedWindows (wins)
     local windowAngle = {}
 
     for _, w in pairs(wins) do
@@ -121,12 +123,12 @@ function obj:_sortedWindows(wins)
     return windowAngle
 end
 
-function getWindowNameFromCache(windowId, defaultWindowName)
+function getWindowNameFromCache (windowId, defaultWindowName)
     -- TODO: maybe add a cache to set window name overrides
     return defaultWindowName
 end
 
-function obj.selectWindow(choice)
+function obj.selectWindow (choice)
     if choice == nil then
         return
     end
@@ -136,7 +138,7 @@ function obj.selectWindow(choice)
     chosenWindow:focus()
 end
 
-function obj:getWindowChoices(allWindows, showAppNameAsPrefix)
+function obj:getWindowChoices (allWindows, showAppNameAsPrefix)
     local chooserChoices = {}
     for _, w in pairs(allWindows) do
         table.insert(
@@ -177,7 +179,7 @@ function obj:getWindowChoices(allWindows, showAppNameAsPrefix)
 end
 
 -- Except the focused window
-function selectWindowInList(allWindows, showAppNameAsPrefix)
+function selectWindowInList (allWindows, showAppNameAsPrefix)
     local chooser = hs.chooser.new(obj.selectWindow)
     local chooserChoices = obj:getWindowChoices(allWindows, showAppNameAsPrefix)
     spoon.ChooserStyle:setChooserUI(chooser, chooserChoices)
@@ -185,26 +187,40 @@ function selectWindowInList(allWindows, showAppNameAsPrefix)
     chooser:searchSubText(true):show()
 end
 
-function obj:selectWindowFromAllWindows()
-    local allWindows =
-        hs.fnutils.filter(
-            hs.window.filter.default:getWindows(),
-            function(win)
-                return win ~= hs.window.focusedWindow()
-            end
-        )
+obj.crossSpaces = false
+function obj:toggleCrossSpaces ()
+    obj.crossSpaces = not obj.crossSpaces
+end
+
+function obj:selectWindowFromAllWindows ()
+    local allWindows
+    if obj.crossSpaces then
+        allWindows =
+            hs.fnutils.filter(
+                hs.window.filter.default:getWindows(),
+                function(win)
+                    return win ~= hs.window.focusedWindow()
+                end
+            )
+    else
+        allWindows = hs.window.allWindows()
+    end
     selectWindowInList(allWindows, true)
 end
 
-function obj:_sameAppWindowsWithFocused()
+function obj:_sameAppWindowsWithFocused ()
     local focusedWindow = hs.window.focusedWindow()
     local focusedApp = focusedWindow:application()
     -- hs.alert.show(string.format("This app is:%s", focusedApp:name()))
 
-    return hs.window.filter.new { focusedApp:name() }:getWindows() -- focusedApp:allWindows()
+    if obj.crossSpaces then
+        return hs.window.filter.new { focusedApp:name() }:getWindows()
+    else
+        return focusedApp:allWindows()
+    end
 end
 
-function obj:_sameAppWindowsWithFocusedExceptFocused()
+function obj:_sameAppWindowsWithFocusedExceptFocused ()
     local allWindows = obj:_sameAppWindowsWithFocused()
 
     return hs.fnutils.filter(
@@ -215,7 +231,7 @@ function obj:_sameAppWindowsWithFocusedExceptFocused()
     )
 end
 
-function obj:_switchFocusIfOnlyOneChoice()
+function obj:_switchFocusIfOnlyOneChoice ()
     local windows = obj:_sameAppWindowsWithFocusedExceptFocused()
     if #windows == 0 then
         hs.alert.show("No other windows", 0.5)
@@ -234,14 +250,14 @@ function obj:_switchFocusIfOnlyOneChoice()
     return windows
 end
 
-function obj:selectWindowFromFocusedApp()
+function obj:selectWindowFromFocusedApp ()
     local windows = obj:_switchFocusIfOnlyOneChoice()
     if windows ~= nil then
         selectWindowInList(windows, false)
     end
 end
 
-function obj:sameAppWindowInNextScreen(nextCount)
+function obj:sameAppWindowInNextScreen (nextCount)
     local allWindows = obj:_switchFocusIfOnlyOneChoice()
     local focusedWindow = hs.window.focusedWindow()
     if allWindows == nil then
@@ -260,12 +276,14 @@ function obj:sameAppWindowInNextScreen(nextCount)
             break
         end
     end
-    local nextIndex = ((thisWindowIndex - 1 + numWindows + nextCount) % numWindows) + 1
+    local nextIndex = ((thisWindowIndex - 1 + numWindows + nextCount) % numWindows) +
+        1
     local nextWindow = windowAngle[nextIndex]["window"]
     -- hs.alert.show(string.format("The next window is:%s", windowAngle[nextIndex]["window"]:title()))
     if not obj.windowHighlightMode then
         hs.alert.closeAll()
-        local alertUUid = hs.alert.show("Current Screen", hs.alert.defaultStyle, nextWindow:screen(), 0.5)
+        local alertUUid = hs.alert.show("Current Screen", hs.alert.defaultStyle,
+            nextWindow:screen(), 0.5)
     end
     nextWindow:unminimize()
     nextWindow:raise()
@@ -273,7 +291,7 @@ function obj:sameAppWindowInNextScreen(nextCount)
     -- hs.alert.closeSpecific(alertUUid, 2)
 end
 
-function obj:toggleWindowHighlightMode()
+function obj:toggleWindowHighlightMode ()
     if not obj.windowHighlightMode then
         obj.windowHighlightMode = true
         hs.window.highlight.ui.overlay = true
@@ -288,11 +306,11 @@ function obj:toggleWindowHighlightMode()
 end
 
 -- TODO: complete the swapWithNext function
-function obj:swapWithNext()
+function obj:swapWithNext ()
     obj.logger.w(hs.inspect(obj:getVisibleWindowsGroupedByScreens()))
 end
 
-function obj:getVisibleWindowsGroupedByScreens()
+function obj:getVisibleWindowsGroupedByScreens ()
     local wins = obj:getVisibleWindowsForAllScreens()
     local rs = {}
     for i = 1, #wins do
@@ -305,7 +323,7 @@ function obj:getVisibleWindowsGroupedByScreens()
     return rs
 end
 
-function obj:getVisibleWindowsForAllScreens()
+function obj:getVisibleWindowsForAllScreens ()
     local all_windows = hs.window.filter.default:getWindows()
     local wins = {}
     for i, w in pairs(all_windows) do
