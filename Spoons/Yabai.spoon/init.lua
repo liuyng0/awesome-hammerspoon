@@ -146,7 +146,7 @@ function obj:focusSpace (spaces)
              yabai("space",
                 "--focus " .. spaceIndex)
           end)
-       :values()
+       :value()
 end
 
 function obj:gotoNextSpaces ()

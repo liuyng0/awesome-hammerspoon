@@ -1058,8 +1058,8 @@ if spoon.Screen then
         "Next Space",
         function()
             -- spoon.Space:nextSpace()
-            spoon.Yabai:gotoNextSpaces()
             spoon.ModalMgr:deactivate({ "screenM" })
+            spoon.Yabai:gotoNextSpaces()
         end
     )
     cmodal:bind(
@@ -1068,8 +1068,8 @@ if spoon.Screen then
         "Move focused window to Next Space",
         function()
             -- spoon.Space:moveCurrentWindowToNextSpace()
-            spoon.Yabai:moveFocusedWindowToNextSpace()
             spoon.ModalMgr:deactivate({ "screenM" })
+            spoon.Yabai:moveFocusedWindowToNextSpace()
         end
     )
     cmodal:bind(
