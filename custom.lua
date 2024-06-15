@@ -29,7 +29,8 @@ hspoon_list = {
     "SplitView",
     "AppBindings",
     "ChooserStyle",
-    "Emacs"
+    "Emacs",
+    "Yabai"
 }
 
 -- appM environment keybindings. Bundle `id` is prefered, but application `name` will be ok.
@@ -62,15 +63,15 @@ hsapp_list = {
             end
         end
     },
-    { key = "q",            name = "Quip" },
-    { key = "h",            name = "Hammerspoon" },
-    { key = ";",            name = "Xcode" },
-    { key = "x",            name = "XMind" },
-    { key = "b",            name = "iBooks" },
-    { key = "n",            name = "GoodNotes" },
-    { key = "z",            name = "zoom.us" },
+    { key = "q",             name = "Quip" },
+    { key = "h",             name = "Hammerspoon" },
+    { key = ";",             name = "Xcode" },
+    { key = "x",             name = "XMind" },
+    { key = "b",             name = "iBooks" },
+    { key = "n",             name = "GoodNotes" },
+    { key = "z",             name = "zoom.us" },
     { key = { hyper2, "p" }, name = "Parallels Desktop" },
-    { key = "p",            name = "PyCharm" }
+    { key = "p",             name = "PyCharm" }
     -- {key = 'a', name = 'Android Studio'},
     -- {key = 'f', name = 'Finder'},
     -- {key = 's', name = 'Visual Studio Code'},

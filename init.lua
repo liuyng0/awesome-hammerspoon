@@ -19,6 +19,11 @@ if customconf then
     require("custom")
 end
 
+lrks = {
+    loader = require("luarocks.loader"),
+    moses = require("moses")
+}
+
 function pathInfo (path)
     local len = string.len(path)
     local pos = len
@@ -1051,7 +1056,8 @@ if spoon.Screen then
         "N",
         "Next Space",
         function()
-            spoon.Space:nextSpace()
+            -- spoon.Space:nextSpace()
+            spoon.Yabai:gotoNextSpaces()
             spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
@@ -1060,7 +1066,8 @@ if spoon.Screen then
         "W",
         "Move focused window to Next Space",
         function()
-            spoon.Space:moveCurrentWindowToNextSpace()
+            -- spoon.Space:moveCurrentWindowToNextSpace()
+            spoon.Yabai:moveFocusedWindowToNextSpace()
             spoon.ModalMgr:deactivate({ "screenM" })
         end
     )
