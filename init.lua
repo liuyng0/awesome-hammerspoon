@@ -1,4 +1,4 @@
-privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
+local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
 
 local logger = hs.logger.new("init.lua", "debug")
 if not privatepath then
