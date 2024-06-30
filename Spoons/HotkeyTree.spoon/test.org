@@ -1,0 +1,43 @@
+#+title: Test
+
+* Test
+#+name: _concatKey 
+#+begin_src lua :exports none
+local M = hs.loadSpoon("HotkeyTree")
+print(hs.inspect(M:_concatKey("a")))
+print(hs.inspect(M:_concatKey({"control", "a"})))
+print(hs.inspect(M:_concatKey({"option", "control", "a"})))
+#+end_src
+
+#+name: _splitKey
+#+begin_src lua :exports none
+local M = hs.loadSpoon("HotkeyTree")
+print(hs.inspect(M:_splitKey("a")))
+print(hs.inspect(M:_splitKey("control-ab")))
+print(hs.inspect(M:_splitKey("option-control-a")))
+#+end_src
+
+#+begin_src sh :noweb-prefix no :noweb yes :results output
+echo "test _concatKey"
+hs -c '<<_concatKey>>'
+#+end_src
+
+#+RESULTS:
+: test _concatKey
+: -- Spoon already loaded, returning existing copy: HotkeyTree
+: "a"
+: "control-a"
+: "control-option-a"
+
+#+begin_src sh :noweb-prefix no :noweb yes :results output
+echo "test _splitKey"
+hs -c '<<_splitKey>>'
+#+end_src
+
+
+#+RESULTS:
+: test _splitKey
+: -- Spoon already loaded, returning existing copy: HotkeyTree
+: "a"
+: { { "control" }, "ab" }
+: { { "control", "option" }, "a" }

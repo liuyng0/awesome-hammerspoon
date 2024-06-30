@@ -87,7 +87,7 @@ end
 table.insert(hsapp_list, { key = "i", id = "com.jetbrains.intellij" })
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
-hsupervisor_keys = { { "shift", "command", "control", "option" }, "1" }
+-- hsupervisor_keys = { { "shift", "command", "control", "option" }, "1" }
 
 -- Reload Hammerspoon configuration
 hsreload_keys = { hyper1, "R" }

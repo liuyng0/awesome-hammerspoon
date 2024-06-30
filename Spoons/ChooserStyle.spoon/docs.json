@@ -23,19 +23,19 @@
     "Constructor" : [
 
     ],
-    "doc" : "A new Sample Spoon\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/ChooserStyle.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/ChooserStyle.spoon.zip)",
+    "Field" : [
+
+    ],
     "Method" : [
 
     ],
     "Command" : [
 
     ],
-    "Field" : [
-
-    ],
     "items" : [
 
     ],
+    "doc" : "A new Sample Spoon\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/ChooserStyle.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/ChooserStyle.spoon.zip)",
     "name" : "ChooserStyle"
   }
 ]

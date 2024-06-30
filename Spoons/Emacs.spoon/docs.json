@@ -1,0 +1,79 @@
+[
+  {
+    "Constant" : [
+
+    ],
+    "submodules" : [
+
+    ],
+    "Function" : [
+
+    ],
+    "Variable" : [
+      {
+        "doc" : "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
+        "stripped_doc" : [
+          "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon."
+        ],
+        "parameters" : [
+
+        ],
+        "def" : "Emacs.logger",
+        "notes" : [
+
+        ],
+        "signature" : "Emacs.logger",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "name" : "logger",
+        "desc" : "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon."
+      }
+    ],
+    "stripped_doc" : [
+
+    ],
+    "desc" : "A new Sample Spoon",
+    "Deprecated" : [
+
+    ],
+    "type" : "Module",
+    "Constructor" : [
+
+    ],
+    "Field" : [
+
+    ],
+    "Method" : [
+
+    ],
+    "Command" : [
+
+    ],
+    "items" : [
+      {
+        "doc" : "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
+        "stripped_doc" : [
+          "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon."
+        ],
+        "parameters" : [
+
+        ],
+        "def" : "Emacs.logger",
+        "notes" : [
+
+        ],
+        "signature" : "Emacs.logger",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "name" : "logger",
+        "desc" : "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon."
+      }
+    ],
+    "doc" : "A new Sample Spoon\n\nDownload: [https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/Emacs.spoon.zip](https:\/\/github.com\/Hammerspoon\/Spoons\/raw\/master\/Spoons\/Emacs.spoon.zip)",
+    "name" : "Emacs"
+  }
+]
