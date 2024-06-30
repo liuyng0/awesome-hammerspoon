@@ -7,20 +7,8 @@ hyper4 = { "ctrl", "cmd" }
 
 -- Specify Spoons which will be loaded
 hspoon_list = {
-    -- "AClock",
-    -- "BingDaily",
-    -- "Calendar",
-    -- "CircleClock",
-    -- "ClipShow",
     "CountDown",
-    -- "FnMate",
-    -- "HCalendar",
-    -- "HSaria2",
     "HSearch",
-    -- "KSheet",
-    -- "SpeedMenu",
-    -- "TimeFlow",
-    -- "UnsplashZ",
     "WinWin",
     "Screen",
     "Space",
@@ -99,7 +87,7 @@ end
 table.insert(hsapp_list, { key = "i", id = "com.jetbrains.intellij" })
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
-hsupervisor_keys = { hyper1, "Q" }
+hsupervisor_keys = { { "shift", "command", "control", "option" }, "1" }
 
 -- Reload Hammerspoon configuration
 hsreload_keys = { hyper1, "R" }
