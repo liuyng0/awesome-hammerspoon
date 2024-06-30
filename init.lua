@@ -21,7 +21,8 @@ end
 
 lrks = {
     loader = require("luarocks.loader"),
-    moses = require("moses")
+    moses = require("moses"),
+    F = require("F")
 }
 
 function pathInfo (path)
