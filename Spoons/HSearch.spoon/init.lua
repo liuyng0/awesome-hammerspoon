@@ -15,7 +15,7 @@ obj.homepage = "https://github.com/Hammerspoon/Spoons"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 -- Internal function used to find our location, so we know where to load files from
-local function script_path()
+local function script_path ()
     local str = debug.getinfo(2, "S").source:sub(2)
     return str:match("(.*/)")
 end
@@ -29,16 +29,18 @@ obj.hotkeys = {}
 obj.source_kw = nil
 obj.searchSettingKey = "hs.chooser.algorithm"
 obj.placeholderGenerator = function()
-    return "algorithm: " .. (hs.settings.get(obj.searchSettingKey) or "default") .. ", @: text only, # subtext only"
+    return "algorithm: " ..
+        (hs.settings.get(obj.searchSettingKey) or "default") ..
+        ", @: text only, # subtext only"
 end
 
 local logger = hs.logger.new("HSearch", "debug")
 
-function obj:resourceImage(path)
+function obj:resourceImage (path)
     return hs.image.imageFromPath(obj.spoonPath .. path)
 end
 
-function obj:setChoices(choices)
+function obj:setChoices (choices)
     -- render choice
     if obj.chooser ~= nil and choices ~= nil then
         spoon.ChooserStyle:setChooserUI(obj.chooser, choices)
@@ -48,17 +50,17 @@ function obj:setChoices(choices)
     end
 end
 
-function obj:restoreOutput()
+function obj:restoreOutput ()
     obj.output_pool = {}
     -- Define the built-in output type
-    local function openWithBrowser(arg)
+    local function openWithBrowser (arg)
         local default_browser = hs.urlevent.getDefaultHandler("http")
         hs.urlevent.openURLWithBundle(arg, default_browser)
     end
-    local function copyToClipboard(arg)
+    local function copyToClipboard (arg)
         hs.pasteboard.setContents(arg)
     end
-    local function sendKeyStrokes(arg)
+    local function sendKeyStrokes (arg)
         local cwin = hs.window.orderedWindows()[1]
         cwin:focus()
         hs.eventtap.keyStrokes(arg)
@@ -68,7 +70,7 @@ function obj:restoreOutput()
     obj.output_pool["keystrokes"] = sendKeyStrokes
 end
 
-function obj:init()
+function obj:init ()
     obj.chooser =
         hs.chooser.new(
             function(chosen)
@@ -97,7 +99,7 @@ end
 --- Tigger new source according to hs.chooser's query string and keyword. Only for debug purpose in usual.
 ---
 
-function obj:switchSource()
+function obj:switchSource ()
     local querystr = obj.chooser:query()
     if string.len(querystr) > 0 then
         -- First we try to switch source according to the querystr
@@ -167,7 +169,7 @@ function obj:switchSource()
     end
 end
 
-function obj:loadSource(source)
+function obj:loadSource (source)
     local output = source.new_output
     if output then
         if #output == 0 then
@@ -188,7 +190,7 @@ function obj:loadSource(source)
     if hotkey then
         obj.hotkeys[overview.keyword] = hotkey
     end
-    local function sourceFunc()
+    local function sourceFunc ()
         local notice = source.notice
         if notice then
             obj:setChoices({ notice })
@@ -228,7 +230,7 @@ end
 --- Load new sources from `HSearch.search_path`, the search_path defaults to `~/.hammerspoon/private/hsearch_dir` and the HSearch Spoon directory. Only for debug purpose in usual.
 ---
 
-function obj:loadSources()
+function obj:loadSources ()
     obj.sources = {}
     obj.sources_overview = {}
     obj:restoreOutput()
@@ -264,7 +266,7 @@ end
 --- Toggle the display of HSearch
 ---
 
-function obj:toggleShow()
+function obj:toggleShow (forceShow)
     if #obj.sources_overview == 0 then
         -- If it's the first time HSearch shows itself, then load all sources from files
         obj:loadSources()
@@ -272,15 +274,10 @@ function obj:toggleShow()
 
         obj:setChoices(obj.sources_overview)
     end
-    if obj.chooser:isVisible() then
-        obj.chooser:hide()
-        obj.trigger:disable()
-        for _, val in pairs(obj.hotkeys) do
-            for i = 1, #val do
-                val[i]:disable()
-            end
+    local show = function()
+        if obj.chooser:isVisible() then
+            return
         end
-    else
         if obj.trigger == nil then
             obj.trigger =
                 hs.hotkey.bind(
@@ -303,6 +300,29 @@ function obj:toggleShow()
         end
         obj.chooser:show()
     end
+
+    local hide = function()
+        if not obj.chooser:isVisible() then
+            return
+        end
+        obj.chooser:hide()
+        obj.trigger:disable()
+        for _, val in pairs(obj.hotkeys) do
+            for i = 1, #val do
+                val[i]:disable()
+            end
+        end
+    end
+
+    if forceShow == true then
+        show()
+    elseif forceShow == false then
+        hide()
+    elseif obj.chooser:isVisible() then
+        hide()
+    else
+        show()
+    end
 end
 
 --- HSearch:makeRequestSource(options)
@@ -318,7 +338,7 @@ end
 ---
 --- Return:
 ---  * A chooser source which can feed to HSearch
-function obj:makeRequestSource(options)
+function obj:makeRequestSource (options)
     return {
         overview = options.overview,
         notice = { text = "Requesting data, please wait a while …" },
@@ -335,7 +355,8 @@ function obj:makeRequestSource(options)
                                 end
                             )
                         if retval and #decoded_data > 0 then
-                            local chooser_data = hs.fnutils.imap(decoded_data, options.item_mapping_func)
+                            local chooser_data = hs.fnutils.imap(decoded_data,
+                                options.item_mapping_func)
                             -- Make sure HSearch spoon is running now
                             obj:setChoices(chooser_data)
                             obj.chooser:refreshChoicesCallback()

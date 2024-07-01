@@ -37,8 +37,8 @@ hs -c '<<_splitKey>>'
 
 #+RESULTS:
 : test _splitKey
-: -- Spoon already loaded, returning existing copy: HotkeyTree
-: "a"
+: -- Loading Spoon: HotkeyTree
+: { "", "a" }
 : { { "control" }, "ab" }
 : { { "control", "option" }, "a" }
 ** addBinding
@@ -56,21 +56,42 @@ hs -c '<<addBinding>>'
 #+end_src
 
 #+RESULTS:
-: test addBinding
-: -- Spoon already loaded, returning existing copy: HotkeyTree
+#+begin_example
+test addBinding
+-- Loading Spoon: HotkeyTree
+{
+  a = {
+    description = "+prefix",
+    mapping = {
+      ["control-a"] = {
+        description = "+prefix",
+        mapping = {
+          ["control-option-a"] = {
+            description = "complex",
+            mapping = <function 1>
+          }
+        }
+      }
+    }
+  },
+  b = {
+    description = "simple",
+    mapping = <function 2>
+  }
+}
+#+end_example
 
 ** addMapping
 #+name: addMapping
 #+begin_src lua
 local M = hs.loadSpoon("HotkeyTree")
 M:addMapping({"a", "c"}, "prefix mapping for a-c", {
-    {key={"b"}, func=function() print("a-c-b") end, description="a-c-b func"},
-    {key={{"control", "c"}}, func=function() print("a-c-C_c") end, description="a-c-C_c func"}
+    {key={"b"}, func=function() print("a-c-b") end, description="a-c-b-func"},
+    {key={{"control", "c"}}, func=function() print("a-c-C_c") end, description="a-c-C_c-func"}
 })
 print(hs.inspect(M.tree))
 #+end_src
 
-#+RESULTS: addMapping
 
 #+begin_src sh :noweb-prefix no :noweb yes :results output
 echo "test addMapping"
@@ -78,5 +99,59 @@ hs -c '<<addMapping>>'
 #+end_src
 
 #+RESULTS:
-: test addMapping
+#+begin_example
+test addMapping
+-- Spoon already loaded, returning existing copy: HotkeyTree
+16:21:04 ** Warning:HotkeyTree: table: 0x600000c6ec80 Duplicated binding { "a", "c" }
+16:21:04 ** Warning:HotkeyTree: table: 0x600000c6ec80 Duplciated prefix { "a", "c", "b" }
+16:21:04 ** Warning:HotkeyTree: table: 0x600000c6ec80 Duplciated prefix { "a", "c", "control-c" }
+{
+  a = {
+    description = "+prefix",
+    mapping = {
+      c = {
+        description = "prefix mapping for a-c",
+        mapping = {
+          b = {
+            description = "a-c-b-func",
+            mapping = <function 1>
+          },
+          ["control-c"] = {
+            description = "a-c-C_c-func",
+            mapping = <function 2>
+          }
+        }
+      }
+    }
+  }
+}
+#+end_example
+
+
+** initModals
+#+name: initModals 
+#+begin_src lua
+local M = hs.loadSpoon("HotkeyTree")
+M:addMapping({"a", "c"}, "prefix mapping for a-c", {
+    {key={"b"}, func=function() print("a-c-b") end, description="a-c-b-func"},
+    {key={{"control", "c"}}, func=function() print("a-c-C_c") end, description="a-c-C_c-func"}
+})
+M:initModals()
+spoon.ModalMgr:activate({"/"}, "#FF6347", true)
+#+end_src
+
+
+#+begin_src sh :noweb-prefix no :noweb yes :results output
+echo "test initModals"
+hs -c '<<initModals>>'
+#+end_src
+
+#+RESULTS:
+: test initModals
 : -- Spoon already loaded, returning existing copy: HotkeyTree
+: 16:24:51 ** Warning:HotkeyTree: table: 0x600000c6ec80 Duplicated binding { "a", "c" }
+: 16:24:51 ** Warning:HotkeyTree: table: 0x600000c6ec80 Duplciated prefix { "a", "c", "b" }
+: 16:24:51 ** Warning:HotkeyTree: table: 0x600000c6ec80 Duplciated prefix { "a", "c", "control-c" }
+:              hotkey: Disabled previous hotkey A: +prefix
+:              hotkey: Disabled previous hotkey A: +prefix
+:              hotkey: Disabled previous hotkey A: +prefix

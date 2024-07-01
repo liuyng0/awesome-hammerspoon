@@ -122,9 +122,15 @@ function obj:displays ()
 end
 
 --- @param space Space
-function obj:moveFocusedWindowToNextSpace ()
+function obj:moveFocusedWindowToNextSpace (follow)
   local nextSpace = obj:getNextSpaces(true)[1]
-  yabai("window", "--space " .. nextSpace .. " --focus")
+  local follow_param
+  if follow and follow == true then
+    follow_param = " --focus"
+  else
+    follow_param = ""
+  end
+  yabai("window", "--space " .. nextSpace .. follow_param)
 end
 
 function obj:getFocusedWindow ()

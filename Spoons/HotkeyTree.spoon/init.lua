@@ -19,15 +19,19 @@ obj.logger = hs.logger.new("HotkeyTree")
 --- Imports
 local M = lrks.moses
 local F = lrks.F
-
+local modalMgr = spoon.ModalMgr
 --- The super_key to start this tree
 obj.super_key = { { "shift", "command", "control", "option" }, "1" }
+obj.quit_keys = { { "control", "q" } }
+obj.show_which_key = true
 
 --- The tree is the configs for the keymappings
 --- Each node could be below cases:
 ---   - (key, function, description)
 ---   - (key, mapping, description)
 obj.tree = {}
+obj.modals = {}
+obj.modal_inited = false
 
 obj.defaultPrefix = "+prefix"
 function _concat (a, b)
@@ -56,7 +60,7 @@ end
 function obj:_splitKey (keystring)
     local fields = hs.fnutils.split(keystring, "-")
     if fields and #fields == 1 then
-        return fields[1]
+        return { "", fields[1] }
     end
     local modifiers = M.chain(fields)
         :initial(1)
@@ -104,13 +108,13 @@ function obj:addBinding (keyseq, description, func)
     while index < #concatedKeys and cursor[concatedKeys[index + 1]] do
         cursor = cursor[concatedKeys[index + 1]].mapping
         if type(cursor) ~= "table" then
-            obj.logger:w(F "Duplciated prefix {concatedKeys} {cursor.description}")
+            obj.logger:w(F "Duplciated prefix {hs.inspect(concatedKeys)}")
             return
         end
         index = index + 1
     end
     if index == #concatedKeys then
-        obj.logger:w(F "Duplicated binding {concatedKeys}")
+        obj.logger:w(F "Duplicated binding {hs.inspect(concatedKeys)}")
         return
     end
     obj:_makeTree(cursor, concatedKeys, index + 1, description, func)
@@ -128,10 +132,69 @@ end
 function obj:addMapping (prefixKeySeq, prefixDescription, funcMap)
     obj:addBinding(prefixKeySeq, prefixDescription, nil)
     for _, v in pairs(funcMap) do
-        local key = v.key
-        local func = v.func
-        local description = v.description
+        local key, func, description
+        if v.key then
+            key = v.key
+            func = v.func
+            description = v.description
+        else
+            key = v[1]
+            func = v[2]
+            description = v[3]
+        end
         obj:addBinding(M.append(prefixKeySeq, key), description, func)
+    end
+end
+
+function obj:_dfs (root, modalPath)
+    if not modalMgr.modal_list[modalPath] then
+        modalMgr:new(modalPath)
+        obj.modals[modalPath] = modalMgr.modal_list[modalPath]
+    end
+    local curModal = modalMgr.modal_list[modalPath]
+    for key, v in pairs(root) do
+        local splitKey = obj:_splitKey(key)
+        if type(v.mapping) == "table" then
+            local childModalPath
+            if modalPath == "/" then
+                childModalPath = "/" .. key
+            else
+                childModalPath = modalPath .. "/" .. key
+            end
+            local childModal = obj:_dfs(v.mapping, childModalPath)
+            curModal:bind(splitKey[1], splitKey[2], v.description, function()
+                spoon.ModalMgr:deactivateAll()
+                spoon.ModalMgr:activate({ childModalPath }, "#FF6347",
+                    obj.show_which_key)
+            end)
+        else
+            curModal:bind(splitKey[1], splitKey[2], v.description, function()
+                spoon.ModalMgr:deactivateAll()
+                v.mapping()
+            end)
+        end
+    end
+    return curModal
+end
+
+function obj:toggleShowWhichKey ()
+    obj.show_which_key = not obj.show_which_key
+    obj.logger:w(F "Toggle show which key -> {obj.show_which_key}")
+end
+
+function obj:initModals ()
+    if obj.modal_inited then
+        return
+    end
+    obj:_dfs(obj.tree, "/")
+    obj.modal_inited = true
+    --- The super key is also the key to deactive modal
+    for _, modal in pairs(obj.modals) do
+        modal:bind(obj.super_key[1], obj.super_key[2],
+            "Deactive modals",
+            function()
+                spoon.ModalMgr:deactivateAll()
+            end)
     end
 end
 

@@ -28,7 +28,7 @@ obj.gridparts = 30
 ---
 --- Parameters:
 ---  * direction - A string specifying the direction, valid strings are: `left`, `right`, `up`, `down`.
-function obj:stepMove(direction)
+function obj:stepMove (direction)
     local cwin = hs.window.focusedWindow()
     if cwin then
         local cscreen = cwin:screen()
@@ -58,7 +58,7 @@ end
 ---
 --- Parameters:
 ---  * direction - A string specifying the direction, valid strings are: `left`, `right`, `up`, `down`.
-function obj:stepResize(direction)
+function obj:stepResize (direction)
     local cwin = hs.window.focusedWindow()
     if cwin then
         local cscreen = cwin:screen()
@@ -88,7 +88,7 @@ end
 ---
 --- Parameters:
 ---  * option - A string specifying the option, valid strings are: `halfleft`, `halfright`, `halfup`, `halfdown`, `cornerNW`, `cornerSW`, `cornerNE`, `cornerSE`, `center`, `fullscreen`, `maximize`, `minimize`, `expand`, `shrink`.
-local function windowStash(window)
+local function windowStash (window)
     local winid = window:id()
     local winf = window:frame()
     if #obj.history > 50 then
@@ -99,7 +99,7 @@ local function windowStash(window)
     table.insert(obj.history, winstru) -- Insert new item of window history
 end
 
-function obj:moveAndResize(option)
+function obj:moveAndResize (option)
     local cwin = hs.window.focusedWindow()
     if cwin then
         local cscreen = cwin:screen()
@@ -109,28 +109,76 @@ function obj:moveAndResize(option)
         local wf = cwin:frame()
         options = {
             halfleft = function()
-                cwin:setFrame({ x = cres.x, y = cres.y, w = cres.w / 2, h = cres.h })
+                cwin:setFrame({
+                    x = cres.x,
+                    y = cres.y,
+                    w = cres.w / 2,
+                    h = cres
+                        .h
+                })
             end,
             halfright = function()
-                cwin:setFrame({ x = cres.x + cres.w / 2, y = cres.y, w = cres.w / 2, h = cres.h })
+                cwin:setFrame({
+                    x = cres.x + cres.w / 2,
+                    y = cres.y,
+                    w = cres.w /
+                        2,
+                    h = cres.h
+                })
             end,
             halfup = function()
-                cwin:setFrame({ x = cres.x, y = cres.y, w = cres.w, h = cres.h / 2 })
+                cwin:setFrame({
+                    x = cres.x,
+                    y = cres.y,
+                    w = cres.w,
+                    h = cres.h /
+                        2
+                })
             end,
             halfdown = function()
-                cwin:setFrame({ x = cres.x, y = cres.y + cres.h / 2, w = cres.w, h = cres.h / 2 })
+                cwin:setFrame({
+                    x = cres.x,
+                    y = cres.y + cres.h / 2,
+                    w = cres.w,
+                    h =
+                        cres.h / 2
+                })
             end,
             cornerNW = function()
-                cwin:setFrame({ x = cres.x, y = cres.y, w = cres.w / 2, h = cres.h / 2 })
+                cwin:setFrame({
+                    x = cres.x,
+                    y = cres.y,
+                    w = cres.w / 2,
+                    h = cres
+                        .h / 2
+                })
             end,
             cornerNE = function()
-                cwin:setFrame({ x = cres.x + cres.w / 2, y = cres.y, w = cres.w / 2, h = cres.h / 2 })
+                cwin:setFrame({
+                    x = cres.x + cres.w / 2,
+                    y = cres.y,
+                    w = cres.w /
+                        2,
+                    h = cres.h / 2
+                })
             end,
             cornerSW = function()
-                cwin:setFrame({ x = cres.x, y = cres.y + cres.h / 2, w = cres.w / 2, h = cres.h / 2 })
+                cwin:setFrame({
+                    x = cres.x,
+                    y = cres.y + cres.h / 2,
+                    w = cres.w /
+                        2,
+                    h = cres.h / 2
+                })
             end,
             cornerSE = function()
-                cwin:setFrame({ x = cres.x + cres.w / 2, y = cres.y + cres.h / 2, w = cres.w / 2, h = cres.h / 2 })
+                cwin:setFrame({
+                    x = cres.x + cres.w / 2,
+                    y = cres.y + cres.h / 2,
+                    w =
+                        cres.w / 2,
+                    h = cres.h / 2
+                })
             end,
             fullscreen = function()
                 cwin:setFullScreen(true)
@@ -145,13 +193,38 @@ function obj:moveAndResize(option)
                 cwin:centerOnScreen()
             end,
             expand = function()
-                cwin:setFrame({ x = wf.x - stepw, y = wf.y - steph, w = wf.w + (stepw * 2), h = wf.h + (steph * 2) })
+                cwin:setFrame({
+                    x = wf.x - stepw,
+                    y = wf.y - steph,
+                    w = wf.w +
+                        (stepw * 2),
+                    h = wf.h + (steph * 2)
+                })
             end,
             shrink = function()
-                cwin:setFrame({ x = wf.x + stepw, y = wf.y + steph, w = wf.w - (stepw * 2), h = wf.h - (steph * 2) })
+                cwin:setFrame({
+                    x = wf.x + stepw,
+                    y = wf.y + steph,
+                    w = wf.w -
+                        (stepw * 2),
+                    h = wf.h - (steph * 2)
+                })
             end,
             centerHalfWidth = function()
-                cwin:setFrame({ x = cres.x + cres.w / 4, y = cres.y, w = cres.w / 2, h = cres.h })
+                cwin:setFrame({
+                    x = cres.x + cres.w / 4,
+                    y = cres.y,
+                    w = cres.w /
+                        2,
+                    h = cres.h
+                })
+            end,
+            tripleLeft = function()
+                cwin:setFrame({ x = 0, y = cres.y, w = cres.w / 4, h = cres.h })
+            end,
+            tripleRight = function()
+                cwin:setFrame({ x = cres.x + cres.w / 4 * 3, y = cres.y, w = cres
+                .w / 4, h = cres.h })
             end
         }
         if options[option] == nil then
@@ -179,7 +252,7 @@ end
 ---
 --- Parameters:
 ---  * direction - A string specifying the direction, valid strings are: `left`, `right`, `up`, `down`, `next`.
-function obj:moveToScreen(direction)
+function obj:moveToScreen (direction)
     local cwin = hs.window.focusedWindow()
     if cwin then
         local cscreen = cwin:screen()
@@ -207,7 +280,7 @@ end
 ---
 --- Parameters:
 ---  * None
-function obj:undo()
+function obj:undo ()
     local cwin = hs.window.focusedWindow()
     local cwinid = cwin:id()
     for idx, val in ipairs(obj.history) do
@@ -224,7 +297,7 @@ end
 ---
 --- Parameters:
 ---  * None
-function obj:centerCursor()
+function obj:centerCursor ()
     local cwin = hs.window.focusedWindow()
     local wf = cwin:frame()
     local cscreen = cwin:screen()
@@ -234,7 +307,11 @@ function obj:centerCursor()
         hs.mouse.absolutePosition({ x = wf.x + wf.w / 2, y = wf.y + wf.h / 2 })
     else
         -- Center the cursor on the screen
-        hs.mouse.absolutePosition({ x = cres.x + cres.w / 2, y = cres.y + cres.h / 2 })
+        hs.mouse.absolutePosition({
+            x = cres.x + cres.w / 2,
+            y = cres.y +
+                cres.h / 2
+        })
     end
 end
 
