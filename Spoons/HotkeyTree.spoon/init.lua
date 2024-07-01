@@ -71,7 +71,7 @@ function obj:_splitKey (keystring)
     return result
 end
 
-function obj:_makeTree (cursor, concatedKeys, index, func, description)
+function obj:_makeTree (cursor, concatedKeys, index, description, func)
     while index < #concatedKeys do
         local key = concatedKeys[index]
         cursor[key] = { mapping = {}, description = obj.defaultPrefix }
@@ -79,7 +79,11 @@ function obj:_makeTree (cursor, concatedKeys, index, func, description)
         index = index + 1
     end
     local key = concatedKeys[index]
-    cursor[key] = { mapping = func, description = description }
+    if not func then
+        cursor[key] = { mapping = {}, description = description }
+    else
+        cursor[key] = { mapping = func, description = description }
+    end
 end
 
 --- Add a key binding
@@ -88,16 +92,17 @@ end
 ---  * keyseq - A key binding sequences, could be:
 ---   * {"a", "b"}
 ---   * {"a", {"control", "a"}, {"control", "option", "a"}}
----  * func - function to be called when the key binding pressed
 ---  * description - The help doc description
-function obj:addBinding (keyseq, func, description)
+---  * func - function to be called when the key binding pressed
+---    * if func is nil, means adding a prefix
+function obj:addBinding (keyseq, description, func)
     local concatedKeys = M.chain(keyseq)
         :map(function(_, _keycomb) return obj:_concatKey(_keycomb) end)
         :value()
     local cursor = obj.tree
     local index = 0
     while index < #concatedKeys and cursor[concatedKeys[index + 1]] do
-        cursor = obj.tree[concatedKeys[index + 1]].mapping
+        cursor = cursor[concatedKeys[index + 1]].mapping
         if type(cursor) ~= "table" then
             obj.logger:w(F "Duplciated prefix {concatedKeys} {cursor.description}")
             return
@@ -108,7 +113,26 @@ function obj:addBinding (keyseq, func, description)
         obj.logger:w(F "Duplicated binding {concatedKeys}")
         return
     end
-    obj:_makeTree(cursor, concatedKeys, index + 1, func, description)
+    obj:_makeTree(cursor, concatedKeys, index + 1, description, func)
+end
+
+--- Add a key binding
+---
+--- Parameters:
+---  * prefixKeySeq - A key binding sequences as keystroke prefix:
+---  * prefixDescription - The help doc description
+---  * funcMap - table of the mapping it should contains below for each item
+---    * key - relative key sequences exclude the prefixKeySeq
+---    * func - function to call
+---    * description - the description for the function
+function obj:addMapping (prefixKeySeq, prefixDescription, funcMap)
+    obj:addBinding(prefixKeySeq, prefixDescription, nil)
+    for _, v in pairs(funcMap) do
+        local key = v.key
+        local func = v.func
+        local description = v.description
+        obj:addBinding(M.append(prefixKeySeq, key), description, func)
+    end
 end
 
 return obj

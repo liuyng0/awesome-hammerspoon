@@ -45,10 +45,8 @@ hs -c '<<_splitKey>>'
 #+name: addBinding
 #+begin_src lua
 local M = hs.loadSpoon("HotkeyTree")
-M:addBinding({"a", {"control", "a"}, {"control", "option", "a"}},
-  function () print("complex") end, "complex")
-M:addBinding({"b"},
-  function () print("simple") end, "simple")
+M:addBinding({"a", {"control", "a"}, {"control", "option", "a"}}, "complex", function () print("complex") end)
+M:addBinding({"b"}, "simple", function () print("simple") end)
 print(hs.inspect(M.tree))
 #+end_src
 
@@ -58,27 +56,27 @@ hs -c '<<addBinding>>'
 #+end_src
 
 #+RESULTS:
-#+begin_example
-test addBinding
--- Loading Spoon: HotkeyTree
-{
-  a = {
-    description = "+prefix",
-    mapping = {
-      ["control-a"] = {
-        description = "+prefix",
-        mapping = {
-          ["control-option-a"] = {
-            description = "complex",
-            mapping = <function 1>
-          }
-        }
-      }
-    }
-  },
-  b = {
-    description = "simple",
-    mapping = <function 2>
-  }
-}
-#+end_example
+: test addBinding
+: -- Spoon already loaded, returning existing copy: HotkeyTree
+
+** addMapping
+#+name: addMapping
+#+begin_src lua
+local M = hs.loadSpoon("HotkeyTree")
+M:addMapping({"a", "c"}, "prefix mapping for a-c", {
+    {key={"b"}, func=function() print("a-c-b") end, description="a-c-b func"},
+    {key={{"control", "c"}}, func=function() print("a-c-C_c") end, description="a-c-C_c func"}
+})
+print(hs.inspect(M.tree))
+#+end_src
+
+#+RESULTS: addMapping
+
+#+begin_src sh :noweb-prefix no :noweb yes :results output
+echo "test addMapping"
+hs -c '<<addMapping>>'
+#+end_src
+
+#+RESULTS:
+: test addMapping
+: -- Spoon already loaded, returning existing copy: HotkeyTree
