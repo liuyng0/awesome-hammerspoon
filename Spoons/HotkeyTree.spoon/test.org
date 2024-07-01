@@ -1,20 +1,13 @@
 #+title: Test
 
 * Test
+** _concatKey
 #+name: _concatKey 
 #+begin_src lua :exports none
 local M = hs.loadSpoon("HotkeyTree")
 print(hs.inspect(M:_concatKey("a")))
 print(hs.inspect(M:_concatKey({"control", "a"})))
 print(hs.inspect(M:_concatKey({"option", "control", "a"})))
-#+end_src
-
-#+name: _splitKey
-#+begin_src lua :exports none
-local M = hs.loadSpoon("HotkeyTree")
-print(hs.inspect(M:_splitKey("a")))
-print(hs.inspect(M:_splitKey("control-ab")))
-print(hs.inspect(M:_splitKey("option-control-a")))
 #+end_src
 
 #+begin_src sh :noweb-prefix no :noweb yes :results output
@@ -28,12 +21,19 @@ hs -c '<<_concatKey>>'
 : "a"
 : "control-a"
 : "control-option-a"
+** _splitKey
+#+name: _splitKey
+#+begin_src lua :exports none
+local M = hs.loadSpoon("HotkeyTree")
+print(hs.inspect(M:_splitKey("a")))
+print(hs.inspect(M:_splitKey("control-ab")))
+print(hs.inspect(M:_splitKey("option-control-a")))
+#+end_src
 
 #+begin_src sh :noweb-prefix no :noweb yes :results output
 echo "test _splitKey"
 hs -c '<<_splitKey>>'
 #+end_src
-
 
 #+RESULTS:
 : test _splitKey
@@ -41,3 +41,44 @@ hs -c '<<_splitKey>>'
 : "a"
 : { { "control" }, "ab" }
 : { { "control", "option" }, "a" }
+** addBinding
+#+name: addBinding
+#+begin_src lua
+local M = hs.loadSpoon("HotkeyTree")
+M:addBinding({"a", {"control", "a"}, {"control", "option", "a"}},
+  function () print("complex") end, "complex")
+M:addBinding({"b"},
+  function () print("simple") end, "simple")
+print(hs.inspect(M.tree))
+#+end_src
+
+#+begin_src sh :noweb-prefix no :noweb yes :results output
+echo "test addBinding"
+hs -c '<<addBinding>>'
+#+end_src
+
+#+RESULTS:
+#+begin_example
+test addBinding
+-- Loading Spoon: HotkeyTree
+{
+  a = {
+    description = "+prefix",
+    mapping = {
+      ["control-a"] = {
+        description = "+prefix",
+        mapping = {
+          ["control-option-a"] = {
+            description = "complex",
+            mapping = <function 1>
+          }
+        }
+      }
+    }
+  },
+  b = {
+    description = "simple",
+    mapping = <function 2>
+  }
+}
+#+end_example
