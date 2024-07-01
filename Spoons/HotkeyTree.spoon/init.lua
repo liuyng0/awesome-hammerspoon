@@ -31,6 +31,7 @@ obj.show_which_key = true
 ---   - (key, mapping, description)
 obj.tree = {}
 obj.modals = {}
+obj.leaf_functions = {}
 obj.modal_inited = false
 
 obj.defaultPrefix = "+prefix"
@@ -86,7 +87,9 @@ function obj:_makeTree (cursor, concatedKeys, index, description, func)
     if not func then
         cursor[key] = { mapping = {}, description = description }
     else
-        cursor[key] = { mapping = func, description = description }
+        local fmap = { mapping = func, description = description }
+        table.insert(obj.leaf_functions, fmap)
+        cursor[key] = fmap
     end
 end
 
@@ -118,6 +121,34 @@ function obj:addBinding (keyseq, description, func)
         return
     end
     obj:_makeTree(cursor, concatedKeys, index + 1, description, func)
+end
+
+function obj:searchAndRun ()
+    if #obj.leaf_functions < 1 then
+        return
+    end
+    local choices = {}
+    for _, funcs in pairs(obj.leaf_functions) do
+        table.insert(choices,
+            {
+                ["text"] = funcs.description,
+                ["subText"] = funcs.description
+            })
+    end
+    local callback = function(choice)
+        if choice == nil then
+            return
+        end
+        for _, funcs in pairs(obj.leaf_functions) do
+            if funcs.description == choice["text"] then
+                funcs.mapping()
+                return
+            end
+        end
+    end
+    local chooser = hs.chooser.new(callback)
+    chooser:choices(choices)
+    chooser:searchSubText(true):show()
 end
 
 --- Add a key binding

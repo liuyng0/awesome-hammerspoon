@@ -712,10 +712,13 @@ local function spaceMap ()
 end
 
 local mappings = {
+    --- Search Command
+    { key = { "S" },                map = function() spoon.HotkeyTree
+            :searchAndRun() end,                                                          description = "Search Commands" },
     --- Search with HSearch
-    { key = { "/" },                map = function() spoon.HSearch:toggleShow() end, description = "Search with HSearch" },
+    { key = { "/" },                map = function() spoon.HSearch:toggleShow() end,      description = "Search with HSearch" },
     --- Lock Screen
-    { key = { { "control", "L" } }, map = function() hs.caffeinate.lockScreen() end, description = "Lock Screen" },
+    { key = { { "control", "L" } }, map = function() hs.caffeinate.lockScreen() end,      description = "Lock Screen" },
     --- Toggle which key
     {
         key = { { "control", "/" } },
