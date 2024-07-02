@@ -136,8 +136,8 @@ function obj:searchAndRun ()
     for _, funcs in pairs(obj.leaf_functions) do
         table.insert(choices,
             {
-                ["text"] = funcs.description,
-                ["subText"] = funcs.key
+                ["text"] = hs.styledtext.new(funcs.description),
+                ["subText"] = hs.styledtext.new(funcs.key)
             })
     end
     local callback = function(choice)
@@ -153,7 +153,6 @@ function obj:searchAndRun ()
     end
     local chooser = hs.chooser.new(callback)
     chooser:choices(choices)
-    spoon.ChooserStyle:setChooserUI(chooser, choices)
     chooser:searchSubText(false):show()
 end
 
