@@ -22,13 +22,13 @@ local F = lrks.F
 local modalMgr = spoon.ModalMgr
 --- The super_key to start this tree
 obj.super_key = { { "shift", "command", "control", "option" }, "1" }
-obj.quit_keys = { { "control", "q" } }
+obj.quit_keys = { { "control", "q" }, { "", "escape" } }
 obj.show_which_key = true
 
 --- The tree is the configs for the keymappings
 --- Each node could be below cases:
----   - (key, function, description)
----   - (key, mapping, description)
+---   - (key, mapping=func, description)
+---   - (key, mapping={}(which is a child node), description)
 obj.tree = {}
 obj.modals = {}
 obj.leaf_functions = {}
@@ -226,6 +226,13 @@ function obj:initModals ()
             function()
                 spoon.ModalMgr:deactivateAll()
             end)
+        for _, quit_key in pairs(obj.quit_keys) do
+            modal:bind(quit_key[1], quit_key[2],
+                "Deactive modals",
+                function()
+                    spoon.ModalMgr:deactivateAll()
+                end)
+        end
     end
 end
 
