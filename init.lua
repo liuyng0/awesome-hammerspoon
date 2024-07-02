@@ -77,31 +77,31 @@ function executeWithPathPopulated (command)
     end
 end
 
+-- Specify Spoons which will be loaded
+hspoon_list = {
+    "CountDown",
+    "HSearch",
+    "WinWin",
+    "Screen",
+    "Space",
+    "Links",
+    "PopupTranslateSelection",
+    "SplitView",
+    "AppBindings",
+    "ChooserStyle",
+    "Emacs",
+    "Yabai",
+    "HotkeyTree"
+}
+
 -- ModalMgr Spoon must be loaded explicitly, because this repository heavily relies upon it.
 hs.loadSpoon("ModalMgr")
-
--- Define default Spoons which will be loaded later
-if not hspoon_list then
-    hspoon_list = {
-        "AClock",
-        "BingDaily",
-        "CircleClock",
-        "ClipShow",
-        "CountDown",
-        "HCalendar",
-        "HSaria2",
-        "HSearch",
-        "SpeedMenu",
-        "WinWin",
-        "FnMate",
-        "ChooserStyle"
-    }
-end
 
 -- Load those Spoons
 for _, v in pairs(hspoon_list) do
     hs.loadSpoon(v)
 end
+
 
 if spoon.PopupTranslateSelection then
     -- Register translateM with modal supervisor
@@ -705,7 +705,7 @@ end
 local mappings = {
     --- Search Command
     {
-        key = { { "control", "S" } },
+        key = { "H" },
         map = function()
             spoon.HotkeyTree
                 :searchAndRun()

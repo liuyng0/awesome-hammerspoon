@@ -23,7 +23,7 @@ local modalMgr = spoon.ModalMgr
 --- The super_key to start this tree
 obj.super_key = { { "shift", "command", "control", "option" }, "1" }
 obj.quit_keys = { { "control", "q" }, { "", "escape" } }
-obj.show_which_key = true
+obj.show_which_key = false
 
 --- The tree is the configs for the keymappings
 --- Each node could be below cases:
@@ -88,7 +88,12 @@ function obj:_makeTree (cursor, concatedKeys, index, description, func)
         cursor[key] = { mapping = {}, description = description }
     else
         local fmap = { mapping = func, description = description }
-        table.insert(obj.leaf_functions, fmap)
+        table.insert(obj.leaf_functions,
+            {
+                mapping = func,
+                description = description,
+                key = hs.inspect(concatedKeys)
+            })
         cursor[key] = fmap
     end
 end
@@ -132,7 +137,7 @@ function obj:searchAndRun ()
         table.insert(choices,
             {
                 ["text"] = funcs.description,
-                ["subText"] = funcs.description
+                ["subText"] = funcs.key
             })
     end
     local callback = function(choice)
@@ -148,7 +153,8 @@ function obj:searchAndRun ()
     end
     local chooser = hs.chooser.new(callback)
     chooser:choices(choices)
-    chooser:searchSubText(true):show()
+    spoon.ChooserStyle:setChooserUI(chooser, choices)
+    chooser:searchSubText(false):show()
 end
 
 --- Add a key binding

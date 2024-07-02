@@ -5,23 +5,6 @@ hyper2 = "cmd"
 hyper3 = { "ctrl", "alt" }
 hyper4 = { "ctrl", "cmd" }
 
--- Specify Spoons which will be loaded
-hspoon_list = {
-    "CountDown",
-    "HSearch",
-    "WinWin",
-    "Screen",
-    "Space",
-    "Links",
-    "PopupTranslateSelection",
-    "SplitView",
-    "AppBindings",
-    "ChooserStyle",
-    "Emacs",
-    "Yabai",
-    "HotkeyTree"
-}
-
 
 -- Modal supervisor keybinding, which can be used to temporarily disable ALL modal environments.
 -- hsupervisor_keys = { { "shift", "command", "control", "option" }, "1" }
