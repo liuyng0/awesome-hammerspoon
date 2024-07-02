@@ -91,7 +91,7 @@ hspoon_list = {
     "ChooserStyle",
     "Emacs",
     "Yabai",
-    "HotkeyTree"
+    'RecursiveBinder'
 }
 
 -- ModalMgr Spoon must be loaded explicitly, because this repository heavily relies upon it.
@@ -619,191 +619,157 @@ local function countDownMins (mins)
 end
 
 --- Windows Map
-local function winMap ()
-    -- left/right/up/down
-    local moveAndResize = function(method)
-        return function()
-            spoon.WinWin:moveAndResize(method)
-        end
+local moveAndResize = function(method)
+    return function()
+        spoon.WinWin:moveAndResize(method)
     end
-    local moveToScreen = function(direction)
-        return function()
-            spoon.WinWin:moveToScreen(direction)
-        end
+end
+local moveToScreen = function(direction)
+    return function()
+        spoon.WinWin:moveToScreen(direction)
     end
-    local moveToNextSpace = function(follow)
-        return function()
-            spoon.Yabai:moveFocusedWindowToNextSpace(follow)
-        end
+end
+local moveToNextSpace = function(follow)
+    return function()
+        spoon.Yabai:moveFocusedWindowToNextSpace(follow)
     end
-    local listWindowCurrent = function()
-        spoon.Screen:selectWindowFromFocusedApp()
-    end
-    local listWindowAll = function()
-        spoon.Screen:selectWindowFromAllWindows()
-    end
-
-
-    return {
-        --- NOTE: don't bind "T", it's used to toggle settings
-        -- move and resize
-        { { "H" },                moveAndResize("halfleft"),                          "MoveAndResize to halfleft" },
-        { { "L" },                moveAndResize("halfright"),                         "MoveAndResize to halfright" },
-        { { "K" },                moveAndResize("halfup"),                            "MoveAndResize to halfup" },
-        { { "J" },                moveAndResize("halfdown"),                          "MoveAndResize to halfdown" },
-        -- to screen
-        { { "N" },                moveToScreen("next"),                               "Move to Next Screen" },
-        { { "P" },                moveToScreen("previous"),                           "Move to Previous Screen" },
-        -- undo
-        { { "U" },                function() spoon.WinWin:undo() end,                 "Undo Window Manipulation" },
-        -- Triple Window
-        { { "A" },                moveAndResize("tripleLeft"),                        "Triple Left" },
-        { { "S" },                moveAndResize("centerHalfWidth"),                   "Triple Center" },
-        { { "D" },                moveAndResize("tripleRight"),                       "Triple Right" },
-        -- undo/redo
-        { { "F" },                moveAndResize("fullscreen"),                        "Fullscreen" },
-        { { "M" },                moveAndResize("maximize"),                          "Maximize" },
-        -- Rotate
-        { { "R" },                function() spoon.Screen:rotateVisibleWindows() end, "Rotate Visible Windows" },
-        -- Other window
-        { { "O" },                function() spoon.Screen:focusOtherWindow() end,     "Focus Other Window" },
-        { { { "control", "O" } }, function() spoon.Screen:swapWithOther() end,        "Swap with other on-screen Window" },
-        { { { "shift", "O" } }, function()
-            spoon.Screen
-                :selectFromCoveredWindow()
-        end, "Select covered Window" },
-        -- to Space
-        { { { "control", "M" } }, moveToNextSpace(false), "Move to Next Space(not follow)" },
-        { { { "shift", "M" } },   moveToNextSpace(true),  "Move to Next Space(follow)" },
-        -- list windows
-        { { { "control", "L" } }, listWindowCurrent,      "Choose Window (Current App)" },
-        { { { "shift", "L" } },   listWindowAll,          "Choose Window (All App)" }
-
-    }
+end
+local listWindowCurrent = function()
+    spoon.Screen:selectWindowFromFocusedApp()
+end
+local listWindowAll = function()
+    spoon.Screen:selectWindowFromAllWindows()
 end
 
-local function spaceMap ()
-    local gotoNextSpace = function()
-        spoon.Yabai:gotoNextSpaces()
-    end
-    local toggleMissionControl = function()
-        hs.spaces.toggleMissionControl()
-    end
-    local toggleShowDesktop = function()
-        hs.spaces.toggleMissionControl()
-    end
-
-    return {
-        -- move and resize
-        { { "N" }, gotoNextSpace,        "Goto next Spaces" },
-        { { "M" }, toggleMissionControl, "Toggle Mission Control" },
-        { { "D" }, toggleShowDesktop,    "Toggle Show Desktop" },
-
-    }
+--- Space Map
+local gotoNextSpace = function()
+    spoon.Yabai:gotoNextSpaces()
+end
+local toggleMissionControl = function()
+    hs.spaces.toggleMissionControl()
+end
+local toggleShowDesktop = function()
+    hs.spaces.toggleMissionControl()
 end
 
-local mappings = {
-    --- Search Command
-    {
-        key = { "H" },
-        map = function()
-            spoon.HotkeyTree
-                :searchAndRun()
-        end,
-        description = "Search Commands"
-    },
-    --- Search with HSearch
-    { key = { "/" },                map = function() spoon.HSearch:toggleShow() end, description = "Search with HSearch" },
-    --- Lock Screen
-    { key = { { "control", "L" } }, map = function() hs.caffeinate.lockScreen() end, description = "Lock Screen" },
-    --- Toggle which key
-    {
-        key = { { "control", "/" } },
-        map = function()
-            spoon.HotkeyTree
-                :toggleShowWhichKey()
-        end,
-        description = "Toggle which key"
-    },
-    --- Launch Applications
-    {
-        key = { "L" },
-        description = "Launch applications",
-        map = {
-            { { "space" },            launch_emacs,                                  "Launch Emacs" },
-            { { "T" },                launch_terminal,                               "Launch Terminal" },
-            { { "C" },                launch_app_by_id("com.google.Chrome"),         "Launch Chrome" },
-            { { "I" },                launch_app_by_id("com.jetbrains.intellij"),    "Launch Intellij" },
-            { { { "control", "W" } }, launch_app_by_id("com.apple.ActivityMonitor"), "Launch ActivityMonitor" },
-            { { "D" },                launch_app_by_name("Dash"),                    "Launch Dash" },
-            { { "W" },                launch_app_by_name("WeChat"),                  "Launch WeChat" },
-            { { "S" },                launch_app_by_name("Slack"),                   "Launch Slack" },
-            { { "F" },                launch_app_by_name("Firefox"),                 "Launch Firefox" },
-            { { "O" },                launch_app_by_name("OmniGraffle"),             "Launch OmniGraffle" },
-            { { "Q" },                launch_app_by_name("Quip"),                    "Launch Quip" },
-            { { "H" },                launch_app_by_name("Hammerspoon"),             "Launch Hammerspoon" },
-            { { "A" },                launch_app_by_name("Android Studio"),          "Launch Android Studio" },
-            { { "P" },                launch_app_by_name("PyCharm"),                 "Launch PyCharm" },
+--- Recursive Binder
+
+spoon.RecursiveBinder.escapeKey = { {}, 'escape' } -- Press escape to abort
+spoon.RecursiveBinder.helperFormat = {
+    atScreenEdge = 2,                              -- Bottom edge (default value)
+    textStyle = {                                  -- An hs.styledtext object
+        font = {
+            name = "Fira Code",
+            size = 16
         }
-    },
-    --- Countdown
-    {
-        key = { "D" },
-        description = "CountDown",
-        map = {
-            { { "P" }, spoon.CountDown.pauseOrResume, "Pause/Resume" },
-            { { "1" }, countDownMins(10),             "CountDown 10 minutes" },
-            { { "2" }, countDownMins(20),             "CountDown 20 minutes" },
-            { { "3" }, countDownMins(30),             "CountDown 30 minutes" },
-            { { "4" }, countDownMins(45),             "CountDown 45 minutes" },
-            { { "6" }, countDownMins(60),             "CountDown 60 minutes" },
-        }
-    },
-    --- Windows
-    {
-        key = { "W" },
-        description = "Manipulate Window",
-        map = winMap()
-    },
-    --- Window Toggles
-    {
-        key = { "W", "T" },
-        description = "Toggle Window Settings",
-        map = {
-            { { "H" }, function() spoon.Screen:toggleWindowHighlightMode() end, "Toggle window highlight mode" },
-            { { "I" }, function() spoon.Screen:toggleCrossSpaces() end,         "Toggle window isolation mode" }
-        }
-    },
-    --- Spaces
-    {
-        key = { "S" },
-        description = "Manipulate Spaces",
-        map = spaceMap()
     }
 }
 
-for _, v in pairs(mappings) do
-    if type(v.map) == "table" then
-        spoon.HotkeyTree:addMapping(v.key, v.description, v.map)
-    else
-        spoon.HotkeyTree:addBinding(v.key, v.description, v.map)
-    end
-end
-spoon.HotkeyTree:initModals()
+local sk = spoon.RecursiveBinder.singleKey
 
-hs.hotkey.bind(
-    spoon.HotkeyTree.super_key[1],
-    spoon.HotkeyTree.super_key[2],
-    function()
-        spoon.ModalMgr:deactivateAll()
-        if spoon.HSearch.chooser:isVisible() then
-            spoon.HSearch:toggleShow(false)
-        else
-            spoon.ModalMgr:activate({ "/" }, "#FF6347",
-                spoon.HotkeyTree.show_which_key)
-        end
-    end
-)
+local keyMap = {
+    --- Search with HSearch
+    [sk('/', 'search+')] = {
+        [sk('h', 'h-search')] = function() spoon.HSearch:toggleShow() end,
+    },
+    [sk('c', 'control+')] = {
+        [sk('l', 'lock screen')] = function() hs.caffeinate.lockScreen() end
+    },
+    --- Launch Applications
+    [sk('a', 'application+')] = {
+        [sk("space", "Emacs")] = launch_emacs,
+        [sk("t", "terminal")] = launch_terminal,
+        [sk("c", "chrome")] = launch_app_by_id("com.google.Chrome"),
+        [sk("i", "intellij")] = launch_app_by_id("com.jetbrains.intellij"),
+        [sk("m", "activity monitor")] = launch_app_by_id(
+            "com.apple.ActivityMonitor"),
+        [sk("d", "dash")] = launch_app_by_name("Dash"),
+        [sk("w", "weChat")] = launch_app_by_name("WeChat"),
+        [sk("s", "slack")] = launch_app_by_name("Slack"),
+        [sk("f", "firefox")] = launch_app_by_name("Firefox"),
+        [sk("o", "omniGraffle")] = launch_app_by_name("OmniGraffle"),
+        [sk("q", "quip")] = launch_app_by_name("Quip"),
+        [sk("h", "hammerspoon")] = launch_app_by_name("Hammerspoon"),
+        [sk("a", "android studio")] = launch_app_by_name("Android Studio"),
+        [sk("p", "pyCharm")] = launch_app_by_name("PyCharm"),
+    },
+    [sk('t', "time/schedule+")] = {
+        [sk('c', 'count down')] = {
+            [sk("p", "pause/resume")] = spoon.CountDown.pauseOrResume,
+            [sk("1", "10 minutes")] = countDownMins(10),
+            [sk("2", "20 minutes")] = countDownMins(20),
+            [sk("3", "30 minutes")] = countDownMins(30),
+            [sk("4", "45 minutes")] = countDownMins(45),
+            [sk("6", "60 minutes")] = countDownMins(60),
+        }
+    },
+    [sk('w', 'windows+')] = {
+        [sk("h", "MoveAndResize to halfleft")] = moveAndResize("halfleft"),
+        [sk("l", "MoveAndResize to halfright")] = moveAndResize("halfright"),
+        [sk("k", "MoveAndResize to halfup")] = moveAndResize("halfup"),
+        [sk("j", "MoveAndResize to halfdown")] = moveAndResize("halfdown"),
+        -- to screen
+        [sk("n", "Move to Next Screen")] = moveToScreen("next"),
+        [sk("p", "Move to Previous Screen")] = moveToScreen("previous"),
+        -- undo
+        [sk("u", "Undo Window Manipulation")] = function() spoon.WinWin:undo() end,
+        -- Triple Window
+        [sk("a", "Triple Left")] = moveAndResize("tripleLeft"),
+        [sk("s", "Triple Center")] = moveAndResize("centerHalfWidth"),
+        [sk("d", "Triple Right")] = moveAndResize("tripleRight"),
+        -- undo/redo
+        [sk("f", "Fullscreen")] = moveAndResize("fullscreen"),
+        [sk("m", "Maximize")] = moveAndResize("maximize"),
+        -- Rotate
+        [sk("r", "Rotate Visible Windows")] = function()
+            spoon.Screen
+                :rotateVisibleWindows()
+        end,
+        -- Other window
+        [sk("o", "other window+")] = {
+            [sk("f", "focus")] = function() spoon.Screen:focusOtherWindow() end,
+            [sk("s", "swap")] = function() spoon.Screen:swapWithOther() end,
+            [sk("o", "open")] = function() spoon.Screen:selectFromCoveredWindow() end
+        },
+        -- to Space
+        [sk("S", "space+")] = {
+            [sk("n", "Move to Next Space(not follow)")] = moveToNextSpace(false),
+            [sk("f", "Move to Next Space(follow)")] = moveToNextSpace(true),
+        },
+        [sk("c", "choose+")] = {
+            [sk("c", "Choose Window (Current App)")] = listWindowCurrent,
+            [sk("a", "Choose Window (All App)")] = listWindowAll,
+        },
+    },
+    [sk('s', 'space+')] = {
+        [sk("n", "goto next spaces")] = gotoNextSpace,
+        [sk("m", "toggle mission control")] = toggleMissionControl,
+        [sk("d", "toggle show desktop")] = toggleShowDesktop,
+    },
+    --- Variable Toggles
+    [sk('v', "variable on/off")] = {
+        [sk('w', 'window toggle')] = {
+            [sk("h", "highlight mode")] = function()
+                spoon.Screen
+                    :toggleWindowHighlightMode()
+            end,
+            [sk("i", "isolation mode (space)")] = function()
+                spoon.Screen
+                    :toggleCrossSpaces()
+            end,
+        }
+    },
+}
+
+local hyper = { { "shift", "command", "control", "option" }, "1", }
+hs.hotkey.bind(hyper[1], hyper[2],
+    spoon.RecursiveBinder.recursiveBind(keyMap))
+
+--- remapping
+hs.hotkey.bind({ "cmd" }, "W", function()
+    hs.eventtap.keyStroke(hyper[1], hyper[2])
+    hs.eventtap.keyStroke({}, "W")
+end)
 
 -- Disable the alert key showing
 hs.hotkey.alertDuration = 0
