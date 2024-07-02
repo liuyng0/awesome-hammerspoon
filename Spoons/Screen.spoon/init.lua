@@ -342,6 +342,14 @@ local function selectOtherWindow (wins, callback)
     if #wins < 1 then
         obj.logger.w("Not enough windows, skip")
     end
+    if #wins == 1 then
+        local window = hs.window.get(wins[1].id)
+        window:focus()
+        if callback then
+            callback(window)
+        end
+        return
+    end
     local windows = M.chain(wins)
         :map(function(_, win)
             return hs.window.get(win.id)
