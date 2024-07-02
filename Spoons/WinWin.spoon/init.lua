@@ -223,8 +223,13 @@ function obj:moveAndResize (option)
                 cwin:setFrame({ x = 0, y = cres.y, w = cres.w / 4, h = cres.h })
             end,
             tripleRight = function()
-                cwin:setFrame({ x = cres.x + cres.w / 4 * 3, y = cres.y, w = cres
-                .w / 4, h = cres.h })
+                cwin:setFrame({
+                    x = cres.x + cres.w / 4 * 3,
+                    y = cres.y,
+                    w = cres
+                        .w / 4,
+                    h = cres.h
+                })
             end
         }
         if options[option] == nil then

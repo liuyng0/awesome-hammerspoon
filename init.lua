@@ -645,31 +645,39 @@ local function winMap ()
 
 
     return {
+        --- NOTE: don't bind "T", it's used to toggle settings
         -- move and resize
-        { { "H" },                moveAndResize("halfleft"),                  "MoveAndResize to halfleft" },
-        { { "L" },                moveAndResize("halfright"),                 "MoveAndResize to halfright" },
-        { { "K" },                moveAndResize("halfup"),                    "MoveAndResize to halfup" },
-        { { "J" },                moveAndResize("halfdown"),                  "MoveAndResize to halfdown" },
+        { { "H" },                moveAndResize("halfleft"),                          "MoveAndResize to halfleft" },
+        { { "L" },                moveAndResize("halfright"),                         "MoveAndResize to halfright" },
+        { { "K" },                moveAndResize("halfup"),                            "MoveAndResize to halfup" },
+        { { "J" },                moveAndResize("halfdown"),                          "MoveAndResize to halfdown" },
         -- to screen
-        { { "N" },                moveToScreen("next"),                       "Move to Next Screen" },
-        { { "P" },                moveToScreen("previous"),                   "Move to Previous Screen" },
+        { { "N" },                moveToScreen("next"),                               "Move to Next Screen" },
+        { { "P" },                moveToScreen("previous"),                           "Move to Previous Screen" },
         -- undo
-        { { "U" },                function() spoon.WinWin:undo() end,         "Undo Window Manipulation" },
+        { { "U" },                function() spoon.WinWin:undo() end,                 "Undo Window Manipulation" },
         -- Triple Window
-        { { "A" },                moveAndResize("tripleLeft"),                "Triple Left" },
-        { { "S" },                moveAndResize("centerHalfWidth"),           "Triple Center" },
-        { { "D" },                moveAndResize("tripleRight"),               "Triple Right" },
+        { { "A" },                moveAndResize("tripleLeft"),                        "Triple Left" },
+        { { "S" },                moveAndResize("centerHalfWidth"),                   "Triple Center" },
+        { { "D" },                moveAndResize("tripleRight"),                       "Triple Right" },
         -- undo/redo
-        { { "F" },                moveAndResize("fullscreen"),                "Fullscreen" },
-        { { "M" },                moveAndResize("maximize"),                  "Maximize" },
-        -- Exchange
-        { { "E" },                function() spoon.Screen:swapWithNext() end, "Exchange(Swap) with windows in next Screen" },
+        { { "F" },                moveAndResize("fullscreen"),                        "Fullscreen" },
+        { { "M" },                moveAndResize("maximize"),                          "Maximize" },
+        -- Rotate
+        { { "R" },                function() spoon.Screen:rotateVisibleWindows() end, "Rotate Visible Windows" },
+        -- Other window
+        { { "O" },                function() spoon.Screen:focusOtherWindow() end,     "Focus Other Window" },
+        { { { "control", "O" } }, function() spoon.Screen:swapWithOther() end,        "Swap with other on-screen Window" },
+        { { { "shift", "O" } }, function()
+            spoon.Screen
+                :selectFromCoveredWindow()
+        end, "Select covered Window" },
         -- to Space
-        { { { "control", "N" } }, moveToNextSpace(false),                     "Move to Next Space(not follow)" },
-        { { { "shift", "N" } },   moveToNextSpace(true),                      "Move to Next Space(follow)" },
+        { { { "control", "M" } }, moveToNextSpace(false), "Move to Next Space(not follow)" },
+        { { { "shift", "M" } },   moveToNextSpace(true),  "Move to Next Space(follow)" },
         -- list windows
-        { { { "control", "L" } }, listWindowCurrent,                          "Choose Window (Current App)" },
-        { { { "shift", "L" } },   listWindowAll,                              "Choose Window (All App)" }
+        { { { "control", "L" } }, listWindowCurrent,      "Choose Window (Current App)" },
+        { { { "shift", "L" } },   listWindowAll,          "Choose Window (All App)" }
 
     }
 end
@@ -684,41 +692,30 @@ local function spaceMap ()
     local toggleShowDesktop = function()
         hs.spaces.toggleMissionControl()
     end
-    local settings = {
-        includeNonVisible = true,
-        includeOtherSpaces = true,
-        -- highlightThumbnailStrokeWidth = 0,
-        -- backgroundColor = {0, 128, 255, 0.3},
-        showTitles = true,
-        onlyActiveApplication = false
-        -- fitWindowsInBackground = false,
-    }
-    local hsExposeInstance = hs.expose.new(nil, settings)
-    local toggleExposeAll = function()
-        hsExposeInstance:toggleShow(false)
-    end
-    local toggleExposeCurrent = function()
-        hsExposeInstance:toggleShow(true)
-    end
 
     return {
         -- move and resize
-        { { "N" },                gotoNextSpace,        "Goto next Spaces" },
-        { { "M" },                toggleMissionControl, "Toggle Mission Control" },
-        { { "D" },                toggleShowDesktop,    "Toggle Show Desktop" },
-        { { "E" },                toggleExposeCurrent,  "Toggle Expose (current)" },
-        { { { "control", "E" } }, toggleExposeAll,      "Toggle Expose (all)" }
+        { { "N" }, gotoNextSpace,        "Goto next Spaces" },
+        { { "M" }, toggleMissionControl, "Toggle Mission Control" },
+        { { "D" }, toggleShowDesktop,    "Toggle Show Desktop" },
+
     }
 end
 
 local mappings = {
     --- Search Command
-    { key = { "S" },                map = function() spoon.HotkeyTree
-            :searchAndRun() end,                                                          description = "Search Commands" },
+    {
+        key = { { "control", "S" } },
+        map = function()
+            spoon.HotkeyTree
+                :searchAndRun()
+        end,
+        description = "Search Commands"
+    },
     --- Search with HSearch
-    { key = { "/" },                map = function() spoon.HSearch:toggleShow() end,      description = "Search with HSearch" },
+    { key = { "/" },                map = function() spoon.HSearch:toggleShow() end, description = "Search with HSearch" },
     --- Lock Screen
-    { key = { { "control", "L" } }, map = function() hs.caffeinate.lockScreen() end,      description = "Lock Screen" },
+    { key = { { "control", "L" } }, map = function() hs.caffeinate.lockScreen() end, description = "Lock Screen" },
     --- Toggle which key
     {
         key = { { "control", "/" } },
@@ -767,6 +764,15 @@ local mappings = {
         key = { "W" },
         description = "Manipulate Window",
         map = winMap()
+    },
+    --- Window Toggles
+    {
+        key = { "W", "T" },
+        description = "Toggle Window Settings",
+        map = {
+            { { "H" }, function() spoon.Screen:toggleWindowHighlightMode() end, "Toggle window highlight mode" },
+            { { "I" }, function() spoon.Screen:toggleCrossSpaces() end,         "Toggle window isolation mode" }
+        }
     },
     --- Spaces
     {

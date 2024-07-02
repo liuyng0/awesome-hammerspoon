@@ -8,6 +8,7 @@ obj.author = "Chophi <chophi@foxmail.com>"
 
 obj.windowHighlightMode = false
 obj.logger = hs.logger.new("Screen")
+local M = lrks.moses
 
 function obj:focusWindowOnNextScreen (nextCount)
     local screens = hs.screen.allScreens()
@@ -93,12 +94,16 @@ function obj:sortedWindows (wins)
     return windows
 end
 
+local function _frameClockWiseAngle (frame)
+    return math.atan(-(frame.y + frame.h), (frame.w + frame.x))
+end
+
 function obj:_sortedWindows (wins)
     local windowAngle = {}
 
     for _, w in pairs(wins) do
         local frame = w:frame()
-        local angle = math.atan(-(frame.y + frame.h), (frame.w + frame.x))
+        local angle = _frameClockWiseAngle(frame)
         -- hs.alert.show(string.format("%f, %s", angle, w:title()))
         table.insert(
             windowAngle,
@@ -305,22 +310,119 @@ function obj:toggleWindowHighlightMode ()
     end
 end
 
--- TODO: complete the swapWithNext function
-function obj:swapWithNext ()
-    obj.logger.w(hs.inspect(obj:getVisibleWindowsGroupedByScreens()))
+function obj:rotateVisibleWindows ()
+    local wins = obj:windowsClockWise()
+    if #wins < 2 then
+        obj.logger.w("Not enough windows, skip")
+        return
+    end
+    for i = 1, #wins do
+        local curWinId, nextWinFrame
+        curWinId = wins[i].id
+        if i == #wins then
+            nextWinFrame = wins[1].frame
+        else
+            nextWinFrame = wins[i + 1].frame
+        end
+        hs.window.get(curWinId):setFrame(nextWinFrame)
+    end
 end
 
-function obj:getVisibleWindowsGroupedByScreens ()
-    local wins = obj:getVisibleWindowsForAllScreens()
-    local rs = {}
-    for i = 1, #wins do
-        if rs[wins[i].screen:id()] == nil then
-            rs[wins[i].screen:id()] = { wins[i] }
-        else
-            table.insert(rs[wins[i].screen:id()], wins[i])
-        end
+function obj:otherVisibleWindows ()
+    local focusedWindow = hs.window.focusedWindow()
+    local wins = obj:windowsClockWise()
+    return M.chain(wins)
+        :select(function(_, win)
+            return win.id ~= focusedWindow:id()
+        end)
+        :value()
+end
+
+local function selectOtherWindow (wins, callback)
+    if #wins < 1 then
+        obj.logger.w("Not enough windows, skip")
     end
-    return rs
+    local windows = M.chain(wins)
+        :map(function(_, win)
+            return hs.window.get(win.id)
+        end)
+        :value()
+    hs.hints.windowHints(windows, callback)
+end
+
+function obj:focusOtherWindow (callback)
+    local wins = obj:otherVisibleWindows()
+    selectOtherWindow(wins, callback)
+end
+
+local function swapWindows (from, to)
+    local fromFrame = from:frame()
+    local toFrame = to:frame()
+    from:setFrame(toFrame)
+    to:setFrame(fromFrame)
+end
+
+function obj:swapWithOther ()
+    local focusedWindow = hs.window.focusedWindow()
+    obj:focusOtherWindow(function(win)
+        swapWindows(focusedWindow, win)
+        focusedWindow:focus()
+    end)
+end
+
+function obj:selectFromCoveredWindow ()
+    local wins = obj:windowsClockWise(true)
+    local focusedWindow = hs.window.focusedWindow()
+    selectOtherWindow(wins, function(win) win:setFrame(focusedWindow:frame()) end)
+end
+
+function obj:windowsClockWise (coveredWindow)
+    local wins = obj:getWindowsGroupByScreens(coveredWindow)
+    obj.logger.w(hs.inspect(wins))
+    return M.chain(wins)
+        :flatten(true)
+        :sort(function(a, b)
+            return _frameClockWiseAngle(a.frame) <
+                _frameClockWiseAngle(b.frame)
+        end)
+        :value()
+end
+
+function obj:getWindowsGroupByScreens (coveredWindow)
+    local windows = M.chain(obj:getVisibleWindowsForAllScreens())
+        :sort(function(a, b)
+            return a.order < b.order
+        end)
+        :groupBy(function(_, win)
+            return win.screen:id()
+        end)
+        :map(function(_, wins)
+            local canSeeWins = {}
+            local coveredWins = {}
+            for _, win in pairs(wins) do
+                local visible = true
+                for _, vwin in pairs(canSeeWins) do
+                    local intersect = vwin.frame:intersect(win.frame)
+                    obj.logger.w(hs.inspect(intersect.area))
+                    if intersect.area ~= 0 then
+                        visible = false
+                        break
+                    end
+                end
+                if visible == true then
+                    table.insert(canSeeWins, win)
+                else
+                    table.insert(coveredWins, win)
+                end
+            end
+            if coveredWindow then
+                return coveredWins
+            else
+                return canSeeWins
+            end
+        end)
+        :value()
+    return windows
 end
 
 function obj:getVisibleWindowsForAllScreens ()

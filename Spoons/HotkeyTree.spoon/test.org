@@ -149,9 +149,6 @@ hs -c '<<initModals>>'
 #+RESULTS:
 : test initModals
 : -- Spoon already loaded, returning existing copy: HotkeyTree
-: 16:24:51 ** Warning:HotkeyTree: table: 0x600000c6ec80 Duplicated binding { "a", "c" }
-: 16:24:51 ** Warning:HotkeyTree: table: 0x600000c6ec80 Duplciated prefix { "a", "c", "b" }
-: 16:24:51 ** Warning:HotkeyTree: table: 0x600000c6ec80 Duplciated prefix { "a", "c", "control-c" }
-:              hotkey: Disabled previous hotkey A: +prefix
-:              hotkey: Disabled previous hotkey A: +prefix
-:              hotkey: Disabled previous hotkey A: +prefix
+: 16:27:28 ** Warning:HotkeyTree: table: 0x600000327440 Duplicated binding { "a", "c" }
+: 16:27:28 ** Warning:HotkeyTree: table: 0x600000327440 Duplciated prefix { "a", "c", "b" }
+: 16:27:28 ** Warning:HotkeyTree: table: 0x600000327440 Duplciated prefix { "a", "c", "control-c" }
