@@ -676,7 +676,7 @@ local keyMap = {
         [sk('l', 'lock screen')] = function() hs.caffeinate.lockScreen() end
     },
     --- Launch Applications
-    [sk('a', 'application+')] = {
+    [sk('l', 'launch+')] = {
         [sk("space", "Emacs")] = launch_emacs,
         [sk("t", "terminal")] = launch_terminal,
         [sk("c", "chrome")] = launch_app_by_id("com.google.Chrome"),
