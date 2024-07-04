@@ -188,34 +188,62 @@ local function createKeyName(key)
    end
 end
 
--- show helper of available keys of current layer
+-- Function to compare two letters
+-- It sorts according to the ASCII code, and for letters, it will be alphabetical
+-- However, for capital letters (65-90), I'm adding 32.5 (this came from 97 - 65 + 0.5, where 97 is a and 65 is A) to the ASCII code before comparing
+-- This way, each capital letter comes after the corresponding simple letter but before letters that come after it in the alphabetical order
+local function compareLetters(a, b)
+    asciiA = string.byte(a)
+    asciiB = string.byte(b)
+    if asciiA >= 65 and asciiA <= 90 then
+        asciiA = asciiA + 32.5
+    end
+    if asciiB >= 65 and asciiB <= 90 then
+        asciiB = asciiB + 32.5
+    end
+    return asciiA < asciiB
+end
+
+-- Here I am adding a bit of code to sort before showing
+-- Only the part between START and END changes
 local function showHelper(keyFuncNameTable)
-   -- keyFuncNameTable is a table that key is key name and value is description
-   local helper = ''
-   local separator = '' -- first loop doesn't need to add a separator, because it is in the very front. 
-   local lastLine = ''
-   local count = 0
-   for keyName, funcName in pairs(keyFuncNameTable) do
-      count = count + 1
-      local newEntry = keyName..' → '..funcName
-      -- make sure each entry is of the same length
-      if string.len(newEntry) > obj.helperEntryLengthInChar then
-         newEntry = string.sub(newEntry, 1, obj.helperEntryLengthInChar - 2)..'..'
-      elseif string.len(newEntry) < obj.helperEntryLengthInChar then
-         newEntry = newEntry..string.rep(' ', obj.helperEntryLengthInChar - string.len(newEntry))
-      end
-      -- create new line for every helperEntryEachLine entries
-      if count % (obj.helperEntryEachLine + 1) == 0 then
-         separator = '\n '
-      elseif count == 1 then
-         separator = ' '
-      else
-         separator = '  '
-      end
-      helper = helper..separator..newEntry
-   end
-   helper = string.match(helper, '[^\n].+$')
-   previousHelperID = hs.alert.show(helper, obj.helperFormat, true)
+    local helper = ''
+    local separator = ''
+    local lastLine = ''
+    local count = 0
+
+    -- START
+    local sortedKeyFuncNameTable = {}
+    for keyName, funcName in pairs(keyFuncNameTable) do
+        table.insert(sortedKeyFuncNameTable, {keyName = keyName, funcName = funcName})
+    end
+    table.sort(sortedKeyFuncNameTable, function(a, b) return compareLetters(a.keyName, b.keyName) end)
+
+    for _, value in ipairs(sortedKeyFuncNameTable) do
+        local keyName = value.keyName
+        local funcName = value.funcName
+        -- END
+        count = count + 1
+        local newEntry = keyName .. ' -> ' .. funcName
+        -- make sure each entry is of the same length
+        if string.len(newEntry) > obj.helperEntryLengthInChar then
+            newEntry =
+                string.sub(newEntry, 1, obj.helperEntryLengthInChar - 2) .. '..'
+        elseif string.len(newEntry) < obj.helperEntryLengthInChar then
+            newEntry = newEntry ..  string.rep(' ', obj.helperEntryLengthInChar - string.len(newEntry))
+        end
+        -- create new line for every helperEntryEachLine entries
+        if count % (obj.helperEntryEachLine + 1) == 0 then
+            separator = '\n '
+        elseif count == 1 then
+            separator = ' '
+        else
+            separator = '  '
+        end
+        helper = helper .. separator .. newEntry
+    end
+    helper = string.match(helper, '[^\n].+$')
+    previousHelperID = hs.alert.show(helper, obj.helperFormat, true)
 end
 
 local function killHelper()
