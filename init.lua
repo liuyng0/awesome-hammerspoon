@@ -1,32 +1,18 @@
 local logger = hs.logger.new("init.lua", "debug")
 
-function reloadConfig (files)
-    local function anyNotIgnored (files)
-        local command = "cd ~/.hammerspoon && git check-ignore " ..
-            table.concat(files, " ") .. " | wc -l"
-        local output, rc = hs.execute(command)
-        local not_ignored_exists = rc and tonumber(output) < #files
-        if not_ignored_exists then
-            logger.d("At least one file changed and not git ignored: " ..
-                hs.inspect(files))
-        else
-            logger.d("All ignored: " .. hs.inspect(files))
-        end
+--- Global variables
+G = {}
 
-        return not_ignored_exists
-    end
-
-    local mayReload = {}
-    for _, file in pairs(files) do
-        if file:sub(-4) == ".lua" and pathInfo(file)["basename"]:sub(0, 2) ~= ".#" then
-            table.insert(mayReload, file)
-        end
-    end
-    if #mayReload > 0 and anyNotIgnored(mayReload) then
-        myWatcher:stop()
+--- Always can manual reload
+local hsreload_keys = { { "ctrl", "shift", "option" }, "R" }
+hs.hotkey.bind(
+    hsreload_keys[1],
+    hsreload_keys[2],
+    "Reload Configuration",
+    function()
         hs.reload()
     end
-end
+)
 
 local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
 if not privatepath then
@@ -34,17 +20,12 @@ if not privatepath then
     hs.fs.mkdir(hs.configdir .. "/private")
 end
 
-local funext = require "hammers/funext"
 require("private-config-default")
 privateconf = hs.fs.pathToAbsolute(hs.configdir .. "/private/config.lua")
 if privateconf then
     -- Load awesomeconfig file if exists
+    -- The private/config will override the default values
     require("private/config")
-end
-
-customconf = hs.fs.pathToAbsolute(hs.configdir .. "/custom.lua")
-if customconf then
-    require("custom")
 end
 
 lrks = {
@@ -52,32 +33,6 @@ lrks = {
     moses = require("utils/moses"),
     F = require("utils/F")
 }
-
-function pathInfo (path)
-    local len = string.len(path)
-    local pos = len
-    local extpos = len + 1
-    while pos > 0 do
-        local b = string.byte(path, pos)
-        if b == 46 and extpos ~= len + 1 then -- 46 = char "."
-            extpos = pos
-        elseif b == 47 then                   -- 47 = char "/"
-            break
-        end
-        pos = pos - 1
-    end
-    local dirname = string.sub(path, 1, pos)
-    local filename = string.sub(path, pos + 1)
-    extpos = extpos - pos
-    local basename = string.sub(filename, 1, extpos - 1)
-    local extname = string.sub(filename, extpos)
-    return {
-        dirname = dirname,
-        filename = filename,
-        basename = basename,
-        extname = extname
-    }
-end
 
 function getScript (filename)
     return os.getenv("HOME") .. "/.hammerspoon/scripts/" .. filename
@@ -98,6 +53,8 @@ function populatePathMaybe ()
     end
 end
 
+populatePathMaybe()
+
 function executeWithPathPopulated (command)
     populatePathMaybe()
     if __my_path then
@@ -105,8 +62,8 @@ function executeWithPathPopulated (command)
     end
 end
 
--- Specify Spoons which will be loaded
-hspoon_list = {
+-- load the spoon list
+local hspoon_list = {
     "CountDown",
     "HSearch",
     "WinWin",
@@ -120,247 +77,20 @@ hspoon_list = {
     "Yabai",
     'RecursiveBinder'
 }
-
--- Load those Spoons
 for _, v in pairs(hspoon_list) do
     hs.loadSpoon(v)
 end
 
-
--- Change the test function to test
-function test ()
-    hs.alert.show("this is a test")
-end
-
-function testEmacs28 ()
-    hs.execute("open /Applications/Emacs28.app")
-end
-
--- hs.hotkey.bind(hyper2, "T", function() test() end)
-
-function copyEmailLink ()
-    status, data =
-        hs.osascript.applescript(
-            [[tell application "Microsoft Outlook"
-        set theMessages to selected objects
-        repeat with theMessage in theMessages
-        set toOpen to id of theMessage
-        set the clipboard to toOpen
-        end repeat
-        end tell]]
-        )
-    hs.alert.show("email link is copied")
-end
-
-hs.hotkey.bind(
-    hyper4,
-    "L",
-    function()
-        copyEmailLink()
-    end
+local APP_GOODNOTES = "Goodnotes"
+spoon.AppBindings:bind(
+    APP_GOODNOTES,
+    {
+        { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
+        { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
+        { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
+        { { "ctrl" }, "l", {}, "right" } -- Scroll message window
+    }
 )
-populatePathMaybe()
-
--- ---------------------------------------------------------------------------------------------------
--- -- Application specific hot keys
--- local appmodal = require "hammers/appmodal"
--- local APP_OMNI_GRAFFLE_NAME = "OmniGraffle"
--- local APP_ITERM_NAME = "iTerm2"
--- local APP_CHROME = "Google Chrome"
--- local APP_GOODNOTES = "GoodNotes"
-
--- local app_model_global_actions = {
---     {
---         key = { "cmd", "J" },
---         description = "Tile Window to Left of Screen",
---         action = function()
---             local cwin = hs.window.focusedWindow()
---             cwin:application():selectMenuItem(
---                 {
---                     "Window",
---                     "Tile Window to Left of Screen"
---                 }
---             )
---         end
---     },
---     {
---         key = { "cmd", "L" },
---         description = "Tile Window to Right of Screen",
---         action = function()
---             local cwin = hs.window.focusedWindow()
---             cwin:application():selectMenuItem(
---                 {
---                     "Window",
---                     "Tile Window to Right of Screen"
---                 }
---             )
---         end
---     }
--- }
-
--- appmodal:set_global_keys(app_model_global_actions)
-
--- ---- OmniGraffle
--- local omnigraffle_modal =
---     appmodal.bind(
---         "cmd",
---         "P",
---         APP_OMNI_GRAFFLE_NAME,
---         {
---             {
---                 key = "T",
---                 description = "Toggle all Side bars",
---                 action = function()
---                     hs.eventtap.keyStroke({ "cmd", "alt" }, "1")
---                     hs.eventtap.keyStroke({ "cmd", "shift" }, "I")
---                 end
---             },
---             {
---                 key = "L",
---                 description = "Toggle left Side bars",
---                 action = function()
---                     hs.eventtap.keyStroke({ "cmd", "alt" }, "1")
---                 end
---             },
---             {
---                 key = "R",
---                 description = "Toggle right Side bars",
---                 action = function()
---                     hs.eventtap.keyStroke({ "cmd", "shift" }, "I")
---                 end
---             },
---             {
---                 key = "E",
---                 description = "Export to SVGs",
---                 action = function()
---                     local itemApp = hs.application.find(APP_OMNI_GRAFFLE_NAME)
---                     itemApp:selectMenuItem({ "File", "Export…" })
---                 end
---             }
---         }
---     )
-
--- ---- iTerm2
--- local iterm_modal =
---     appmodal.bind(
---         "cmd",
---         "P",
---         APP_ITERM_NAME,
---         {
---             {
---                 key = "P",
---                 description = "Select Previous Tab",
---                 action = function()
---                     local itemApp = hs.application.find(APP_ITERM_NAME)
---                     itemApp:selectMenuItem({ "Window", "Select Previous Tab" })
---                 end
---             },
---             {
---                 key = "N",
---                 description = "Select Next Tab",
---                 action = function()
---                     local itemApp = hs.application.find(APP_ITERM_NAME)
---                     itemApp:selectMenuItem({ "Window", "Select Next Tab" })
---                 end
---             },
---             {
---                 key = "C",
---                 description = "New Tab with Current Profile",
---                 action = function()
---                     local itemApp = hs.application.find(APP_ITERM_NAME)
---                     itemApp:selectMenuItem(
---                         {
---                             "Shell",
---                             "New Tab with Current Profile"
---                         }
---                     )
---                 end
---             },
---             {
---                 key = "X",
---                 description = "Close",
---                 action = function()
---                     local itemApp = hs.application.find(APP_ITERM_NAME)
---                     itemApp:selectMenuItem({ "Shell", "Close" })
---                 end
---             }
---         }
---     )
-
--- ---- Chrome
--- local chrome_modal =
---     appmodal.bind(
---         "cmd",
---         "P",
---         APP_CHROME,
---         {
---             {
---                 key = "P",
---                 description = "Select Previous Tab",
---                 action = function()
---                     local itemApp = hs.application.find(APP_CHROME)
---                     itemApp:selectMenuItem({ "Tab", "Select Previous Tab" })
---                 end
---             },
---             {
---                 key = "N",
---                 description = "Select Next Tab",
---                 action = function()
---                     local itemApp = hs.application.find(APP_CHROME)
---                     itemApp:selectMenuItem({ "Tab", "Select Next Tab" })
---                 end
---             },
---             {
---                 key = { "cmd", "P" },
---                 description = "Search Tabs",
---                 action = function()
---                     local itemApp = hs.application.find(APP_CHROME)
---                     itemApp:selectMenuItem({ "Tab", "Search Tabs…" })
---                 end
---             },
---             {
---                 key = "M",
---                 description = "Task Manager",
---                 action = function()
---                     local itemApp = hs.application.find(APP_CHROME)
---                     itemApp:selectMenuItem({ "Window", "Task Manager" })
---                 end
---             }
---         }
---     )
-
--- -- Finally we initialize ModalMgr supervisor
--- spoon.ModalMgr.supervisor:enter()
-
--- spoon.AppBindings:bind(
---     APP_GOODNOTES,
---     {
---         { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
---         { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
---         { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
---         { { "ctrl" }, "l", {}, "right" } -- Scroll message window
---     }
--- )
-
--- spoon.AppBindings:bind(
---     "Kindle",
---     {
---         { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
---         { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
---         { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
---         { { "ctrl" }, "l", {}, "right" } -- Scroll message window
---     }
--- )
-
--- spoon.AppBindings:bind(
---     "Preview",
---     {
---         { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
---         { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
---         { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
---         { { "ctrl" }, "l", {}, "right" } -- Scroll message window
---     }
--- )
 
 --- Launch applications functions
 local launch_emacs = function()
@@ -543,11 +273,62 @@ spoon.RecursiveBinder.recursiveBind(keyMap, hyper)
 -- Disable the alert key showing
 hs.hotkey.alertDuration = 0
 
+local function autoReload (files)
+    local function pathInfo (path)
+        local len = string.len(path)
+        local pos = len
+        local extpos = len + 1
+        while pos > 0 do
+            local b = string.byte(path, pos)
+            if b == 46 and extpos ~= len + 1 then -- 46 = char "."
+                extpos = pos
+            elseif b == 47 then                   -- 47 = char "/"
+                break
+            end
+            pos = pos - 1
+        end
+        local dirname = string.sub(path, 1, pos)
+        local filename = string.sub(path, pos + 1)
+        extpos = extpos - pos
+        local basename = string.sub(filename, 1, extpos - 1)
+        local extname = string.sub(filename, extpos)
+        return {
+            dirname = dirname,
+            filename = filename,
+            basename = basename,
+            extname = extname
+        }
+    end
 
+    local function containsNotIgnored (files)
+        local command = "cd ~/.hammerspoon && git check-ignore " ..
+            table.concat(files, " ") .. " | wc -l"
+        local output, rc = hs.execute(command)
+        local result = rc and tonumber(output) < #files
+        if result then
+            logger.d("At least one file changed and not git ignored: " ..
+                hs.inspect(files))
+        else
+            logger.d("All ignored: " .. hs.inspect(files))
+        end
+        return result
+    end
+
+    local updatedLuaFiles = {}
+    for _, file in pairs(files) do
+        if file:sub(-4) == ".lua" and pathInfo(file)["basename"]:sub(0, 2) ~= ".#" then
+            table.insert(updatedLuaFiles, file)
+        end
+    end
+    if #updatedLuaFiles > 0 and containsNotIgnored(updatedLuaFiles) then
+        G.autoReloadWatcher:stop()
+        hs.reload()
+    end
+end
 -- Watch the configuration change.
-myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/",
-    reloadConfig)
-myWatcher:start()
+G.autoReloadWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", autoReload)
+G.autoReloadWatcher:start()
+
 
 require("hs.ipc")
 

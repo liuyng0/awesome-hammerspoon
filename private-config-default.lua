@@ -1,4 +1,3 @@
-local funext = require "hammers/funext"
 privconf = {}
 
 -- Configure filepaths to search links

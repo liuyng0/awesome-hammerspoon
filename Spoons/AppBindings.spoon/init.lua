@@ -11,7 +11,7 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 local logger = hs.logger.new("AppBindings", "debug")
 obj.logger = logger
 
-function obj:pressFn(mods, key)
+function obj:pressFn (mods, key)
     if key == nil then
         key = mods
         mods = {}
@@ -22,18 +22,18 @@ function obj:pressFn(mods, key)
     end
 end
 
-function obj:appRemap(mods, key, remapMods, remapKey)
-    fn = self:pressFn(remapMods, remapKey)
+function obj:appRemap (mods, key, remapMods, remapKey)
+    local fn = self:pressFn(remapMods, remapKey)
     return hs.hotkey.new(mods, key, fn, nil, fn)
 end
 
-function obj:init()
+function obj:init ()
     self._init_done = true
     return self
 end
 
 -- Translate user input keymap to hs.hotkey functions
-function obj:keymapToHotkeys(keymap)
+function obj:keymapToHotkeys (keymap)
     local hotkeys = {}
 
     for i, item in pairs(keymap) do
@@ -52,27 +52,27 @@ function obj:keymapToHotkeys(keymap)
     return hotkeys
 end
 
-function obj:bind(appTitle, keymap)
+function obj:bind (appTitle, keymap)
     self.logger.d("Found binding for app " .. appTitle)
 
     local hotkeys = self:keymapToHotkeys(keymap)
 
-    local function enableKeys()
+    local function enableKeys ()
         for i, hotkey in pairs(hotkeys) do
             hotkey:enable()
         end
     end
 
-    local function disableKeys()
+    local function disableKeys ()
         for i, hotkey in pairs(hotkeys) do
             hotkey:disable()
         end
     end
 
-    local appFilter = hs.window.filter
+    local windowFilter = hs.window.filter
 
-    appFilter.new(appTitle):subscribe(appFilter.windowFocused, enableKeys):subscribe(
-        appFilter.windowUnfocused,
+    windowFilter.new(appTitle):subscribe(windowFilter.windowFocused, enableKeys):subscribe(
+        windowFilter.windowUnfocused,
         disableKeys
     )
 end
