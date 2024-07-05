@@ -1,6 +1,8 @@
 local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
 
 local logger = hs.logger.new("init.lua", "debug")
+local color = require("hs.drawing.color")
+
 if not privatepath then
     -- Create `~/.hammerspoon/private` directory if not exists.
     hs.fs.mkdir(hs.configdir .. "/private")
@@ -654,10 +656,13 @@ end
 
 --- Recursive Binder
 
-spoon.RecursiveBinder.escapeKey = { {}, 'escape' } -- Press escape to abort
+spoon.RecursiveBinder.escapeKeys = {
+    { {},            'escape' },
+    { { 'control' }, 'q' }
+}
 spoon.RecursiveBinder.helperFormat = {
-    atScreenEdge = 2,                              -- Bottom edge (default value)
-    textStyle = {                                  -- An hs.styledtext object
+    atScreenEdge = 2, -- Bottom edge (default value)
+    textStyle = {     -- An hs.styledtext object
         font = {
             name = "Fira Code",
             size = 16
@@ -666,7 +671,6 @@ spoon.RecursiveBinder.helperFormat = {
 }
 
 local sk = spoon.RecursiveBinder.singleKey
-
 local keyMap = {
     --- Search with HSearch
     [sk('/', 'search+')] = {
@@ -762,14 +766,7 @@ local keyMap = {
 }
 
 local hyper = { { "shift", "command", "control", "option" }, "1", }
-hs.hotkey.bind(hyper[1], hyper[2],
-    spoon.RecursiveBinder.recursiveBind(keyMap))
-
---- remapping
-hs.hotkey.bind({ "cmd" }, "W", function()
-    hs.eventtap.keyStroke(hyper[1], hyper[2])
-    hs.eventtap.keyStroke({}, "W")
-end)
+spoon.RecursiveBinder.recursiveBind(keyMap, hyper)
 
 -- Disable the alert key showing
 hs.hotkey.alertDuration = 0
