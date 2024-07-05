@@ -1,7 +1,6 @@
 local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
 
 local logger = hs.logger.new("init.lua", "debug")
-local color = require("hs.drawing.color")
 
 if not privatepath then
     -- Create `~/.hammerspoon/private` directory if not exists.
@@ -22,9 +21,9 @@ if customconf then
 end
 
 lrks = {
-    loader = require("luarocks.loader"),
-    moses = require("moses"),
-    F = require("F")
+    ---@type utils.moses
+    moses = require("utils/moses"),
+    F = require("utils/F")
 }
 
 function pathInfo (path)
@@ -764,7 +763,6 @@ local keyMap = {
         }
     },
 }
-
 local hyper = { { "shift", "command", "control", "option" }, "1", }
 spoon.RecursiveBinder.recursiveBind(keyMap, hyper)
 

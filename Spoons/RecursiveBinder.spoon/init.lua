@@ -11,6 +11,7 @@ local eventtap = require("hs.eventtap")
 local color = require("hs.drawing.color")
 local F = lrks.F
 local M = lrks.moses
+
 obj.__index = obj
 
 -- Metadata
@@ -20,11 +21,10 @@ obj.author = "Yuan Fu <casouri@gmail.com>"
 obj.homepage = "https://github.com/Hammerspoon/Spoons"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
 
-
 --- RecursiveBinder.escapeKey
 --- Variable
 --- key to abort, default to {keyNone, 'escape'}
-obj.escapeKeys = { { keyNone, 'escape' } }
+obj.escapeKeys = { { { "" }, 'escape' } }
 
 --- RecursiveBinder.helperEntryEachLine
 --- Variable

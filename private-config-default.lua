@@ -1,9 +1,6 @@
 local funext = require "hammers/funext"
 privconf = {}
 
--- Configure the ignored apps
-privconf.hsapp_ignored_apps = funext.set({})
-
 -- Configure filepaths to search links
 privconf.hssearch_links_filepaths = string.gsub([[
 ~/org/database/useful-links.md
