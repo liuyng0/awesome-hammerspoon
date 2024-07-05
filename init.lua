@@ -1,7 +1,34 @@
-local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
-
 local logger = hs.logger.new("init.lua", "debug")
 
+function reloadConfig (files)
+    local function anyNotIgnored (files)
+        local command = "cd ~/.hammerspoon && git check-ignore " ..
+            table.concat(files, " ") .. " | wc -l"
+        local output, rc = hs.execute(command)
+        local not_ignored_exists = rc and tonumber(output) < #files
+        if not_ignored_exists then
+            logger.d("At least one file changed and not git ignored: " ..
+                hs.inspect(files))
+        else
+            logger.d("All ignored: " .. hs.inspect(files))
+        end
+
+        return not_ignored_exists
+    end
+
+    local mayReload = {}
+    for _, file in pairs(files) do
+        if file:sub(-4) == ".lua" and pathInfo(file)["basename"]:sub(0, 2) ~= ".#" then
+            table.insert(mayReload, file)
+        end
+    end
+    if #mayReload > 0 and anyNotIgnored(mayReload) then
+        myWatcher:stop()
+        hs.reload()
+    end
+end
+
+local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
 if not privatepath then
     -- Create `~/.hammerspoon/private` directory if not exists.
     hs.fs.mkdir(hs.configdir .. "/private")
@@ -21,7 +48,7 @@ if customconf then
 end
 
 lrks = {
-    ---@type utils.moses
+    ---@type Moses
     moses = require("utils/moses"),
     F = require("utils/F")
 }
@@ -86,7 +113,6 @@ hspoon_list = {
     "Screen",
     "Space",
     "Links",
-    "PopupTranslateSelection",
     "SplitView",
     "AppBindings",
     "ChooserStyle",
@@ -95,218 +121,11 @@ hspoon_list = {
     'RecursiveBinder'
 }
 
--- ModalMgr Spoon must be loaded explicitly, because this repository heavily relies upon it.
-hs.loadSpoon("ModalMgr")
-
 -- Load those Spoons
 for _, v in pairs(hspoon_list) do
     hs.loadSpoon(v)
 end
 
-
-if spoon.PopupTranslateSelection then
-    -- Register translateM with modal supervisor
-    hstranslateM_keys = hstranslateM_keys or { "cmd", "]" }
-
-    spoon.ModalMgr:new("translateM")
-    local cmodal = spoon.ModalMgr.modal_list["translateM"]
-    cmodal:bind(
-        "",
-        "escape",
-        "Deactivate translateM",
-        function()
-            spoon.PopupTranslateSelection:hide()
-            spoon.ModalMgr:deactivate({ "translateM" })
-        end
-    )
-    cmodal:bind(
-        "",
-        "Q",
-        "Deactivate translateM",
-        function()
-            spoon.PopupTranslateSelection:hide()
-            spoon.ModalMgr:deactivate({ "translateM" })
-        end
-    )
-    if spoon.PopupTranslateSelection:translateShellEnabled() then
-        cmodal:bind(
-            "",
-            "E",
-            "Translate Shell (to English)",
-            function()
-                spoon.ModalMgr:deactivate({ "translateM" })
-                local text = spoon.PopupTranslateSelection:selectionOrInput()
-                spoon.ModalMgr:activate({ "translateM" })
-                spoon.PopupTranslateSelection:translateShell("en", text)
-            end
-        )
-        cmodal:bind(
-            "",
-            "C",
-            "Translate Shell (to Chinese)",
-            function()
-                spoon.ModalMgr:deactivate({ "translateM" })
-                local text = spoon.PopupTranslateSelection:selectionOrInput()
-                spoon.ModalMgr:activate({ "translateM" })
-                spoon.PopupTranslateSelection:translateShell("zh", text)
-            end
-        )
-    end
-
-    cmodal:bind(
-        "",
-        "O",
-        "Toggle showing Eudic LightPeek",
-        function()
-            if hs.window "^取词 $":isVisible() then
-                hs.window "^取词 $":application():hide()
-            else
-                hs.window "^取词 $":raise()
-            end
-            spoon.ModalMgr:deactivate({ "translateM" })
-        end
-    )
-    cmodal:bind(
-        "",
-        "I",
-        "Open 画词翻译",
-        function()
-            if not hs.application("^Eudic$"):findMenuItem({ "功能", "划词翻译" })["ticked"] then
-                hs.application("^Eudic$"):selectMenuItem({ "功能", "划词翻译" })
-                hs.timer.doAfter(
-                    1,
-                    function()
-                        hs.window "^取词 $":raise()
-                    end
-                )
-            else
-                hs.alert("欧路词典划词翻译已经打开")
-            end
-            spoon.ModalMgr:deactivate({ "translateM" })
-        end
-    )
-    cmodal:bind(
-        "",
-        "P",
-        "Close 画词翻译",
-        function()
-            if hs.application("^Eudic$"):findMenuItem({ "功能", "划词翻译" })["ticked"] then
-                hs.application("^Eudic$"):selectMenuItem({ "功能", "划词翻译" })
-                hs.timer.doAfter(
-                    1,
-                    function()
-                        hs.window "^取词 $":application():hide()
-                    end
-                )
-            else
-                hs.alert("欧路词典划词翻译已经关闭")
-            end
-            spoon.ModalMgr:deactivate({ "translateM" })
-        end
-    )
-    if string.len(hstranslateM_keys[2]) > 0 then
-        spoon.ModalMgr.supervisor:bind(
-            hstranslateM_keys[1],
-            hstranslateM_keys[2],
-            "Enter translateM Environment",
-            function()
-                spoon.ModalMgr:deactivateAll()
-                -- Show the keybindings cheatsheet once translateM is activated
-                spoon.ModalMgr:activate({ "translateM" }, "#FF6347", true)
-            end
-        )
-    end
-end
-
-hs.hotkey.bind(
-    hyper2,
-    "'",
-    function()
-        spoon.PopupTranslateSelection:toggleTranslatePopup("zh", "en")
-        spoon.ModalMgr:deactivate({ "translateM" })
-    end
-)
-
-if hsstay_keys then
-    local stay = require("hammers/stay")
-    stay.hotkey =
-        hs.hotkey.new(
-            hsstay_keys[1],
-            hsstay_keys[2],
-            function()
-                stay:toggle_or_choose()
-            end
-        )
-    stay:start()
-end
-
-if hssession_keys then
-    local session = require("hammers/session")
-    spoon.ModalMgr:new("HSSession")
-    local cmodal = spoon.ModalMgr.modal_list["HSSession"]
-    cmodal:bind(
-        "",
-        "escape",
-        "Deactivate HSSession",
-        function()
-            spoon.ModalMgr:deactivate({ "HSSession" })
-        end
-    )
-    cmodal:bind(
-        "",
-        "Q",
-        "Deactivate HSSession",
-        function()
-            spoon.ModalMgr:deactivate({ "HSSession" })
-        end
-    )
-    cmodal:bind(
-        "",
-        "S",
-        "Save current application",
-        function()
-            spoon.ModalMgr:deactivate({ "HSSession" })
-            session:saveCurrentSession()
-        end
-    )
-    cmodal:bind(
-        "",
-        "G",
-        "Switch to session",
-        function()
-            spoon.ModalMgr:deactivate({ "HSSession" })
-            session:switchToSession()
-        end
-    )
-    cmodal:bind(
-        "",
-        "L",
-        "[Debug] Show Current Session",
-        function()
-            spoon.ModalMgr:deactivate({ "HSSession" })
-            session:showCurrentSession()
-        end
-    )
-    -- Register session module with modal supervisor
-    spoon.ModalMgr.supervisor:bind(
-        hssession_keys[1],
-        hssession_keys[2],
-        "Enter HSSession Environment",
-        function()
-            spoon.ModalMgr:deactivateAll()
-            -- Show the keybindings cheatsheet once countdownM is activated
-            spoon.ModalMgr:activate({ "HSSession" }, "#FF6347", true)
-        end
-    )
-
-    hs.hotkey.bind(
-        hyper2,
-        "T",
-        function()
-            session:saveCurrentSession()
-        end
-    )
-end
 
 -- Change the test function to test
 function test ()
@@ -342,251 +161,206 @@ hs.hotkey.bind(
 )
 populatePathMaybe()
 
----------------------------------------------------------------------------------------------------
--- Application specific hot keys
-local appmodal = require "hammers/appmodal"
-local APP_OMNI_GRAFFLE_NAME = "OmniGraffle"
-local APP_ITERM_NAME = "iTerm2"
-local APP_CHROME = "Google Chrome"
-local APP_GOODNOTES = "GoodNotes"
+-- ---------------------------------------------------------------------------------------------------
+-- -- Application specific hot keys
+-- local appmodal = require "hammers/appmodal"
+-- local APP_OMNI_GRAFFLE_NAME = "OmniGraffle"
+-- local APP_ITERM_NAME = "iTerm2"
+-- local APP_CHROME = "Google Chrome"
+-- local APP_GOODNOTES = "GoodNotes"
 
-local app_model_global_actions = {
-    {
-        key = { "cmd", "J" },
-        description = "Tile Window to Left of Screen",
-        action = function()
-            local cwin = hs.window.focusedWindow()
-            cwin:application():selectMenuItem(
-                {
-                    "Window",
-                    "Tile Window to Left of Screen"
-                }
-            )
-        end
-    },
-    {
-        key = { "cmd", "L" },
-        description = "Tile Window to Right of Screen",
-        action = function()
-            local cwin = hs.window.focusedWindow()
-            cwin:application():selectMenuItem(
-                {
-                    "Window",
-                    "Tile Window to Right of Screen"
-                }
-            )
-        end
-    }
-}
+-- local app_model_global_actions = {
+--     {
+--         key = { "cmd", "J" },
+--         description = "Tile Window to Left of Screen",
+--         action = function()
+--             local cwin = hs.window.focusedWindow()
+--             cwin:application():selectMenuItem(
+--                 {
+--                     "Window",
+--                     "Tile Window to Left of Screen"
+--                 }
+--             )
+--         end
+--     },
+--     {
+--         key = { "cmd", "L" },
+--         description = "Tile Window to Right of Screen",
+--         action = function()
+--             local cwin = hs.window.focusedWindow()
+--             cwin:application():selectMenuItem(
+--                 {
+--                     "Window",
+--                     "Tile Window to Right of Screen"
+--                 }
+--             )
+--         end
+--     }
+-- }
 
-appmodal:set_global_keys(app_model_global_actions)
+-- appmodal:set_global_keys(app_model_global_actions)
 
----- OmniGraffle
-local omnigraffle_modal =
-    appmodal.bind(
-        "cmd",
-        "P",
-        APP_OMNI_GRAFFLE_NAME,
-        {
-            {
-                key = "T",
-                description = "Toggle all Side bars",
-                action = function()
-                    hs.eventtap.keyStroke({ "cmd", "alt" }, "1")
-                    hs.eventtap.keyStroke({ "cmd", "shift" }, "I")
-                end
-            },
-            {
-                key = "L",
-                description = "Toggle left Side bars",
-                action = function()
-                    hs.eventtap.keyStroke({ "cmd", "alt" }, "1")
-                end
-            },
-            {
-                key = "R",
-                description = "Toggle right Side bars",
-                action = function()
-                    hs.eventtap.keyStroke({ "cmd", "shift" }, "I")
-                end
-            },
-            {
-                key = "E",
-                description = "Export to SVGs",
-                action = function()
-                    local itemApp = hs.application.find(APP_OMNI_GRAFFLE_NAME)
-                    itemApp:selectMenuItem({ "File", "Export…" })
-                end
-            }
-        }
-    )
+-- ---- OmniGraffle
+-- local omnigraffle_modal =
+--     appmodal.bind(
+--         "cmd",
+--         "P",
+--         APP_OMNI_GRAFFLE_NAME,
+--         {
+--             {
+--                 key = "T",
+--                 description = "Toggle all Side bars",
+--                 action = function()
+--                     hs.eventtap.keyStroke({ "cmd", "alt" }, "1")
+--                     hs.eventtap.keyStroke({ "cmd", "shift" }, "I")
+--                 end
+--             },
+--             {
+--                 key = "L",
+--                 description = "Toggle left Side bars",
+--                 action = function()
+--                     hs.eventtap.keyStroke({ "cmd", "alt" }, "1")
+--                 end
+--             },
+--             {
+--                 key = "R",
+--                 description = "Toggle right Side bars",
+--                 action = function()
+--                     hs.eventtap.keyStroke({ "cmd", "shift" }, "I")
+--                 end
+--             },
+--             {
+--                 key = "E",
+--                 description = "Export to SVGs",
+--                 action = function()
+--                     local itemApp = hs.application.find(APP_OMNI_GRAFFLE_NAME)
+--                     itemApp:selectMenuItem({ "File", "Export…" })
+--                 end
+--             }
+--         }
+--     )
 
----- iTerm2
-local iterm_modal =
-    appmodal.bind(
-        "cmd",
-        "P",
-        APP_ITERM_NAME,
-        {
-            {
-                key = "P",
-                description = "Select Previous Tab",
-                action = function()
-                    local itemApp = hs.application.find(APP_ITERM_NAME)
-                    itemApp:selectMenuItem({ "Window", "Select Previous Tab" })
-                end
-            },
-            {
-                key = "N",
-                description = "Select Next Tab",
-                action = function()
-                    local itemApp = hs.application.find(APP_ITERM_NAME)
-                    itemApp:selectMenuItem({ "Window", "Select Next Tab" })
-                end
-            },
-            {
-                key = "C",
-                description = "New Tab with Current Profile",
-                action = function()
-                    local itemApp = hs.application.find(APP_ITERM_NAME)
-                    itemApp:selectMenuItem(
-                        {
-                            "Shell",
-                            "New Tab with Current Profile"
-                        }
-                    )
-                end
-            },
-            {
-                key = "X",
-                description = "Close",
-                action = function()
-                    local itemApp = hs.application.find(APP_ITERM_NAME)
-                    itemApp:selectMenuItem({ "Shell", "Close" })
-                end
-            }
-        }
-    )
+-- ---- iTerm2
+-- local iterm_modal =
+--     appmodal.bind(
+--         "cmd",
+--         "P",
+--         APP_ITERM_NAME,
+--         {
+--             {
+--                 key = "P",
+--                 description = "Select Previous Tab",
+--                 action = function()
+--                     local itemApp = hs.application.find(APP_ITERM_NAME)
+--                     itemApp:selectMenuItem({ "Window", "Select Previous Tab" })
+--                 end
+--             },
+--             {
+--                 key = "N",
+--                 description = "Select Next Tab",
+--                 action = function()
+--                     local itemApp = hs.application.find(APP_ITERM_NAME)
+--                     itemApp:selectMenuItem({ "Window", "Select Next Tab" })
+--                 end
+--             },
+--             {
+--                 key = "C",
+--                 description = "New Tab with Current Profile",
+--                 action = function()
+--                     local itemApp = hs.application.find(APP_ITERM_NAME)
+--                     itemApp:selectMenuItem(
+--                         {
+--                             "Shell",
+--                             "New Tab with Current Profile"
+--                         }
+--                     )
+--                 end
+--             },
+--             {
+--                 key = "X",
+--                 description = "Close",
+--                 action = function()
+--                     local itemApp = hs.application.find(APP_ITERM_NAME)
+--                     itemApp:selectMenuItem({ "Shell", "Close" })
+--                 end
+--             }
+--         }
+--     )
 
----- Chrome
-local chrome_modal =
-    appmodal.bind(
-        "cmd",
-        "P",
-        APP_CHROME,
-        {
-            {
-                key = "P",
-                description = "Select Previous Tab",
-                action = function()
-                    local itemApp = hs.application.find(APP_CHROME)
-                    itemApp:selectMenuItem({ "Tab", "Select Previous Tab" })
-                end
-            },
-            {
-                key = "N",
-                description = "Select Next Tab",
-                action = function()
-                    local itemApp = hs.application.find(APP_CHROME)
-                    itemApp:selectMenuItem({ "Tab", "Select Next Tab" })
-                end
-            },
-            {
-                key = { "cmd", "P" },
-                description = "Search Tabs",
-                action = function()
-                    local itemApp = hs.application.find(APP_CHROME)
-                    itemApp:selectMenuItem({ "Tab", "Search Tabs…" })
-                end
-            },
-            {
-                key = "M",
-                description = "Task Manager",
-                action = function()
-                    local itemApp = hs.application.find(APP_CHROME)
-                    itemApp:selectMenuItem({ "Window", "Task Manager" })
-                end
-            }
-        }
-    )
+-- ---- Chrome
+-- local chrome_modal =
+--     appmodal.bind(
+--         "cmd",
+--         "P",
+--         APP_CHROME,
+--         {
+--             {
+--                 key = "P",
+--                 description = "Select Previous Tab",
+--                 action = function()
+--                     local itemApp = hs.application.find(APP_CHROME)
+--                     itemApp:selectMenuItem({ "Tab", "Select Previous Tab" })
+--                 end
+--             },
+--             {
+--                 key = "N",
+--                 description = "Select Next Tab",
+--                 action = function()
+--                     local itemApp = hs.application.find(APP_CHROME)
+--                     itemApp:selectMenuItem({ "Tab", "Select Next Tab" })
+--                 end
+--             },
+--             {
+--                 key = { "cmd", "P" },
+--                 description = "Search Tabs",
+--                 action = function()
+--                     local itemApp = hs.application.find(APP_CHROME)
+--                     itemApp:selectMenuItem({ "Tab", "Search Tabs…" })
+--                 end
+--             },
+--             {
+--                 key = "M",
+--                 description = "Task Manager",
+--                 action = function()
+--                     local itemApp = hs.application.find(APP_CHROME)
+--                     itemApp:selectMenuItem({ "Window", "Task Manager" })
+--                 end
+--             }
+--         }
+--     )
 
--- Finally we initialize ModalMgr supervisor
-spoon.ModalMgr.supervisor:enter()
+-- -- Finally we initialize ModalMgr supervisor
+-- spoon.ModalMgr.supervisor:enter()
 
-spoon.AppBindings:bind(
-    APP_GOODNOTES,
-    {
-        { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
-        { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
-        { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
-        { { "ctrl" }, "l", {}, "right" } -- Scroll message window
-    }
-)
+-- spoon.AppBindings:bind(
+--     APP_GOODNOTES,
+--     {
+--         { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
+--         { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
+--         { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
+--         { { "ctrl" }, "l", {}, "right" } -- Scroll message window
+--     }
+-- )
 
-spoon.AppBindings:bind(
-    "Kindle",
-    {
-        { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
-        { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
-        { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
-        { { "ctrl" }, "l", {}, "right" } -- Scroll message window
-    }
-)
+-- spoon.AppBindings:bind(
+--     "Kindle",
+--     {
+--         { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
+--         { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
+--         { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
+--         { { "ctrl" }, "l", {}, "right" } -- Scroll message window
+--     }
+-- )
 
-spoon.AppBindings:bind(
-    "Preview",
-    {
-        { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
-        { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
-        { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
-        { { "ctrl" }, "l", {}, "right" } -- Scroll message window
-    }
-)
-
-function anyNotIgnored (files)
-    local command = "cd ~/.hammerspoon && git check-ignore " ..
-        table.concat(files, " ") .. " | wc -l"
-    local output, rc = hs.execute(command)
-    local not_ignored_exists = rc and tonumber(output) < #files
-    if not_ignored_exists then
-        logger.d("At least one file changed and not git ignored: " ..
-            hs.inspect(files))
-    else
-        logger.d("All ignored: " .. hs.inspect(files))
-    end
-
-    return not_ignored_exists
-end
-
-function reloadConfig (files)
-    local mayReload = {}
-    for _, file in pairs(files) do
-        if file:sub(-4) == ".lua" and pathInfo(file)["basename"]:sub(0, 2) ~= ".#" then
-            table.insert(mayReload, file)
-        end
-    end
-    if #mayReload > 0 and anyNotIgnored(mayReload) then
-        myWatcher:stop()
-        hs.reload()
-    end
-end
-
--- Watch the configuration change.
-myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/",
-    reloadConfig)
-myWatcher:start()
-
-hsreload_keys = hsreload_keys or { { "cmd", "shift", "ctrl" }, "R" }
-if string.len(hsreload_keys[2]) > 0 then
-    hs.hotkey.bind(
-        hsreload_keys[1],
-        hsreload_keys[2],
-        "Reload Configuration",
-        function()
-            hs.reload()
-        end
-    )
-end
+-- spoon.AppBindings:bind(
+--     "Preview",
+--     {
+--         { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
+--         { { "ctrl" }, "k", {}, "down" }, -- Scroll message window
+--         { { "ctrl" }, "j", {}, "left" }, -- Scroll message window
+--         { { "ctrl" }, "l", {}, "right" } -- Scroll message window
+--     }
+-- )
 
 --- Launch applications functions
 local launch_emacs = function()
@@ -768,6 +542,12 @@ spoon.RecursiveBinder.recursiveBind(keyMap, hyper)
 
 -- Disable the alert key showing
 hs.hotkey.alertDuration = 0
+
+
+-- Watch the configuration change.
+myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/",
+    reloadConfig)
+myWatcher:start()
 
 require("hs.ipc")
 
