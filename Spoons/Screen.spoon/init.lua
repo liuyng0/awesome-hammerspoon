@@ -332,7 +332,7 @@ function obj:otherVisibleWindows ()
     local focusedWindow = hs.window.focusedWindow()
     local wins = obj:windowsClockWise()
     return M.chain(wins)
-        :select(function(_, win)
+        :select(function(win, _)
             return win.id ~= focusedWindow:id()
         end)
         :value()
@@ -351,7 +351,7 @@ local function selectOtherWindow (wins, callback)
         return
     end
     local windows = M.chain(wins)
-        :map(function(_, win)
+        :map(function(win, _)
             return hs.window.get(win.id)
         end)
         :value()
@@ -401,10 +401,10 @@ function obj:getWindowsGroupByScreens (coveredWindow)
         :sort(function(a, b)
             return a.order < b.order
         end)
-        :groupBy(function(_, win)
+        :groupBy(function(win, _)
             return win.screen:id()
         end)
-        :map(function(_, wins)
+        :map(function(wins, _)
             local canSeeWins = {}
             local coveredWins = {}
             for _, win in pairs(wins) do

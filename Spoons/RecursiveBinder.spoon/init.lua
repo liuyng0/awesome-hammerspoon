@@ -283,7 +283,6 @@ local function suppressKeysOtherThenOurs (modal, onSuppress)
     -- parse for flags, get keycode for each
     local kc, mods = tostring(v._hk):match("keycode: (%d+), mods: (0x[^ ]+)")
     local hkFlags = tonumber(mods)
-    local hkOriginal = hkFlags
     local flags = 0
     if (hkFlags & 256) == 256 then
       hkFlags, flags = hkFlags - 256, flags | eventtap.event.rawFlagMasks
@@ -303,7 +302,11 @@ local function suppressKeysOtherThenOurs (modal, onSuppress)
     if hkFlags ~= 0 then
       obj.logger.d("unexpected flag pattern detected for " .. tostring(v._hk))
     end
-    passThroughKeys[tonumber(kc)] = flags
+    if passThroughKeys[tonumber(kc)] ~= nil then
+      table.insert(passThroughKeys[tonumber(kc)], flags)
+    else
+      passThroughKeys[tonumber(kc)] = { flags }
+    end
   end
 
   local eventtap = eventtap.new(
@@ -326,7 +329,8 @@ local function suppressKeysOtherThenOurs (modal, onSuppress)
       end
       local pid = event:getProperty(hs.eventtap.event.properties
         .eventSourceUnixProcessID)
-      if passThroughKeys[event:getKeyCode()] == flags then
+      local keys = passThroughKeys[event:getKeyCode()]
+      if keys ~= nil and M.contains(keys, flags) then
         -- hs.printf("passing:     %3d 0x%08x pid=%d, eventType=%s",
         --   event:getKeyCode(), flags,
         --   pid, event:getType())

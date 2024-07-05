@@ -3079,6 +3079,7 @@ do
   -- @name chain
   -- @param value a value to be wrapped
   -- @return a wrapped object
+  ---@return Moses
   function Moses.chain (value)
     return new(value)
   end

@@ -192,9 +192,7 @@ local keyMap = {
         [sk("m", "activity monitor")] = launch_app_by_id(
             "com.apple.ActivityMonitor"),
         [sk("d", "dash")] = launch_app_by_name("Dash"),
-        [sk("w", "weChat")] = launch_app_by_name("WeChat"),
         [sk("s", "slack")] = launch_app_by_name("Slack"),
-        [sk("f", "firefox")] = launch_app_by_name("Firefox"),
         [sk("o", "omniGraffle")] = launch_app_by_name("OmniGraffle"),
         [sk("q", "quip")] = launch_app_by_name("Quip"),
         [sk("h", "hammerspoon")] = launch_app_by_name("Hammerspoon"),
@@ -212,33 +210,32 @@ local keyMap = {
         }
     },
     [sk('w', 'windows+')] = {
-        [sk("h", "MoveAndResize to halfleft")] = moveAndResize("halfleft"),
-        [sk("l", "MoveAndResize to halfright")] = moveAndResize("halfright"),
-        [sk("k", "MoveAndResize to halfup")] = moveAndResize("halfup"),
-        [sk("j", "MoveAndResize to halfdown")] = moveAndResize("halfdown"),
+        [sk("h", "Halfleft")] = moveAndResize("halfleft"),
+        [sk("l", "Halfright")] = moveAndResize("halfright"),
+        [sk("k", "Halfup")] = moveAndResize("halfup"),
+        [sk("j", "Halfdown")] = moveAndResize("halfdown"),
         -- to screen
-        [sk("n", "Move to Next Screen")] = moveToScreen("next"),
-        [sk("p", "Move to Previous Screen")] = moveToScreen("previous"),
+        [sk("n", "Next Screen")] = moveToScreen("next"),
+        [sk("p", "Previous Screen")] = moveToScreen("previous"),
         -- undo
-        [sk("u", "Undo Window Manipulation")] = function() spoon.WinWin:undo() end,
+        [sk("u", "Undo")] = function() spoon.WinWin:undo() end,
         -- Triple Window
-        [sk("a", "Triple Left")] = moveAndResize("tripleLeft"),
-        [sk("s", "Triple Center")] = moveAndResize("centerHalfWidth"),
-        [sk("d", "Triple Right")] = moveAndResize("tripleRight"),
+        [sk("a", "3-Left")] = moveAndResize("tripleLeft"),
+        [sk("s", "3-Center")] = moveAndResize("centerHalfWidth"),
+        [sk("d", "3-Right")] = moveAndResize("tripleRight"),
         -- undo/redo
         [sk("f", "Fullscreen")] = moveAndResize("fullscreen"),
         [sk("m", "Maximize")] = moveAndResize("maximize"),
         -- Rotate
-        [sk("r", "Rotate Visible Windows")] = function()
+        [sk("r", "Rotate")] = function()
             spoon.Screen
                 :rotateVisibleWindows()
         end,
         -- Other window
-        [sk("o", "other window+")] = {
-            [sk("f", "focus")] = function() spoon.Screen:focusOtherWindow() end,
-            [sk("s", "swap")] = function() spoon.Screen:swapWithOther() end,
-            [sk("o", "open")] = function() spoon.Screen:selectFromCoveredWindow() end
-        },
+        [sk("O", "open")] = function() spoon.Screen:selectFromCoveredWindow() end,
+        [sk("o", "other window+")] = function() spoon.Screen:focusOtherWindow() end,
+        [{ { "control" }, "o", "swap-o" }] = function() spoon.Screen:swapWithOther() end,
+
         -- to Space
         [sk("S", "space+")] = {
             [sk("n", "Move to Next Space(not follow)")] = moveToNextSpace(false),
