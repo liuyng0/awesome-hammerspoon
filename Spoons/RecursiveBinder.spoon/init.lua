@@ -9,8 +9,8 @@ local obj = {}
 
 local eventtap = require("hs.eventtap")
 local color = require("hs.drawing.color")
-local F = lrks.F
-local M = lrks.moses
+local F = U.F
+local M = U.moses
 
 obj.__index = obj
 

@@ -8,7 +8,7 @@ obj.author = "Chophi <chophi@foxmail.com>"
 
 obj.windowHighlightMode = false
 obj.logger = hs.logger.new("Screen")
-local M = lrks.moses
+local M = U.moses
 
 function obj:focusWindowOnNextScreen (nextCount)
     local screens = hs.screen.allScreens()

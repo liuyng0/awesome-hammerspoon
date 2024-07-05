@@ -10,7 +10,7 @@ obj.logger = hs.logger.new("Space")
 
 local spaces = require("hs.spaces")
 local funs = require("hs.fnutils")
-local M = lrks.moses
+local M = U.moses
 function obj:getSpaceTable ()
     local allSpaces = spaces.allSpaces()
     local spaceTable = {}

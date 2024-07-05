@@ -3,6 +3,13 @@ local logger = hs.logger.new("init.lua", "debug")
 --- Global variables
 G = {}
 
+--- Utils
+U = {
+    ---@type Moses
+    moses = require("utils/moses"),
+    F = require("utils/F")
+}
+
 --- Always can manual reload
 local hsreload_keys = { { "ctrl", "shift", "option" }, "R" }
 hs.hotkey.bind(
@@ -27,12 +34,6 @@ if privateconf then
     -- The private/config will override the default values
     require("private/config")
 end
-
-lrks = {
-    ---@type Moses
-    moses = require("utils/moses"),
-    F = require("utils/F")
-}
 
 function getScript (filename)
     return os.getenv("HOME") .. "/.hammerspoon/scripts/" .. filename
