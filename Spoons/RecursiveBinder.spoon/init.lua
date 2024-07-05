@@ -301,7 +301,7 @@ local function suppressKeysOtherThenOurs (modal, onSuppress)
           flags | eventtap.event.rawFlagMasks.control
     end
     if hkFlags ~= 0 then
-      obj.logger:d("unexpected flag pattern detected for " .. tostring(v._hk))
+      obj.logger.d("unexpected flag pattern detected for " .. tostring(v._hk))
     end
     passThroughKeys[tonumber(kc)] = flags
   end
@@ -327,17 +327,17 @@ local function suppressKeysOtherThenOurs (modal, onSuppress)
       local pid = event:getProperty(hs.eventtap.event.properties
         .eventSourceUnixProcessID)
       if passThroughKeys[event:getKeyCode()] == flags then
-        hs.printf("passing:     %3d 0x%08x pid=%d, eventType=%s",
-          event:getKeyCode(), flags,
-          pid, event:getType())
+        -- hs.printf("passing:     %3d 0x%08x pid=%d, eventType=%s",
+        --   event:getKeyCode(), flags,
+        --   pid, event:getType())
         return false -- pass it through so hotkey can catch it
       else
         if onSuppress then
           onSuppress(event)
         end
-        hs.printf("suppressing: %3d 0x%08x pid=%d, eventType=%s",
-          event:getKeyCode(), flags,
-          pid, event:getType())
+        -- hs.printf("suppressing: %3d 0x%08x pid=%d, eventType=%s",
+        --   event:getKeyCode(), flags,
+        --   pid, event:getType())
         return true -- delete it if we got this far -- it's a key that we want suppressed
       end
     end
@@ -417,8 +417,10 @@ local function decorateRoot (rootNode)
     --- @param self hs.hotkey.modal
     --- @diagnostic disable: duplicate-set-field
     curNode.modal.entered = function(self)
-      obj.logger.i("Enter eventtap for modal with prefixKey: " ..
-        curNode.prefixKeySeq .. " key: " .. curNode.key)
+      -- obj.logger.i(
+      --   F(
+      --     "Enter eventtap for modal with [{curNode.prefixKeySeq}]+[{curNode.key}]",
+      --     curNode))
       thisTap:start()
     end
     return eventTaps
@@ -444,14 +446,15 @@ local function decorateRoot (rootNode)
   local eventTaps = registerEventTaps(rootNode)
   --- @param curNode BindNode trigger from which node
   local stopAllEventTaps = function(curNode)
-    local stopped = 0
+    local count = 0
     for _, tap in pairs(eventTaps) do
       tap:stop()
-      stopped = stopped + 1
+      count = count + 1
     end
-    obj.logger.i("Exit all eventtaps total(" ..
-      stopped .. ")for modal with prefixKey: " ..
-      curNode.prefixKeySeq .. " key: " .. curNode.key)
+    -- obj.logger.i(
+    --   F(
+    --     "Stopped {count} eventtaps for modal triggerred from [{curNode.prefixKeySeq}] + [{curNode.key}]",
+    --     count, curNode))
   end
   deRegisterEventTaps(rootNode, stopAllEventTaps)
 
