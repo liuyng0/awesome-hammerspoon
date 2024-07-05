@@ -357,7 +357,7 @@ local function decorateRoot (rootNode)
   end
 
   local function complementColor (color)
-    --- @type table
+    --- @type {}
     local colorRGB = hs.drawing.color.asRGB(color)
     local r, g, b, a = colorRGB.red, colorRGB.green, colorRGB.blue,
         colorRGB.alpha
