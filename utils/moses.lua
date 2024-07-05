@@ -22,7 +22,7 @@ local unpack                     = table.unpack or unpack
 local pairs, ipairs              = pairs, ipairs
 local error                      = error
 local clock                      = os and os.clock or nil
----@class utils.moses
+---@class Moses
 local M                          = {}
 
 
@@ -3059,7 +3059,7 @@ do
   local f = {}
 
   -- Will be returned upon requiring, indexes into the wrapper
-  ---@class utils.moses
+  ---@class Moses
   local Moses = {}
   Moses.__index = f
 
@@ -3140,6 +3140,6 @@ do
   Moses._LICENSE     = 'MIT <http://raw.githubusercontent.com/Yonaba/Moses/master/LICENSE>'
   Moses._DESCRIPTION = 'utility-belt library for functional programming in Lua'
 
-  ---@type utils.moses
+  ---@type Moses
   return Moses
 end

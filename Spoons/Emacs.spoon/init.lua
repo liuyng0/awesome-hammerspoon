@@ -5,6 +5,7 @@
 ---
 --- Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Emacs.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Emacs.spoon.zip)
 
+---@class spoon.Emacs
 local obj = {}
 obj.__index = obj
 
