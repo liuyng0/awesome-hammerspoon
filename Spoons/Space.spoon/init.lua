@@ -10,7 +10,7 @@ obj.logger = hs.logger.new("Space")
 
 local spaces = require("hs.spaces")
 local funs = require("hs.fnutils")
-local funext = require("hammers.funext")
+local M = lrks.moses
 function obj:getSpaceTable ()
     local allSpaces = spaces.allSpaces()
     local spaceTable = {}
@@ -31,7 +31,7 @@ function obj:getSpaceTable ()
             screenByUUID[scn:getUUID()] = scn
         end
     )
-    funext.imap(
+    M.forEach(
         allSpaces,
         function(screenUUID, spaceIds)
             funs.map(
