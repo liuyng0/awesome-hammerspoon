@@ -20,6 +20,7 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 obj.logger = hs.logger.new("Yabai")
 
 local M = U.moses
+local F = U.F
 
 --- @class Frame
 --- @field x number
@@ -90,12 +91,13 @@ local pipe = function(command)
   if status then
     return output
   else
-    error("Command failed with error return code, command: " .. command .. " rc: " .. rc .. ", output: " .. output)
+    error("Command failed with error return code, command: "
+      .. command .. " rc: " .. rc .. ", output: " .. output)
   end
 end
 
 local yabai = function(method, extra_params)
-  return pipe("/opt/homebrew/bin/yabai" .. " -m " .. method .. " " .. extra_params)
+  return pipe("/opt/homebrew/bin/yabai" .. " -m " .. method .. " " .. extra_params .. " 2>&1")
 end
 
 --- @return Window[]
@@ -159,7 +161,7 @@ function obj:getCurrentSpaces ()
   return M.chain(obj:spaces()): --- @param space Space
   select(
     function(space, _)
-      return space["is-visible"]
+      return space["is-visible"] == true
     end
   ): --- @param space Space
   groupBy(
@@ -176,14 +178,14 @@ end
 --- @return number[] spaceIndex
 function obj:getNextSpaces (onlyCurrentDisplay)
   local spacesMap = obj:getCurrentSpaces()
-  -- obj.logger:e("spacesMap" .. hs.inspect(spacesMap))
+  obj.logger.w("spacesMap" .. hs.inspect(spacesMap))
   local cycleNext = function(ids, current)
-    -- obj.logger:e("ids" ..
+    -- obj.logger.e("ids" ..
     --    hs.inspect(ids) .. " current: " .. hs.inspect(current))
     local sorted = M.sort(ids)
     local index = M.detect(sorted, current)
     local count = 1
-    for _, v in M.cycle(sorted, 2) do
+    for v, _ in M.cycle(sorted, 2) do
       if count == index + 1 then
         return v
       end
@@ -197,7 +199,7 @@ function obj:getNextSpaces (onlyCurrentDisplay)
         M.chain(displays): --- @param display Display
         select(
           function(display, _)
-            return display["has-focus"]
+            return display["has-focus"] == true
           end
         ):value()
   end
@@ -205,10 +207,10 @@ function obj:getNextSpaces (onlyCurrentDisplay)
   --- @param b Display
   sort(
     function(a, b)
-      if (a["has-focus"]) then
+      if (a["has-focus"] == true) then
         return true
       end
-      if (b["has-focus"]) then
+      if (b["has-focus"] == true) then
         return false
       end
       return a.index < b.index
