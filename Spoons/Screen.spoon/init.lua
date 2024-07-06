@@ -343,6 +343,7 @@ local function selectOtherWindow (wins, callback)
         obj.logger.w("Not enough windows, skip")
     end
     if #wins == 1 then
+        obj.logger.w("Single window, just call the callback!")
         local window = hs.window.get(wins[1].id)
         window:focus()
         if callback then
@@ -355,7 +356,9 @@ local function selectOtherWindow (wins, callback)
             return hs.window.get(win.id)
         end)
         :value()
+    obj.logger.w("Select from other windows" .. hs.inspect(windows))
     hs.hints.windowHints(windows, callback)
+    obj.logger.w("hs.hints.windowHints done!")
 end
 
 function obj:focusOtherWindow (callback)
@@ -433,8 +436,11 @@ function obj:getWindowsGroupByScreens (coveredWindow)
     return windows
 end
 
+--- Only in the spaces selected for all the screens
 function obj:getVisibleWindowsForAllScreens ()
-    local all_windows = hs.window.filter.default:getWindows()
+    -- local all_windows = hs.window.filter.default:getWindows()
+    -- local all_windows = hs.window.allWindows()
+    local all_windows = hs.window.filter.defaultCurrentSpace:getWindows()
     local wins = {}
     for i, w in pairs(all_windows) do
         local w_info = {
