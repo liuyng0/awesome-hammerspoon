@@ -19,73 +19,19 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 --- Variable
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.logger = hs.logger.new("Yabai")
+obj.program = "/opt/homebrew/bin/yabai"
 
 local M = U.moses
 local F = U.F
 
---- @class Frame
---- @field x number
---- @field y number
---- @field w number
---- @field h number
-
---- @class Space
---- @field id number
---- @field uuid string
---- @field index number
---- @field label string
---- @field type string
---- @field display number
---- @field windows number[]
---- @field first-window number
---- @field last-window number
---- @field has-focus boolean
---- @field is-visible boolean
---- @field is-native-fullscreen boolean
-
---- @class Display
---- @field id number
---- @field uuid string
---- @field index number
---- @field label string
---- @field frame Frame
---- @field spaces number[]
---- @field has-focus boolean
-
---- @class Window
---- @field id number
---- @field pid number
---- @field app string
---- @field title string
---- @field scratchpad string
---- @field frame Frame
---- @field role string
---- @field subrole string
---- @field root-window boolean
---- @field display number
---- @field space number
---- @field level number
---- @field sub-level number
---- @field layer string
---- @field sub-layer string
---- @field opacity number
---- @field split-type string
---- @field split-child string
---- @field stack-index number
---- @field can-move boolean
---- @field can-resize boolean
---- @field has-focus boolean
---- @field has-shadow boolean
---- @field has-parent-zoom boolean
---- @field has-fullscreen-zoom boolean
---- @field has-ax-reference boolean
---- @field is-native-fullscreen boolean
---- @field is-visible boolean
---- @field is-minimized boolean
---- @field is-hidden boolean
---- @field is-floating boolean
---- @field is-sticky boolean
---- @field is-grabbed boolean
+function obj.query (command)
+  local handle = io.popen(obj.program .. " " .. command)
+  ---@diagnostic disable x
+  local result = handle:read("*a")
+  handle:close()
+  print(result)
+  return result
+end
 
 function obj.pipe (command)
   -- obj.logger.wf("Run yabai command: %s", command)
@@ -98,13 +44,14 @@ function obj.pipe (command)
   end
 end
 
+-- deprecate
 function obj.yabai (method, extra_params)
   return obj.pipe("/opt/homebrew/bin/yabai" .. " -m " .. method .. " " .. extra_params .. " 2>&1")
 end
 
 --- @return Window[]
 function obj:windows ()
-  local windows = hs.json.decode(obj.yabai("query", "--windows"))
+  local windows = hs.json.decode(obj.query("query --windows"))
   ---@cast windows Window[]
   return windows
 end
@@ -246,8 +193,8 @@ function obj:switchToApp (appName)
   local win
   M.chain(wins)
       :select(function(win, _)
-        obj.logger.e("win is " .. hs.inspect(win))
-        obj.logger.e("equality is " .. win.app == appName)
+        -- obj.logger.e("win is " .. hs.inspect(win))
+        obj.logger.e("win.app", win.app == appName)
         return win.app == appName
       end)
       :groupBy(
