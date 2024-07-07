@@ -4,6 +4,7 @@
 ---
 --- Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Yabai.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Yabai.spoon.zip)
 
+---@class spoon.Yabai
 local obj = {}
 obj.__index = obj
 
@@ -86,7 +87,8 @@ local F = U.F
 --- @field is-sticky boolean
 --- @field is-grabbed boolean
 
-local pipe = function(command)
+function obj.pipe (command)
+  -- obj.logger.wf("Run yabai command: %s", command)
   local output, status, _type, rc = hs.execute(command)
   if status then
     return output
@@ -96,32 +98,31 @@ local pipe = function(command)
   end
 end
 
-local yabai = function(method, extra_params)
-  return pipe("/opt/homebrew/bin/yabai" .. " -m " .. method .. " " .. extra_params .. " 2>&1")
+function obj.yabai (method, extra_params)
+  return obj.pipe("/opt/homebrew/bin/yabai" .. " -m " .. method .. " " .. extra_params .. " 2>&1")
 end
 
 --- @return Window[]
 function obj:windows ()
-  local windows = hs.json.decode(yabai("query", "--windows"))
+  local windows = hs.json.decode(obj.yabai("query", "--windows"))
   ---@cast windows Window[]
   return windows
 end
 
 --- @return Space[]
 function obj:spaces ()
-  local spaces = hs.json.decode(yabai("query", "--spaces"))
+  local spaces = hs.json.decode(obj.yabai("query", "--spaces"))
   ---@cast spaces Space[]
   return spaces
 end
 
 --- @return Display[]
 function obj:displays ()
-  local displays = hs.json.decode(yabai("query", "--displays"))
+  local displays = hs.json.decode(obj.yabai("query", "--displays"))
   ---@cast displays Display[]
   return displays
 end
 
---- @param space Space
 function obj:moveFocusedWindowToNextSpace (follow)
   local nextSpace = obj:getNextSpaces(true)[1]
   local follow_param
@@ -130,14 +131,23 @@ function obj:moveFocusedWindowToNextSpace (follow)
   else
     follow_param = ""
   end
-  yabai("window", "--space " .. nextSpace .. follow_param)
+  obj.yabai("window", "--space " .. nextSpace .. follow_param)
 end
 
 function obj:getFocusedWindow ()
-  return M.chain(obj:windows()): --- @param window Window
-  select(
+  return M.chain(obj:windows()):
+  select( --- @param window Window
     function(window, _)
       return window["has-focus"]
+    end
+  ):value()[1]
+end
+
+function obj:focusedSpace ()
+  return M.chain(obj:spaces()):
+  select( --- @param space Space
+    function(space, _)
+      return space["has-focus"] == true
     end
   ):value()[1]
 end
@@ -148,7 +158,7 @@ function obj:focusSpace (spaces)
   --- @param space Space | number
     function(space, _)
       local spaceIndex = type(space) == "number" and space or space.index
-      yabai("space", "--focus " .. spaceIndex)
+      obj.yabai("space", "--focus " .. spaceIndex)
     end
   ):value()
 end
@@ -158,8 +168,9 @@ function obj:gotoNextSpaces ()
 end
 
 function obj:getCurrentSpaces ()
-  return M.chain(obj:spaces()): --- @param space Space
+  return M.chain(obj:spaces()):
   select(
+  --- @param space Space
     function(space, _)
       return space["is-visible"] == true
     end
@@ -196,16 +207,17 @@ function obj:getNextSpaces (onlyCurrentDisplay)
   local displays = obj:displays()
   if onlyCurrentDisplay then
     displays =
-        M.chain(displays): --- @param display Display
+        M.chain(displays):
         select(
+        --- @param display Display
           function(display, _)
             return display["has-focus"] == true
           end
         ):value()
   end
-  return M.chain(displays): --- @param a Display
+  return M.chain(displays):sort(
+  --- @param a Display
   --- @param b Display
-  sort(
     function(a, b)
       if (a["has-focus"] == true) then
         return true
@@ -215,12 +227,48 @@ function obj:getNextSpaces (onlyCurrentDisplay)
       end
       return a.index < b.index
     end
-  ): --- @param a Display
+  ):
   map(
+  --- @param a Display
     function(a, _)
       return cycleNext(a.spaces, spacesMap[a.index].index)
     end
   ):value()
+end
+
+--- Switch to app window prefer current mission control
+--- @return boolean true if switched to app, flase if no window with specified app name
+function obj:switchToApp (appName)
+  local wins = obj:windows()
+  ---@type Space
+  local space = obj:focusedSpace()
+  obj.logger.e("space is " .. hs.inspect(space))
+  local win
+  M.chain(wins)
+      :select(function(win, _)
+        obj.logger.e("win is " .. hs.inspect(win))
+        obj.logger.e("equality is " .. win.app == appName)
+        return win.app == appName
+      end)
+      :groupBy(
+        function(win, _)
+          if win.space ~= space.index then
+            return 1
+          else
+            return 2
+          end
+        end)
+      :flatten()
+      :value()
+  obj.logger.e("win is " .. hs.inspect(win))
+  if win and #win >= 1 then
+    local command = string.format(
+      "/opt/homebrew/bin/yabai -m window --focus %d 2>&1", win[1].id)
+    obj.logger.e(string.format("start to run %s", command))
+    -- obj.pipe(command)
+    return true
+  end
+  return false
 end
 
 return obj

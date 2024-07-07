@@ -9,6 +9,10 @@ obj.author = "Chophi <chophi@foxmail.com>"
 obj.windowHighlightMode = false
 obj.logger = hs.logger.new("Screen")
 local M = U.moses
+local hints = N.hints
+---@type spoon.Yabai
+local yabai = hs.loadSpoon("Yabai")
+
 
 function obj:focusWindowOnNextScreen (nextCount)
     local screens = hs.screen.allScreens()
@@ -356,8 +360,8 @@ local function selectOtherWindow (wins, callback)
             return hs.window.get(win.id)
         end)
         :value()
-    obj.logger.w("Select from other windows" .. hs.inspect(windows))
-    hs.hints.windowHints(windows, callback)
+    -- obj.logger.w("Select from other windows" .. hs.inspect(windows))
+    hints.windowHints(windows, callback)
     obj.logger.w("hs.hints.windowHints done!")
 end
 
@@ -366,30 +370,33 @@ function obj:focusOtherWindow (callback)
     selectOtherWindow(wins, callback)
 end
 
+---@param from hs.window
+---@param to hs.window
 local function swapWindows (from, to)
-    local fromFrame = from:frame()
-    local toFrame = to:frame()
-    from:setFrame(toFrame)
-    to:setFrame(fromFrame)
+    -- local fromFrame = from:frame()
+    -- local toFrame = to:frame()
+    -- from:setFrame(toFrame)
+    -- to:setFrame(fromFrame)
+    yabai.yabai("window", string.format("%d --swap %d", from:id(), to:id()))
 end
 
 function obj:swapWithOther ()
     local focusedWindow = hs.window.focusedWindow()
     obj:focusOtherWindow(function(win)
         swapWindows(focusedWindow, win)
-        focusedWindow:focus()
+        win:focus()
     end)
 end
 
 function obj:selectFromCoveredWindow ()
     local wins = obj:windowsClockWise(true)
     local focusedWindow = hs.window.focusedWindow()
-    selectOtherWindow(wins, function(win) win:setFrame(focusedWindow:frame()) end)
+    selectOtherWindow(wins, function(win) swapWindows(focusedWindow, win) end)
 end
 
 function obj:windowsClockWise (coveredWindow)
     local wins = obj:getWindowsGroupByScreens(coveredWindow)
-    obj.logger.w(hs.inspect(wins))
+    -- obj.logger.w(hs.inspect(wins))
     return M.chain(wins)
         :flatten(true)
         :sort(function(a, b)
@@ -414,7 +421,7 @@ function obj:getWindowsGroupByScreens (coveredWindow)
                 local visible = true
                 for _, vwin in pairs(canSeeWins) do
                     local intersect = vwin.frame:intersect(win.frame)
-                    obj.logger.w(hs.inspect(intersect.area))
+                    -- obj.logger.w(hs.inspect(intersect.area))
                     if intersect.area ~= 0 then
                         visible = false
                         break
@@ -440,9 +447,9 @@ end
 function obj:getVisibleWindowsForAllScreens ()
     -- local all_windows = hs.window.filter.default:getWindows()
     -- local all_windows = hs.window.allWindows()
-    local all_windows = hs.window.filter.defaultCurrentSpace:getWindows()
+    local allWindows = hs.window.filter.defaultCurrentSpace:getWindows()
     local wins = {}
-    for i, w in pairs(all_windows) do
+    for i, w in pairs(allWindows) do
         local w_info = {
             id = w:id(),
             title = w:title(),

@@ -1,4 +1,14 @@
 local logger = hs.logger.new("init.lua", "debug")
+--- Always can manual reload
+local hsreload_keys = { { "ctrl", "shift", "option" }, "R" }
+hs.hotkey.bind(
+    hsreload_keys[1],
+    hsreload_keys[2],
+    "Reload Configuration",
+    function()
+        hs.reload()
+    end
+)
 
 --- Global variables
 G = {}
@@ -10,16 +20,13 @@ U = {
     F = require("utils/F")
 }
 
---- Always can manual reload
-local hsreload_keys = { { "ctrl", "shift", "option" }, "R" }
-hs.hotkey.bind(
-    hsreload_keys[1],
-    hsreload_keys[2],
-    "Reload Configuration",
-    function()
-        hs.reload()
-    end
-)
+--- New extensions, actually are overriddens for the extensions
+N = {
+    ---@type next.expose
+    expose = require("next/expose"),
+    ---@type next.hints
+    hints = require("next/hints")
+}
 
 local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
 if not privatepath then
@@ -93,29 +100,42 @@ spoon.AppBindings:bind(
     }
 )
 
---- Launch applications functions
-local launch_emacs = function()
-    if spoon.Emacs:app() ~= nil then
-        spoon.Emacs:switch_to_main_window()
-    else
-        hs.application.launchOrFocusByBundleID(spoon.Emacs.emacs_bundle)
-    end
-end
-local launch_terminal = function()
-    if spoon.Emacs:app() == nil or not spoon.Emacs:switch_to_vterm_window() then
-        hs.application.launchOrFocusByBundleID('com.googlecode.iterm2')
-    end
-end
-local function launch_app_by_name (app_name)
+local function launch_app_by_name (appName, crossSpace)
     return function()
-        hs.application.launchOrFocus(app_name)
+        if not crossSpace then
+            hs.application.launchOrFocus(appName)
+        else
+            ---@type spoon.Yabai
+            if not spoon.Yabai:switchToApp(appName) then
+                hs.application.launchOrFocus(appName)
+            end
+        end
     end
 end
+
 local function launch_app_by_id (app_id)
     return function()
         hs.application.launchOrFocusByBundleID(app_id)
     end
 end
+
+--- Launch applications functions
+local launch_emacs = function()
+    launch_app_by_name("Emacs", true)()
+    -- if spoon.Emacs:app() ~= nil then
+    --     spoon.Emacs:switch_to_main_window()
+    -- else
+    --     hs.application.launchOrFocusByBundleID(spoon.Emacs.emacs_bundle)
+    -- end
+end
+
+local launch_terminal = function()
+    launch_app_by_name("iTerm2", true)()
+    -- if spoon.Emacs:app() == nil or not spoon.Emacs:switch_to_vterm_window() then
+    --     hs.application.launchOrFocusByBundleID('com.googlecode.iterm2')
+    -- end
+end
+
 
 --- Countdown
 local function countDownMins (mins)
@@ -155,7 +175,7 @@ local toggleMissionControl = function()
     hs.spaces.toggleMissionControl()
 end
 local toggleShowDesktop = function()
-    hs.spaces.toggleMissionControl()
+    hs.spaces.toggleShowDesktop()
 end
 
 --- Recursive Binder
@@ -175,6 +195,26 @@ spoon.RecursiveBinder.helperFormat = {
 }
 
 local sk = spoon.RecursiveBinder.singleKey
+--- yabai functions
+local ybfn = (function()
+    local focusSpace = function(spaceIndex)
+        --- Yabai has problem to switch focus if the space is empty
+        return function()
+            hs.eventtap.keyStroke({ "control", "option", "shift" }, string.format("%s", spaceIndex))
+        end
+    end
+    local moveW2S = function(spaceIndex, follow)
+        return function()
+            spoon.Yabai.pipe(string.format(
+                "/opt/homebrew/bin/yabai -m window --space %d %s 2>&1",
+                spaceIndex, follow and "--focus" or ""))
+        end
+    end
+    return {
+        focusSpace = focusSpace,
+        moveW2S = moveW2S
+    }
+end)()
 local keyMap = {
     --- Search with HSearch
     [sk('/', 'search+')] = {
@@ -210,6 +250,14 @@ local keyMap = {
         }
     },
     [sk('w', 'windows+')] = {
+        [sk("1", "move to & focus space 1")] = ybfn.moveW2S(1, true),
+        [sk("2", "move to & focus space 2")] = ybfn.moveW2S(2, true),
+        [sk("3", "move to & focus space 3")] = ybfn.moveW2S(3, true),
+        [sk("4", "move to & focus space 4")] = ybfn.moveW2S(4, true),
+        [sk("5", "move to & focus space 5")] = ybfn.moveW2S(5, true),
+        [sk("6", "move to & focus space 6")] = ybfn.moveW2S(6, true),
+        [sk("7", "move to & focus space 7")] = ybfn.moveW2S(7, true),
+        [sk("8", "move to & focus space 8")] = ybfn.moveW2S(8, true),
         [sk("h", "Halfleft")] = moveAndResize("halfleft"),
         [sk("l", "Halfright")] = moveAndResize("halfright"),
         [sk("k", "Halfup")] = moveAndResize("halfup"),
@@ -251,6 +299,30 @@ local keyMap = {
         [sk("m", "toggle mission control")] = toggleMissionControl,
         [sk("d", "toggle show desktop")] = toggleShowDesktop,
     },
+    --- Spaces
+    [sk("1", "focus space 1")] = ybfn.focusSpace(1),
+    [sk("2", "focus space 2")] = ybfn.focusSpace(2),
+    [sk("3", "focus space 3")] = ybfn.focusSpace(3),
+    [sk("4", "focus space 4")] = ybfn.focusSpace(4),
+    [sk("5", "focus space 5")] = ybfn.focusSpace(5),
+    [sk("6", "focus space 6")] = ybfn.focusSpace(6),
+    [sk("7", "focus space 7")] = ybfn.focusSpace(7),
+    [sk("8", "focus space 8")] = ybfn.focusSpace(8),
+
+    --- Exposes
+    [sk('e', 'expose+')] = (function()
+        local exposeAll = N.expose.new({ "Emacs", "Chrome", "Intellij", "iTerm2" },
+            { showThumbnails = true })
+        exposeAll:setCallback(
+        ---@param win hs.window
+            function(win)
+                logger.w("focus on window: " .. win:id())
+                win:focus()
+            end)
+        return {
+            [sk("f", "focus")] = function() exposeAll:toggleShow() end
+        }
+    end)(),
     --- Variable Toggles
     [sk('v', "variable on/off")] = {
         [sk('w', 'window toggle')] = {
@@ -263,6 +335,12 @@ local keyMap = {
                     :toggleCrossSpaces()
             end,
         }
+    },
+    --- Hammerspoon
+    [sk('h', "hammerspoon")] = {
+        [sk("c", "toggle console")] = function()
+            hs.toggleConsole()
+        end
     },
 }
 local hyper = { { "shift", "command", "control", "option" }, "1", }
