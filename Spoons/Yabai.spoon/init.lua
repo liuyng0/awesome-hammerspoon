@@ -23,52 +23,77 @@ obj.program = "/opt/homebrew/bin/yabai"
 
 local M = U.moses
 local F = U.F
-local commands = U.commands
+local command = U.command
 
-function obj.query (command)
-  local handle = io.popen(obj.program .. " " .. command)
-  ---@diagnostic disable x
-  local result = handle:read("*a")
-  handle:close()
-  print(result)
-  return result
-end
-
-function obj.pipe (command)
-  -- obj.logger.wf("Run yabai command: %s", command)
-  local output, status, _type, rc = hs.execute(command)
-  if status then
-    return output
-  else
-    error("Command failed with error return code, command: "
-      .. command .. " rc: " .. rc .. ", output: " .. output)
-  end
-end
-
--- deprecate
-function obj.yabai (method, extra_params)
-  return obj.pipe("/opt/homebrew/bin/yabai" .. " -m " .. method .. " " .. extra_params .. " 2>&1")
+local function execSync (args)
+  return command.execTaskInShellSync(obj.program .. " " .. args, nil, false)
 end
 
 --- @return Window[]
-function obj:windows ()
-  local windows = hs.json.decode(obj.query("-m query --windows"))
-  ---@cast windows Window[]
-  return windows
+function obj:windows (index)
+  ---@type Window[]
+  return hs.json.decode(execSync([[-m query --windows]] .. index and " --window " .. index or ""))
 end
 
 --- @return Space[]
-function obj:spaces ()
-  local spaces = hs.json.decode(obj.yabai("query", "--spaces"))
-  ---@cast spaces Space[]
-  return spaces
+function obj:spaces (index)
+  ---@type Space[]
+  return hs.json.decode(execSync([[-m query --spaces]] .. index and " --space " .. index or ""))
 end
 
 --- @return Display[]
-function obj:displays ()
-  local displays = hs.json.decode(obj.yabai("query", "--displays"))
-  ---@cast displays Display[]
-  return displays
+function obj:displays (index)
+  ---@type Display[]
+  return hs.json.decode(execSync([[-m query --displays]] .. index and " --display " .. index or ""))
+end
+
+--- @return Focus?
+function obj:focusedWSD ()
+  ---@type string|nil
+  local windowJson = execSync [===[-m query --windows | jq '.[] | select(.["has-focus"] == true)']===]
+  if windowJson then
+    ---@type Window
+    local window = hs.json.decode(windowJson)
+    return {
+      windowId = window.id,
+      displayIndex = window.display,
+      spaceIndex = window.space,
+      frame = window.frame,
+      app = window.app,
+      title = window.title
+    }
+  end
+end
+
+local function toint (val)
+  if val == nil then
+    return nil
+  end
+  local num = tonumber(val)
+  if num == nil then
+    return nil
+  end
+  return math.floor(tonumber(val))
+end
+
+--- move window to space
+function obj:moveWindowToSpace (winId, spaceIndex, follow)
+  local focus = obj:focusedWSD()
+  local _winId = winId or (focus and focus.windowId)
+  local spacesLen = toint(execSync("-m query --spaces | jq -rj '. | length'"))
+
+  if spacesLen >= spaceIndex then
+    -- adding the window selector to move command solves some buggy behavior by yabai when dealing with windows without menubars
+    execSync("-m window " .. _winId .. " --space " .. spaceIndex .. (follow and " --focus " or ""))
+  end
+end
+
+function obj:moveWindowToDisplay (winId, display, follow)
+
+end
+
+function obj:swapWindow (winId, otherWinId, focus)
+
 end
 
 function obj:moveFocusedWindowToNextSpace (follow)
@@ -219,4 +244,5 @@ function obj:switchToApp (appName)
   return false
 end
 
+---@return spoon.Yabai
 return obj

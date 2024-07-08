@@ -19,7 +19,7 @@ U = {
     moses = require("utils/moses"),
     F = require("utils/F"),
     ---@type utils.command
-    commands = require("utils/command")
+    command = require("utils/command")
 }
 
 --- New extensions, actually are overriddens for the extensions
@@ -90,6 +90,11 @@ local hspoon_list = {
 for _, v in pairs(hspoon_list) do
     hs.loadSpoon(v)
 end
+
+S = {
+    ---@type spoon.Yabai
+    yabai = spoon.Yabai
+}
 
 local APP_GOODNOTES = "Goodnotes"
 spoon.AppBindings:bind(
@@ -197,6 +202,9 @@ spoon.RecursiveBinder.helperFormat = {
 }
 
 local sk = spoon.RecursiveBinder.singleKey
+local ctrl = function(singleKey, description)
+    return { { "control" }, singleKey, description }
+end
 --- yabai functions
 local ybfn = (function()
     local focusSpace = function(spaceIndex)
@@ -206,145 +214,163 @@ local ybfn = (function()
         end
     end
     local moveW2S = function(spaceIndex, follow)
-        return function()
-            spoon.Yabai.pipe(string.format(
-                "/opt/homebrew/bin/yabai -m window --space %d %s 2>&1",
-                spaceIndex, follow and "--focus" or ""))
-        end
+        return U.command.cwrap(function()
+            S.yabai:moveWindowToSpace(nil, spaceIndex, follow)
+        end)
     end
     return {
         focusSpace = focusSpace,
         moveW2S = moveW2S
     }
 end)()
-local keyMap = {
-    --- Search with HSearch
-    [sk('/', 'search+')] = {
-        [sk('h', 'h-search')] = function() spoon.HSearch:toggleShow() end,
-    },
-    [sk('c', 'control+')] = {
-        [sk('l', 'lock screen')] = function() hs.caffeinate.lockScreen() end
-    },
-    --- Launch Applications
-    [sk('l', 'launch+')] = {
-        [sk("space", "Emacs")] = launch_emacs,
-        [sk("t", "terminal")] = launch_terminal,
-        [sk("c", "chrome")] = launch_app_by_id("com.google.Chrome"),
-        [sk("i", "intellij")] = launch_app_by_id("com.jetbrains.intellij"),
-        [sk("m", "activity monitor")] = launch_app_by_id(
-            "com.apple.ActivityMonitor"),
-        [sk("d", "dash")] = launch_app_by_name("Dash"),
-        [sk("s", "slack")] = launch_app_by_name("Slack"),
-        [sk("o", "omniGraffle")] = launch_app_by_name("OmniGraffle"),
-        [sk("q", "quip")] = launch_app_by_name("Quip"),
-        [sk("h", "hammerspoon")] = launch_app_by_name("Hammerspoon"),
-        [sk("a", "android studio")] = launch_app_by_name("Android Studio"),
-        [sk("p", "pyCharm")] = launch_app_by_name("PyCharm"),
-    },
-    [sk('t', "time/schedule+")] = {
-        [sk("p", "pause/resume")] = spoon.CountDown.pauseOrResume,
-        [sk("1", "10 minutes")] = countDownMins(10),
-        [sk("2", "20 minutes")] = countDownMins(20),
-        [sk("3", "30 minutes")] = countDownMins(30),
-        [sk("4", "45 minutes")] = countDownMins(45),
-        [sk("6", "60 minutes")] = countDownMins(60),
-    },
-    [sk('w', 'windows+')] = {
-        [sk("1", "move to & focus space 1")] = ybfn.moveW2S(1, true),
-        [sk("2", "move to & focus space 2")] = ybfn.moveW2S(2, true),
-        [sk("3", "move to & focus space 3")] = ybfn.moveW2S(3, true),
-        [sk("4", "move to & focus space 4")] = ybfn.moveW2S(4, true),
-        [sk("5", "move to & focus space 5")] = ybfn.moveW2S(5, true),
-        [sk("6", "move to & focus space 6")] = ybfn.moveW2S(6, true),
-        [sk("7", "move to & focus space 7")] = ybfn.moveW2S(7, true),
-        [sk("8", "move to & focus space 8")] = ybfn.moveW2S(8, true),
-        [sk("h", "Halfleft")] = moveAndResize("halfleft"),
-        [sk("l", "Halfright")] = moveAndResize("halfright"),
-        [sk("k", "Halfup")] = moveAndResize("halfup"),
-        [sk("j", "Halfdown")] = moveAndResize("halfdown"),
-        -- to screen
-        [sk("n", "Next Screen")] = moveToScreen("next"),
-        [sk("p", "Previous Screen")] = moveToScreen("previous"),
-        -- undo
-        [sk("u", "Undo")] = function() spoon.WinWin:undo() end,
-        -- Triple Window
-        [sk("a", "3-Left")] = moveAndResize("tripleLeft"),
-        [sk("s", "3-Center")] = moveAndResize("centerHalfWidth"),
-        [sk("d", "3-Right")] = moveAndResize("tripleRight"),
-        -- undo/redo
-        [sk("f", "Fullscreen")] = moveAndResize("fullscreen"),
-        [sk("m", "Maximize")] = moveAndResize("maximize"),
-        -- Rotate
-        [sk("r", "Rotate")] = function()
-            spoon.Screen
-                :rotateVisibleWindows()
-        end,
-        -- Other window
-        [sk("O", "open")] = function() spoon.Screen:selectFromCoveredWindow() end,
-        [sk("o", "other window+")] = function() spoon.Screen:focusOtherWindow() end,
-        [{ { "control" }, "o", "swap-o" }] = function() spoon.Screen:swapWithOther() end,
 
-        -- to Space
-        [sk("S", "space+")] = {
-            [sk("n", "Move to Next Space(not follow)")] = moveToNextSpace(false),
-            [sk("f", "Move to Next Space(follow)")] = moveToNextSpace(true),
+U.command.cwrap(function()
+    local keyMap = {
+        --- Search with HSearch
+        [sk('/', 'search+')] = {
+            [sk('h', 'h-search')] = function() spoon.HSearch:toggleShow() end,
         },
-        [sk("c", "choose+")] = {
-            [sk("c", "Choose Window (Current App)")] = listWindowCurrent,
-            [sk("a", "Choose Window (All App)")] = listWindowAll,
+        [sk('c', 'control+')] = {
+            [sk('l', 'lock screen')] = function() hs.caffeinate.lockScreen() end
         },
-    },
-    [sk('s', 'space+')] = {
-        [sk("n", "goto next spaces")] = gotoNextSpace,
-        [sk("m", "toggle mission control")] = toggleMissionControl,
-        [sk("d", "toggle show desktop")] = toggleShowDesktop,
-    },
-    --- Spaces
-    [sk("1", "focus space 1")] = ybfn.focusSpace(1),
-    [sk("2", "focus space 2")] = ybfn.focusSpace(2),
-    [sk("3", "focus space 3")] = ybfn.focusSpace(3),
-    [sk("4", "focus space 4")] = ybfn.focusSpace(4),
-    [sk("5", "focus space 5")] = ybfn.focusSpace(5),
-    [sk("6", "focus space 6")] = ybfn.focusSpace(6),
-    [sk("7", "focus space 7")] = ybfn.focusSpace(7),
-    [sk("8", "focus space 8")] = ybfn.focusSpace(8),
+        --- Launch Applications
+        [sk('l', 'launch+')] = {
+            [sk("space", "Emacs")] = launch_emacs,
+            [sk("t", "terminal")] = launch_terminal,
+            [sk("c", "chrome")] = launch_app_by_id("com.google.Chrome"),
+            [sk("i", "intellij")] = launch_app_by_id("com.jetbrains.intellij"),
+            [sk("m", "activity monitor")] = launch_app_by_id(
+                "com.apple.ActivityMonitor"),
+            [sk("d", "dash")] = launch_app_by_name("Dash"),
+            [sk("s", "slack")] = launch_app_by_name("Slack"),
+            [sk("o", "omniGraffle")] = launch_app_by_name("OmniGraffle"),
+            [sk("q", "quip")] = launch_app_by_name("Quip"),
+            [sk("h", "hammerspoon")] = launch_app_by_name("Hammerspoon"),
+            [sk("a", "android studio")] = launch_app_by_name("Android Studio"),
+            [sk("p", "pyCharm")] = launch_app_by_name("PyCharm"),
+        },
+        [sk('t', "time/schedule+")] = {
+            [sk("p", "pause/resume")] = spoon.CountDown.pauseOrResume,
+            [sk("1", "10 minutes")] = countDownMins(10),
+            [sk("2", "20 minutes")] = countDownMins(20),
+            [sk("3", "30 minutes")] = countDownMins(30),
+            [sk("4", "45 minutes")] = countDownMins(45),
+            [sk("6", "60 minutes")] = countDownMins(60),
+        },
+        [sk('w', 'windows+')] = {
+            [sk("1", "move to & focus space 1-8")] = ybfn.moveW2S(1, true),
+            [sk("2")] = ybfn.moveW2S(2, true),
+            [sk("3")] = ybfn.moveW2S(3, true),
+            [sk("4")] = ybfn.moveW2S(4, true),
+            [sk("5")] = ybfn.moveW2S(5, true),
+            [sk("6")] = ybfn.moveW2S(6, true),
+            [sk("7")] = ybfn.moveW2S(7, true),
+            [sk("8")] = ybfn.moveW2S(8, true),
+            [ctrl("1", "move to space 1-8")] = ybfn.moveW2S(1, true),
+            [ctrl("2")] = ybfn.moveW2S(2, true),
+            [ctrl("3")] = ybfn.moveW2S(3, true),
+            [ctrl("4")] = ybfn.moveW2S(4, true),
+            [ctrl("5")] = ybfn.moveW2S(5, true),
+            [ctrl("6")] = ybfn.moveW2S(6, true),
+            [ctrl("7")] = ybfn.moveW2S(7, true),
+            [ctrl("8")] = ybfn.moveW2S(8, true),
 
-    --- Exposes
-    [sk('e', 'expose+')] = (function()
-        local exposeAll = N.expose.new({ "Emacs", "Chrome", "Intellij", "iTerm2" },
-            { showThumbnails = true })
-        exposeAll:setCallback(
-        ---@param win hs.window
-            function(win)
-                logger.w("focus on window: " .. win:id())
-                win:focus()
-            end)
-        return {
-            [sk("f", "focus")] = function() exposeAll:toggleShow() end
-        }
-    end)(),
-    --- Variable Toggles
-    [sk('v', "variable on/off")] = {
-        [sk('w', 'window toggle')] = {
-            [sk("h", "highlight mode")] = function()
+            [sk("h", "Halfleft")] = moveAndResize("halfleft"),
+            [sk("l", "Halfright")] = moveAndResize("halfright"),
+            [sk("k", "Halfup")] = moveAndResize("halfup"),
+            [sk("j", "Halfdown")] = moveAndResize("halfdown"),
+            -- to screen
+            [sk("n", "Next Screen")] = moveToScreen("next"),
+            [sk("p", "Previous Screen")] = moveToScreen("previous"),
+            -- undo
+            [sk("u", "Undo")] = function() spoon.WinWin:undo() end,
+            -- Triple Window
+            [sk("a", "3-Left")] = moveAndResize("tripleLeft"),
+            [sk("s", "3-Center")] = moveAndResize("centerHalfWidth"),
+            [sk("d", "3-Right")] = moveAndResize("tripleRight"),
+            -- undo/redo
+            [sk("f", "Fullscreen")] = moveAndResize("fullscreen"),
+            [sk("m", "Maximize")] = moveAndResize("maximize"),
+            -- Rotate
+            [sk("r", "Rotate")] = function()
                 spoon.Screen
-                    :toggleWindowHighlightMode()
+                    :rotateVisibleWindows()
             end,
-            [sk("i", "isolation mode (space)")] = function()
-                spoon.Screen
-                    :toggleCrossSpaces()
-            end,
+            -- Other window
+            [sk("O", "open")] = function() spoon.Screen:selectFromCoveredWindow() end,
+            [sk("o", "other window+")] = function() spoon.Screen:focusOtherWindow() end,
+            [{ { "control" }, "o", "swap-o" }] = function() spoon.Screen:swapWithOther() end,
+
+            -- to Space
+            [sk("S", "space+")] = {
+                [sk("n", "Move to Next Space(not follow)")] = moveToNextSpace(false),
+                [sk("f", "Move to Next Space(follow)")] = moveToNextSpace(true),
+            },
+            [sk("c", "choose+")] = {
+                [sk("c", "Choose Window (Current App)")] = listWindowCurrent,
+                [sk("a", "Choose Window (All App)")] = listWindowAll,
+            },
+        },
+        [sk('s', 'space+')] = {
+            [sk("n", "goto next spaces")] = gotoNextSpace,
+            [sk("m", "toggle mission control")] = toggleMissionControl,
+            [sk("d", "toggle show desktop")] = toggleShowDesktop,
+        },
+        --- Spaces
+        [sk("1", "focus space (1-8)")] = ybfn.focusSpace(1),
+        [sk("2", nil)] = ybfn.focusSpace(2),
+        [sk("3")] = ybfn.focusSpace(3),
+        [sk("4")] = ybfn.focusSpace(4),
+        [sk("5")] = ybfn.focusSpace(5),
+        [sk("6")] = ybfn.focusSpace(6),
+        [sk("7")] = ybfn.focusSpace(7),
+        [sk("8")] = ybfn.focusSpace(8),
+
+        --- Exposes
+        [sk('e', 'expose+')] = (function()
+            local exposeAll = N.expose.new({ "Emacs", "Chrome", "Intellij", "iTerm2" },
+                { showThumbnails = true })
+            exposeAll:setCallback(
+            ---@param win hs.window
+                function(win)
+                    logger.w("focus on window: " .. win:id())
+                    win:focus()
+                end)
+            return {
+                [sk("f", "focus")] = function() exposeAll:toggleShow() end
+            }
+        end)(),
+        --- Variable Toggles
+        [sk('v', "variable on/off")] = {
+            [sk('w', 'window toggle')] = {
+                [sk("h", "highlight mode")] = function()
+                    spoon.Screen
+                        :toggleWindowHighlightMode()
+                end,
+                [sk("i", "isolation mode (space)")] = function()
+                    spoon.Screen
+                        :toggleCrossSpaces()
+                end,
+            }
+        },
+        --- Hammerspoon
+        [sk('h', "hammerspoon")] = {
+            [sk("c", "toggle console")] = function()
+                hs.toggleConsole()
+            end
+        },
+        [sk('y', "yabai+")] = {
+            [sk("c", "current")] = U.command.cwrap(
+                function()
+                    local info = S.yabai:focusedWSD()
+                    hs.alert.show(hs.inspect(info))
+                end
+            )
         }
-    },
-    --- Hammerspoon
-    [sk('h', "hammerspoon")] = {
-        [sk("c", "toggle console")] = function()
-            hs.toggleConsole()
-        end
-    },
-}
-local hyper = { { "shift", "command", "control", "option" }, "1", }
-spoon.RecursiveBinder.recursiveBind(keyMap, hyper)
+    }
+    local hyper = { { "shift", "command", "control", "option" }, "1", }
+    spoon.RecursiveBinder.recursiveBind(keyMap, hyper)
+end)()
 
 -- Disable the alert key showing
 hs.hotkey.alertDuration = 0

@@ -1,7 +1,7 @@
 ---@class utils.command
 local obj = {}
 obj.module = "utils.command"
-obj.logger = hs.logger.new(obj.module, 'info')
+obj.logger = hs.logger.new(obj.module, 'debug')
 obj._PATH_VARIABLE = nil
 
 ---@class CommandResult
@@ -28,10 +28,11 @@ local function append (source, ...)
   return source
 end
 
--- execTaskInShellSync runs a command and waits for the output. All commands executed with a path environment variable that mirrors a logged in shell
--- @param cmdWithArgs - a string with the bash commands to runs
--- @param callback - a callback function to trigger once the command completes. Parrams for the callback fn should be exitCode, stdOut, and stdErr
--- @param withLogin - whether to run the command in a shell that has logged in resulting in common profile and env variable settings getting applied
+--- execTaskInShellSync runs a command and waits for the output. All commands executed with a path environment variable that mirrors a logged in shell
+--- @param cmdWithArgs - a string with the bash commands to runs
+--- @param callback - a callback function to trigger once the command completes. Parrams for the callback fn should be exitCode, stdOut, and stdErr
+--- @param withLogin - whether to run the command in a shell that has logged in resulting in common profile and env variable settings getting applied
+--- @type fun(cmdWithArgs: string, callback: function?, withLogin: boolean)
 obj.execTaskInShellSync = (function()
   local pathEnv = ""
   local fn = function(cmdWithArgs, callback, withLogin)
