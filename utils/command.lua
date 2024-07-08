@@ -18,11 +18,12 @@ end
 
 -- execTaskInShellSync runs a command and waits for the output. All commands executed with a path environment variable that mirrors a logged in shell
 -- @param commandWithArgs string a string with the bash commands to runs
--- @param callback function a callback function to trigger once the command completes. Parrams for the callback fn should be exitCode, stdOut, and stdErr
+-- @param onComplete function takes (exitcode, stdout, stderr) as input
 -- @param pathEnv string if set will set to PATH
 -- @return CommandResult
-local execTaskInShellSync = (function()
-  local fn = function(commandWithArgs, callback, pathEnv)
+local execute = function(commandWithArgs, onComplete, pathEnv)
+  local done = false
+  local longRunningTask = coroutine.wrap(function(commandWithArgs, onComplete, pathEnv)
     if not coroutine.isyieldable() then
       obj.logger.i("this function cannot be invoked on the main Lua thread")
     end
@@ -33,56 +34,47 @@ local execTaskInShellSync = (function()
       table.insert(cmd, "export PATH=\"" .. pathEnv .. "\" && " .. commandWithArgs)
     else
       if type(pathEnv) == "boolean" and pathEnv then
-        append(cmd, "-l", "-i", "-c")
+        append(cmd, "-i", "-c")
       else
         append(cmd, "-c")
       end
       table.insert(cmd, commandWithArgs)
     end
 
-    local done = false
-    local t = hs.task.new(os.getenv("SHELL"), function(exitCode, stdOut, stdErr)
-      if callback ~= nil then
-        callback({
-          exitcode = exitCode,
-          stdout = stdOut,
-          stderr = stdErr
-        })
-      end
+    done = false
+    local t = hs.task.new(os.getenv("SHELL"), function(_exitcode, _stdout, _stderr)
+      print("_exitcode: " .. _exitcode)
+      print("_stdout: " .. _stdout)
+      print("_stderr: " .. _stderr)
+      --- TODO: fix the code here, looks like it's not executed sequentially
+      onComplete(_exitcode, _stdout, _stderr)
       done = true
-    end, cmd)
+    end, cmd):start()
 
-    t:start()
-
-    while done == false do
-      coroutine.yield()
+    while t:isRunning() or done == false do
+      coroutine.applicationYield()
     end
-  end
-  return function(cmdWithArgs, callback, withEnv)
-    return fn(cmdWithArgs, callback, withEnv)
-  end
-end)()
+
+    t:terminate()
+    longRunningTask = nil -- by referencing longTask within the coroutine function
+    done = false
+    -- it becomes an up-value so it won't be collected
+  end)
+  longRunningTask(commandWithArgs, onComplete, pathEnv)
+end
 
 function obj.init ()
   if not obj._PATH_VARIABLE then
-    coroutine.wrap(function()
-      execTaskInShellSync("echo -n $" .. "PATH", function(commandResult)
-        obj._PATH_VARIABLE = commandResult.stdout
-      end, true)
-    end)()
-  end
-end
-
-function obj.cwrap (func)
-  return function()
-    coroutine.wrap(func)()
+    execute("echo -n $" .. "PATH", function(_, stdout, stderr)
+      obj._PATH_VARIABLE = stdout
+    end, true)
   end
 end
 
 function obj.execTaskInShellAsync (cmdWithArgs, callback)
-  coroutine.wrap(function()
-    execTaskInShellSync(cmdWithArgs, callback, true)
-  end)()
+  local result
+  execute(cmdWithArgs, callback,
+    obj._PATH_VARIABLE)
 end
 
 return obj

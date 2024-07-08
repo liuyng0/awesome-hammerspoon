@@ -8,10 +8,11 @@
 local M = require("utils/command")
 M.init()
 print(M._PATH_VARIABLE)
-local result
-M.execTaskInShellAsync("/bin/ls -la", function (_result) print(hs.inspect(_result)) end)
-print("hello")
+local result = M.execTaskInShellAsync("/bin/ls -la")
+print(hs.inspect(result))
 #+end_src
+
+#+RESULTS: path_variable
 
 #+begin_src sh :noweb-prefix no :noweb yes :results output
 echo "test path_variable"
@@ -20,5 +21,5 @@ hs -c '<<path_variable>>'
 
 #+RESULTS:
 : test path_variable
-: /Users/yang/.rvm/gems/ruby-3.2.2/bin:/Users/yang/.rvm/gems/ruby-3.2.2@global/bin:/Users/yang/.rvm/rubies/ruby-3.2.2/bin:/sbin:/usr/sbin:/usr/local/bin:/Users/yang/.rvm/bin:/Users/yang/Library/Android/sdk//platform-tools:/Library/TeX/texbin:/opt/homebrew/opt/coreutils/libexec/gnubin:/Users/yang/opt/anaconda3/bin:/Users/yang/.pyenv/shims:/opt/homebrew/Cellar/jabba/0.13.0/jdk/openjdk@22.0.1/Contents/Home/bin:/Users/yang/.sdkman/candidates/maven/current/bin:/Users/yang/repo/public/config/zsh/bin/common:/Users/yang/repo/public/config/zsh/bin/common/decompile-apk:/Users/yang/repo/public/config/zsh/script/common:/Users/yang/repo/public/config/zsh/script/darwin:/Users/yang/repo/private/config/zsh.private/script/darwin:/Users/yang/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/opt/podman/bin:/Users/yang/Software/flutter/flutter/bin:/Applications/Hammerspoon.app/Contents/Frameworks/hs:/Users/yang/Software/istio-1.9.1/bin:/Users/yang/Library/Python/3.8/bin:/Users/yang/Library/Python/3.9/bin:/Library/Tex/texbin:/opt/homebrew/share/google-cloud-sdk/bin:/Users/yang/go/bin:/Users/yang/.rvm/bin:/Users/yang/.wspl-tools/bin
-: hello
+: nil
+: table: 0x6000fac78040
