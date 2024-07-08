@@ -1,25 +1,23 @@
 #+title: Test
 
 * Test
-
-** path_variable
-#+name: path_variable
+** execTaskInShellSync
+#+name: execTaskInShellSync
 #+begin_src lua :exports none
 local M = require("utils/command")
-M.init()
-print(M._PATH_VARIABLE)
-local result = M.execTaskInShellAsync("/bin/ls -la")
-print(hs.inspect(result))
+-- M.init()
+local value = M.cwrap(function () M.execTaskInShellSync("/bin/ls -la", nil, false) end)()
+print(value)
 #+end_src
 
-#+RESULTS: path_variable
+#+RESULTS: execTaskInShellSync
 
 #+begin_src sh :noweb-prefix no :noweb yes :results output
-echo "test path_variable"
-hs -c '<<path_variable>>'
+echo "test execTaskInShellSync"
+hs -c '<<execTaskInShellSync>>'
 #+end_src
 
 #+RESULTS:
-: test path_variable
-: nil
-: table: 0x6000fac78040
+: test execTaskInShellSync
+: 14:42:58 utils.comm: this function cannot be invoked on the main Lua thread
+: -- Loading extension: task
