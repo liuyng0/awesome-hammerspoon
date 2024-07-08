@@ -370,28 +370,34 @@ function obj:focusOtherWindow (callback)
     selectOtherWindow(wins, callback)
 end
 
----@param from hs.window
----@param to hs.window
-local function swapWindows (from, to)
-    -- local fromFrame = from:frame()
-    -- local toFrame = to:frame()
-    -- from:setFrame(toFrame)
-    -- to:setFrame(fromFrame)
-    yabai.yabai("window", string.format("%d --swap %d", from:id(), to:id()))
+local function swap (wina, winb)
+    yabai:swapWindows(wina:id(), winb:id())
 end
 
 function obj:swapWithOther ()
     local focusedWindow = hs.window.focusedWindow()
     obj:focusOtherWindow(function(win)
-        swapWindows(focusedWindow, win)
-        win:focus()
+        U.command.cwrap(function() swap(focusedWindow, win) end)()
+    end)
+end
+
+function obj:stackWithOther ()
+    local focusedWindow = hs.window.focusedWindow()
+    obj:focusOtherWindow(function(win)
+        U.command.cwrap(function() yabai:stackWindows(focusedWindow:id(), win:id()) end)()
     end)
 end
 
 function obj:selectFromCoveredWindow ()
     local wins = obj:windowsClockWise(true)
     local focusedWindow = hs.window.focusedWindow()
-    selectOtherWindow(wins, function(win) swapWindows(focusedWindow, win) end)
+    selectOtherWindow(wins, function(win)
+        U.command.cwrap(
+            function()
+                swap(focusedWindow, win)
+            end
+        )()
+    end)
 end
 
 function obj:windowsClockWise (coveredWindow)

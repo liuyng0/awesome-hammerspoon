@@ -85,6 +85,8 @@ function obj:moveWindowToSpace (winId, spaceIndex, follow)
   if spacesLen >= spaceIndex then
     -- adding the window selector to move command solves some buggy behavior by yabai when dealing with windows without menubars
     execSync("-m window " .. _winId .. " --space " .. spaceIndex .. (follow and " --focus " or ""))
+  else
+    obj.logger.e("spaceIndex exceeded" .. spacesLen .. " " .. spaceIndex)
   end
 end
 
@@ -92,8 +94,16 @@ function obj:moveWindowToDisplay (winId, display, follow)
 
 end
 
-function obj:swapWindow (winId, otherWinId, focus)
+function obj:swapWindows (winId, otherWinId)
+  execSync("-m window " .. winId .. " --swap " .. otherWinId)
+end
 
+function obj:stackWindows (winId, otherWinId)
+  execSync("-m window " .. winId .. " --stack " .. otherWinId)
+end
+
+function obj:switchLayout (layout)
+  execSync("-m space --layout " .. layout)
 end
 
 function obj:moveFocusedWindowToNextSpace (follow)
