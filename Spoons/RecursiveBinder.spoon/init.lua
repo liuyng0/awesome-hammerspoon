@@ -169,7 +169,7 @@ function obj.singleKey (key, name)
   if name then
     return { mod, key, name }
   else
-    return { mod, key, 'no name' }
+    return { mod, key, nil }
   end
 end
 
