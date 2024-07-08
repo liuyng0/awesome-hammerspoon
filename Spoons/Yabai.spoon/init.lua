@@ -23,6 +23,7 @@ obj.program = "/opt/homebrew/bin/yabai"
 
 local M = U.moses
 local F = U.F
+local commands = U.commands
 
 function obj.query (command)
   local handle = io.popen(obj.program .. " " .. command)
@@ -51,7 +52,7 @@ end
 
 --- @return Window[]
 function obj:windows ()
-  local windows = hs.json.decode(obj.query("query --windows"))
+  local windows = hs.json.decode(obj.query("-m query --windows"))
   ---@cast windows Window[]
   return windows
 end

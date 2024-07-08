@@ -17,7 +17,9 @@ G = {}
 U = {
     ---@type Moses
     moses = require("utils/moses"),
-    F = require("utils/F")
+    F = require("utils/F"),
+    ---@type utils.command
+    commands = require("utils/command")
 }
 
 --- New extensions, actually are overriddens for the extensions
@@ -240,14 +242,12 @@ local keyMap = {
         [sk("p", "pyCharm")] = launch_app_by_name("PyCharm"),
     },
     [sk('t', "time/schedule+")] = {
-        [sk('c', 'count down')] = {
-            [sk("p", "pause/resume")] = spoon.CountDown.pauseOrResume,
-            [sk("1", "10 minutes")] = countDownMins(10),
-            [sk("2", "20 minutes")] = countDownMins(20),
-            [sk("3", "30 minutes")] = countDownMins(30),
-            [sk("4", "45 minutes")] = countDownMins(45),
-            [sk("6", "60 minutes")] = countDownMins(60),
-        }
+        [sk("p", "pause/resume")] = spoon.CountDown.pauseOrResume,
+        [sk("1", "10 minutes")] = countDownMins(10),
+        [sk("2", "20 minutes")] = countDownMins(20),
+        [sk("3", "30 minutes")] = countDownMins(30),
+        [sk("4", "45 minutes")] = countDownMins(45),
+        [sk("6", "60 minutes")] = countDownMins(60),
     },
     [sk('w', 'windows+')] = {
         [sk("1", "move to & focus space 1")] = ybfn.moveW2S(1, true),

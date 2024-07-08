@@ -6,8 +6,11 @@
 #+begin_src lua :exports none
 local M = require("utils/command")
 -- M.init()
-local value = M.cwrap(function () M.execTaskInShellSync("/bin/ls -la", nil, false) end)()
-print(value)
+local result
+coroutine.create(function ()
+    result = M.execTaskInShellSync("yabai -m query --windows", nil, false)
+end).yield(3)
+print(result)
 #+end_src
 
 #+RESULTS: execTaskInShellSync
@@ -19,5 +22,3 @@ hs -c '<<execTaskInShellSync>>'
 
 #+RESULTS:
 : test execTaskInShellSync
-: 14:42:58 utils.comm: this function cannot be invoked on the main Lua thread
-: -- Loading extension: task
