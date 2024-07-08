@@ -318,11 +318,11 @@ local keyMap = {
         [sk("d", "toggle show desktop")] = toggleShowDesktop,
         [sk("l", "toggle space layout")] = U.command.cwrap(
             (function()
-                local layouts = { [1] = "bsp", [2] = "float", [3] = "stack" }
+                local layouts = { [1] = "bsp", [2] = "stack" }
                 local now = 1
                 return function()
                     local next = now + 1
-                    if next == 4 then next = 1 end
+                    if next == 3 then next = 1 end
                     S.yabai:switchLayout(layouts[next])
                     now = next
                 end
