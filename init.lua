@@ -199,7 +199,9 @@ end
 local ybfn = (function()
     local focusSpace = function(spaceIndex)
         --- Yabai has problem to switch focus if the space is empty
-        hs.eventtap.keyStroke({ "control", "option", "shift" }, string.format("%s", spaceIndex))
+        return function()
+            hs.eventtap.keyStroke({ "control" }, string.format("%s", spaceIndex))
+        end
         -- return cwrap(function()
         --     S.yabai:gotoSpace(spaceIndex)
         -- end)
