@@ -34,7 +34,7 @@ obj.placeholderGenerator = function()
         ", @: text only, # subtext only"
 end
 
-local logger = hs.logger.new("HSearch", "debug")
+local logger = hs.logger.new("HSearch")
 
 function obj:resourceImage (path)
     return hs.image.imageFromPath(obj.spoonPath .. path)

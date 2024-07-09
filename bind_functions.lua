@@ -1,5 +1,40 @@
 ---@class BindFunctions
 local obj = {}
+local function color (hex, alpha)
+  return { hex = hex, alpha = alpha }
+end
+obj.defaultFont = "Fira Code"
+obj.defaultHelperStyle = {
+  atScreenEdge = 0, -- Bottom edge (default value)
+  textStyle = {     -- An hs.styledtext object
+    font = {
+      name = obj.defaultFont,
+      size = 12
+    }
+  }
+}
+obj.defaultStyledTextStle = {
+  text = {
+    font = {
+      name = obj.defaultFont,
+      size = 12
+    },
+    color = color("#525868", 1.0),
+    paragraphStyle = {
+      lineBreak = "truncateTail"
+    }
+  },
+  subText = {
+    font = {
+      name = obj.defaultFont,
+      size = 10
+    },
+    color = color("#3c4353", 1.0),
+    paragraphStyle = {
+      lineBreak = "truncateTail"
+    }
+  }
+}
 
 ---@param names table the descriptions for the pass in modules
 ---@param ... table[] the modules
@@ -37,7 +72,7 @@ function obj.toggleDebugLogger (names, ...)
         local tb = {}
         for name, _ in pairs(loggers) do
           table.insert(tb, {
-            text = name
+            text = hs.styledtext.new(name, obj.defaultStyledTextStle)
           })
         end
         return tb
@@ -46,16 +81,7 @@ function obj.toggleDebugLogger (names, ...)
 end
 
 function obj.showDebug (msg)
-  local helperFormat = {
-    atScreenEdge = 0, -- Bottom edge (default value)
-    textStyle = {     -- An hs.styledtext object
-      font = {
-        name = "Fira Code",
-        size = 12
-      }
-    }
-  }
-  hs.alert.show(msg, helperFormat)
+  hs.alert.show(msg, obj.defaultHelperStyle)
 end
 
 return obj

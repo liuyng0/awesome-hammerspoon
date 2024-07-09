@@ -1,7 +1,7 @@
 ---@class utils.command
 local obj = {}
 obj.module = "utils.command"
-obj.logger = hs.logger.new(obj.module, 'debug')
+obj.logger = hs.logger.new(obj.module)
 obj._PATH_VARIABLE = nil
 
 ---@class CommandResult

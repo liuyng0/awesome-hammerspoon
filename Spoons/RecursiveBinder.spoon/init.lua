@@ -80,7 +80,7 @@ obj.helperModifierMapping = {
   shift = '⇧',
 }
 
-obj.logger = hs.logger.new("RecursiveBinder", "info")
+obj.logger = hs.logger.new("RecursiveBinder")
 
 -- used by next model to close previous helper
 obj.previousHelperMessage = nil

@@ -8,7 +8,7 @@ obj.author = "Justin Wyne <justinwyne@gmail.com>"
 obj.homepage = "https://github.com/wyne/awesome-hammerspoon"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
 
-local logger = hs.logger.new("AppBindings", "debug")
+local logger = hs.logger.new("AppBindings")
 obj.logger = logger
 
 function obj:pressFn (mods, key)
