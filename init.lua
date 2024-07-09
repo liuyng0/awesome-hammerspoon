@@ -73,27 +73,31 @@ function executeWithPathPopulated (command)
 end
 
 -- load the spoon list
-local hspoon_list = {
-    "CountDown",
-    "HSearch",
-    "WinWin",
-    "Screen",
-    "Space",
-    "Links",
-    "SplitView",
-    "AppBindings",
-    "ChooserStyle",
-    "Emacs",
-    "Yabai",
-    'RecursiveBinder'
-}
-for _, v in pairs(hspoon_list) do
-    hs.loadSpoon(v)
-end
-
 S = {
+    ---@type spoon.CountDown
+    countdown = hs.loadSpoon("CountDown"),
+    ---@type spoon.HSearch
+    hsearch = hs.loadSpoon("HSearch"),
+    ---@type spoon.WinWin
+    winwin = hs.loadSpoon("WinWin"),
+    ---@type spoon.Screen
+    screen = hs.loadSpoon("Screen"),
+    ---@type spoon.Space
+    space = hs.loadSpoon("Space"),
+    ---@type spoon.Links
+    links = hs.loadSpoon("Links"),
+    ---@type spoon.SplitView
+    splitview = hs.loadSpoon("SplitView"),
+    ---@type spoon.AppBindings
+    appbindings = hs.loadSpoon("AppBindings"),
+    ---@type spoon.ChooserStyle
+    chooserstyle = hs.loadSpoon("ChooserStyle"),
+    ---@type spoon.Emacs
+    emacs = hs.loadSpoon("Emacs"),
     ---@type spoon.Yabai
-    yabai = spoon.Yabai
+    yabai = hs.loadSpoon("Yabai"),
+    ---@type spoon.RecursiveBinder
+    recursivebinder = hs.loadSpoon("RecursiveBinder")
 }
 
 local APP_GOODNOTES = "Goodnotes"
@@ -108,15 +112,16 @@ spoon.AppBindings:bind(
 )
 
 local function launch_app_by_name (appName, crossSpace)
-    return function()
-        if not crossSpace then
+    if not crossSpace then
+        return function()
             hs.application.launchOrFocus(appName)
-        else
-            ---@type spoon.Yabai
-            if not spoon.Yabai:switchToApp(appName) then
+        end
+    else
+        return U.command.cwrap(function()
+            if not S.yabai:switchToApp(appName) then
                 hs.application.launchOrFocus(appName)
             end
-        end
+        end)
     end
 end
 
@@ -223,7 +228,8 @@ local ybfn = (function()
         moveW2S = moveW2S
     }
 end)()
-
+---@type BindFunctions
+local bfn = require("bind_functions")
 local keyMap = {
     --- Search with HSearch
     [sk('/', 'search+')] = {
@@ -364,7 +370,11 @@ local keyMap = {
                 spoon.Screen
                     :toggleCrossSpaces()
             end,
-        }
+        },
+        [sk('d', 'toggle debug')] = function()
+            bfn.toggleDebugLogger({ "G", "S", "N", "U" },
+                G, S, N, U)
+        end
     },
     --- Hammerspoon
     [sk('h', "hammerspoon")] = {
