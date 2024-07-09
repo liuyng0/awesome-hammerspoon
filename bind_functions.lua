@@ -45,4 +45,17 @@ function obj.toggleDebugLogger (names, ...)
       ):show()
 end
 
+function obj.showDebug (msg)
+  local helperFormat = {
+    atScreenEdge = 0, -- Bottom edge (default value)
+    textStyle = {     -- An hs.styledtext object
+      font = {
+        name = "Fira Code",
+        size = 12
+      }
+    }
+  }
+  hs.alert.show(msg, helperFormat)
+end
+
 return obj

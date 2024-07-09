@@ -117,11 +117,12 @@ local function launch_app_by_name (appName, crossSpace)
             hs.application.launchOrFocus(appName)
         end
     else
-        return U.command.cwrap(function()
-            if not S.yabai:switchToApp(appName) then
-                hs.application.launchOrFocus(appName)
-            end
-        end)
+        return
+            U.command.cwrap(function()
+                if not S.yabai:switchToApp(appName) then
+                    hs.application.launchOrFocus(appName)
+                end
+            end)
     end
 end
 
@@ -130,24 +131,6 @@ local function launch_app_by_id (app_id)
         hs.application.launchOrFocusByBundleID(app_id)
     end
 end
-
---- Launch applications functions
-local launch_emacs = function()
-    launch_app_by_name("Emacs", true)()
-    -- if spoon.Emacs:app() ~= nil then
-    --     spoon.Emacs:switch_to_main_window()
-    -- else
-    --     hs.application.launchOrFocusByBundleID(spoon.Emacs.emacs_bundle)
-    -- end
-end
-
-local launch_terminal = function()
-    launch_app_by_name("iTerm2", true)()
-    -- if spoon.Emacs:app() == nil or not spoon.Emacs:switch_to_vterm_window() then
-    --     hs.application.launchOrFocusByBundleID('com.googlecode.iterm2')
-    -- end
-end
-
 
 --- Countdown
 local function countDownMins (mins)
@@ -240,8 +223,8 @@ local keyMap = {
     },
     --- Launch Applications
     [sk('l', 'launch+')] = {
-        [sk("space", "Emacs")] = launch_emacs,
-        [sk("t", "terminal")] = launch_terminal,
+        [sk("space", "Emacs")] = launch_app_by_name("Emacs", true),
+        [sk("t", "terminal")] = launch_app_by_name("iTerm2", true),
         [sk("c", "chrome")] = launch_app_by_id("com.google.Chrome"),
         [sk("i", "intellij")] = launch_app_by_id("com.jetbrains.intellij"),
         [sk("m", "activity monitor")] = launch_app_by_id(
@@ -386,7 +369,7 @@ local keyMap = {
         [sk("c", "current")] = U.command.cwrap(
             function()
                 local info = S.yabai:focusedWSD()
-                hs.alert.show(hs.inspect(info))
+                bfn.showDebug(hs.inspect(info))
             end
         )
     }
