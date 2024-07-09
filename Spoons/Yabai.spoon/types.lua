@@ -61,3 +61,11 @@
 --- @field is-floating boolean
 --- @field is-sticky boolean
 --- @field is-grabbed boolean
+
+---@class Focus
+---@field windowId number
+---@field spaceIndex number
+---@field displayIndex number
+---@field frame Frame
+---@field app string
+---@field title string

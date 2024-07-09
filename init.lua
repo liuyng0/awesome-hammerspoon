@@ -133,19 +133,19 @@ end
 
 --- Launch applications functions
 local launch_emacs = function()
-    -- launch_app_by_name("Emacs", true)()
-    if spoon.Emacs:app() ~= nil then
-        spoon.Emacs:switch_to_main_window()
-    else
-        hs.application.launchOrFocusByBundleID(spoon.Emacs.emacs_bundle)
-    end
+    launch_app_by_name("Emacs", true)()
+    -- if spoon.Emacs:app() ~= nil then
+    --     spoon.Emacs:switch_to_main_window()
+    -- else
+    --     hs.application.launchOrFocusByBundleID(spoon.Emacs.emacs_bundle)
+    -- end
 end
 
 local launch_terminal = function()
-    -- launch_app_by_name("iTerm2", true)()
-    if spoon.Emacs:app() == nil or not spoon.Emacs:switch_to_vterm_window() then
-        hs.application.launchOrFocusByBundleID('com.googlecode.iterm2')
-    end
+    launch_app_by_name("iTerm2", true)()
+    -- if spoon.Emacs:app() == nil or not spoon.Emacs:switch_to_vterm_window() then
+    --     hs.application.launchOrFocusByBundleID('com.googlecode.iterm2')
+    -- end
 end
 
 
