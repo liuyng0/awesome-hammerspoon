@@ -46,7 +46,7 @@ function obj.toggleDebugLogger (names, ...)
     if args[i] then
       for name, module in pairs(args[i]) do
         if module and module.logger then
-          local pathName = names[i] .. "." .. name .. " log level: " .. module.logger.getLogLevel() .. "-> 2"
+          local pathName = names[i] .. "." .. name .. " log level: " .. module.logger.getLogLevel() .. "-> 4"
           loggers[pathName] = module.logger
         end
       end
@@ -54,9 +54,9 @@ function obj.toggleDebugLogger (names, ...)
   end
   local function onSelected (choice)
     if choice == nil then return end
-    local logger = loggers[choice]
+    local logger = loggers[choice.key]
     if logger then
-      if logger.__origin_log_level then
+      if logger.__origin_log_level ~= nil then
         local origin = logger.__origin_log_level
         logger.setLogLevel(origin)
         logger.__origin_log_level = nil
@@ -72,7 +72,8 @@ function obj.toggleDebugLogger (names, ...)
         local tb = {}
         for name, _ in pairs(loggers) do
           table.insert(tb, {
-            text = hs.styledtext.new(name, obj.defaultStyledTextStle)
+            text = hs.styledtext.new(name, obj.defaultStyledTextStle),
+            key = name
           })
         end
         return tb

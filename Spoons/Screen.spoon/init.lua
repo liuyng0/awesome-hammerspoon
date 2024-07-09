@@ -1,3 +1,4 @@
+---@class spoon.Screen
 local obj = {}
 obj.__index = obj
 

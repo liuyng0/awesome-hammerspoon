@@ -22,8 +22,8 @@ obj.logger = hs.logger.new("Yabai")
 obj.program = "/opt/homebrew/bin/yabai"
 
 local M = U.moses
-local F = U.F
 local command = U.command
+local wf = hs.window.filter
 
 local function execSync (args)
   return command.execTaskInShellSync(obj.program .. " " .. args, nil, false)
@@ -32,19 +32,19 @@ end
 --- @return Window[]
 function obj:windows (index)
   ---@type Window[]
-  return hs.json.decode(execSync([[-m query --windows]] .. index and " --window " .. index or ""))
+  return hs.json.decode(execSync([[-m query --windows]] .. (index and " --window " .. index or "")))
 end
 
 --- @return Space[]
 function obj:spaces (index)
   ---@type Space[]
-  return hs.json.decode(execSync([[-m query --spaces]] .. index and " --space " .. index or ""))
+  return hs.json.decode(execSync([[-m query --spaces]] .. (index and " --space " .. index or "")))
 end
 
 --- @return Display[]
 function obj:displays (index)
   ---@type Display[]
-  return hs.json.decode(execSync([[-m query --displays]] .. index and " --display " .. index or ""))
+  return hs.json.decode(execSync([[-m query --displays]] .. (index and " --display " .. index or "")))
 end
 
 --- @return Focus?
@@ -90,10 +90,6 @@ function obj:moveWindowToSpace (winId, spaceIndex, follow)
   end
 end
 
-function obj:moveWindowToDisplay (winId, display, follow)
-
-end
-
 function obj:swapWindows (winId, otherWinId)
   execSync("-m window " .. winId .. " --swap " .. otherWinId)
 end
@@ -104,6 +100,84 @@ end
 
 function obj:switchLayout (layout)
   execSync("-m space --layout " .. layout)
+end
+
+local function getWindows (winIds)
+  if not winIds or type(winIds) ~= "table" then
+    return {}
+  end
+  local windows = wf.new(function(w)
+    for _, id in pairs(winIds) do
+      if id == w:id() then
+        return true
+      end
+    end
+    return false
+  end):getWindows()
+  obj.logger.w("Select from other windows: " .. hs.inspect(windows))
+  return windows
+end
+
+local function selectWindow (winIds, callback)
+  if #winIds < 1 then
+    obj.logger.w("Not enough windows, skip")
+  end
+  if #winIds == 1 then
+    obj.logger.w("Single window, just call the callback!")
+    local window = hs.window.get(winIds[1])
+    if callback then
+      callback(window)
+    end
+    return
+  end
+  obj.logger.w("Select from other windows: " .. hs.inspect(winIds))
+  N.hints.windowHints(getWindows(winIds), callback)
+  obj.logger.w("hs.hints.windowHints done!")
+end
+
+function obj:focusOtherWindow ()
+  local focus = obj:focusedWSD()
+  local visibleSpaceIndexs = M.chain(obj:spaces())
+      :select(
+      ---@param s Space
+        function(s, _)
+          return s["is-visible"]
+        end)
+      :map(
+      ---@param s Space
+        function(s, _)
+          return s.index
+        end
+      )
+      :value()
+
+  if not visibleSpaceIndexs then
+    return
+  end
+
+  local function spaceSelector (indexes)
+    local result = string.format(".space == %d", indexes[1])
+    for i = 2, #indexes do
+      result = result .. "or" .. string.format(".space == %d", indexes[i])
+    end
+    return result
+  end
+
+  ---@type Window[]?
+  local windows = hs.json.decode(
+    execSync(
+      string.format("-m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
+        spaceSelector(visibleSpaceIndexs))))
+  local winIds = M.chain(windows)
+      :select(
+      ---@param w Window
+        function(w, _) return (not focus or w.id ~= focus.windowId) end)
+      :map(function(w, _) return w.id end)
+      :value()
+  selectWindow(winIds, function(win)
+    win:raise()
+    win:focus()
+  end)
 end
 
 -- function obj:moveFocusedWindowToNextSpace (follow)
@@ -250,6 +324,28 @@ function obj:switchToApp (appName)
     return true
   end
   return false
+end
+
+function obj:stackAppWindows ()
+  local focus = obj:focusedWSD()
+  if not focus then
+    return
+  end
+  ---@type Window[]?
+  local windows = hs.json.decode(
+    execSync(
+      string.format("-m query --windows | jq -r '.[] | select(.app == \"%s\" and .space == %d)' | jq -n '[inputs]'",
+        focus.app, focus.spaceIndex)))
+  M.chain(windows)
+      :select(
+      ---@param w Window
+        function(w, _) return w.id ~= focus.windowId end)
+      :each(
+      ---@param w Window
+        function(w, _)
+          obj:stackWindows(focus.windowId, w.id)
+        end)
+      :value()
 end
 
 --- @return spoon.Yabai

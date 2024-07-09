@@ -30,6 +30,7 @@ N = {
     hints = require("next/hints")
 }
 
+local cwrap = U.command.cwrap
 local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
 if not privatepath then
     -- Create `~/.hammerspoon/private` directory if not exists.
@@ -119,7 +120,7 @@ local function launch_app_by_name (appName, crossSpace)
         end
     else
         return
-            U.command.cwrap(function()
+            cwrap(function()
                 if not S.yabai:switchToApp(appName) then
                     hs.application.launchOrFocus(appName)
                 end
@@ -136,36 +137,36 @@ end
 --- Countdown
 local function countDownMins (mins)
     return function()
-        spoon.CountDown:startFor(mins)
+        S.countdown:startFor(mins)
     end
 end
 
 --- Windows Map
 local moveAndResize = function(method)
     return function()
-        spoon.WinWin:moveAndResize(method)
+        S.winwin:moveAndResize(method)
     end
 end
 local moveToScreen = function(direction)
     return function()
-        spoon.WinWin:moveToScreen(direction)
+        S.winwin:moveToScreen(direction)
     end
 end
 local moveToNextSpace = function(follow)
     return function()
-        spoon.Yabai:moveFocusedWindowToNextSpace(follow)
+        S.yabai:moveFocusedWindowToNextSpace(follow)
     end
 end
 local listWindowCurrent = function()
-    spoon.Screen:selectWindowFromFocusedApp()
+    S.screen:selectWindowFromFocusedApp()
 end
 local listWindowAll = function()
-    spoon.Screen:selectWindowFromAllWindows()
+    S.screen:selectWindowFromAllWindows()
 end
 
 --- Space Map
 local gotoNextSpace = function()
-    spoon.Yabai:gotoNextSpaces()
+    S.yabai:gotoNextSpaces()
 end
 local toggleMissionControl = function()
     hs.spaces.toggleMissionControl()
@@ -176,11 +177,11 @@ end
 
 --- Recursive Binder
 
-spoon.RecursiveBinder.escapeKeys = {
+S.recursivebinder.escapeKeys = {
     { {},            'escape' },
     { { 'control' }, 'q' }
 }
-spoon.RecursiveBinder.helperFormat = {
+S.recursivebinder.helperFormat = {
     atScreenEdge = 2, -- Bottom edge (default value)
     textStyle = {     -- An hs.styledtext object
         font = {
@@ -190,7 +191,7 @@ spoon.RecursiveBinder.helperFormat = {
     }
 }
 
-local sk = spoon.RecursiveBinder.singleKey
+local sk = S.recursivebinder.singleKey
 local ctrl = function(singleKey, description)
     return { { "control" }, singleKey, description }
 end
@@ -203,7 +204,7 @@ local ybfn = (function()
         end
     end
     local moveW2S = function(spaceIndex, follow)
-        return U.command.cwrap(function()
+        return cwrap(function()
             S.yabai:moveWindowToSpace(nil, spaceIndex, follow)
         end)
     end
@@ -217,7 +218,7 @@ local bfn = require("bind_functions")
 local keyMap = {
     --- Search with HSearch
     [sk('/', 'search+')] = {
-        [sk('h', 'h-search')] = function() spoon.HSearch:toggleShow() end,
+        [sk('h', 'h-search')] = function() S.hsearch:toggleShow() end,
     },
     [sk('c', 'control+')] = {
         [sk('l', 'lock screen')] = function() hs.caffeinate.lockScreen() end
@@ -239,7 +240,7 @@ local keyMap = {
         [sk("p", "pyCharm")] = launch_app_by_name("PyCharm"),
     },
     [sk('t', "time/schedule+")] = {
-        [sk("p", "pause/resume")] = spoon.CountDown.pauseOrResume,
+        [sk("p", "pause/resume")] = S.countdown.pauseOrResume,
         [sk("1", "10 minutes")] = countDownMins(10),
         [sk("2", "20 minutes")] = countDownMins(20),
         [sk("3", "30 minutes")] = countDownMins(30),
@@ -272,7 +273,7 @@ local keyMap = {
         [sk("n", "Next Screen")] = moveToScreen("next"),
         [sk("p", "Previous Screen")] = moveToScreen("previous"),
         -- undo
-        [sk("u", "Undo")] = function() spoon.WinWin:undo() end,
+        [sk("u", "Undo")] = function() S.winwin:undo() end,
         -- Triple Window
         [sk("a", "3-Left")] = moveAndResize("tripleLeft"),
         [sk("s", "3-Center")] = moveAndResize("centerHalfWidth"),
@@ -282,16 +283,16 @@ local keyMap = {
         [sk("m", "Maximize")] = moveAndResize("maximize"),
         -- Rotate
         [sk("r", "Rotate")] = function()
-            spoon.Screen
+            S.screen
                 :rotateVisibleWindows()
         end,
         -- Other window
-        [sk("o", "other window")] =
-            function() spoon.Screen:focusOtherWindow() end,
+        [sk("o", "other window")] = cwrap(
+            function() S.yabai:focusOtherWindow() end
+        ),
         [sk("O", "open")] =
-            function() spoon.Screen:selectFromCoveredWindow() end,
-        [{ { "control" }, "o", "swap-o" }] = function() spoon.Screen:swapWithOther() end,
-        [{ { "control", "shift" }, "o", "stack-o" }] = function() spoon.Screen:stackWithOther() end,
+            function() S.screen:selectFromCoveredWindow() end,
+        [{ { "control" }, "o", "swap-o" }] = function() S.screen:swapWithOther() end,
         -- to Space
         [sk("S", "space+")] = {
             [sk("n", "Move to Next Space(not follow)")] = moveToNextSpace(false),
@@ -302,11 +303,16 @@ local keyMap = {
             [sk("a", "Choose Window (All App)")] = listWindowAll,
         },
     },
+    -- Other window
+    [sk("o", "other window")] = cwrap(
+        function() S.yabai:focusOtherWindow() end
+    ),
+
     [sk('s', 'space+')] = {
         [sk("n", "goto next spaces")] = gotoNextSpace,
         [sk("m", "toggle mission control")] = toggleMissionControl,
         [sk("d", "toggle show desktop")] = toggleShowDesktop,
-        [sk("l", "toggle space layout")] = U.command.cwrap(
+        [sk("l", "toggle space layout")] = cwrap(
             (function()
                 local layouts = { [1] = "bsp", [2] = "stack" }
                 local now = 1
@@ -367,7 +373,11 @@ local keyMap = {
         end
     },
     [sk('y', "yabai+")] = {
-        [sk("c", "current")] = U.command.cwrap(
+        [sk("s", "stack")] = {
+            [sk('o', 'to other')] = function() S.screen:stackWithOther() end,
+            [sk('a', 'application')] = cwrap(function() S.yabai:stackAppWindows() end),
+        },
+        [sk("c", "current")] = cwrap(
             function()
                 local info = S.yabai:focusedWSD()
                 bfn.showDebug(hs.inspect(info))
