@@ -135,6 +135,10 @@ local function selectWindow (winIds, callback)
   obj.logger.w("hs.hints.windowHints done!")
 end
 
+function obj:gotoSpace (spaceIndex)
+  execSync("-m space --focus " .. spaceIndex)
+end
+
 function obj:focusOtherWindow ()
   local focus = obj:focusedWSD()
   local visibleSpaceIndexs = M.chain(obj:spaces())
