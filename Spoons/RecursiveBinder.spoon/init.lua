@@ -179,30 +179,34 @@ local function createKeyName (key)
   -- key is in the form {{modifers}, key, (optional) name}
   -- create proper key name for helper
   local modifierTable = M.sort(key[1])
+  local containShift = false
+  M.each(modifierTable, function(v, _) if v == 'shift' then containShift = true end end)
+  modifierTable = M.select(modifierTable, function(v, _)
+    return v ~= "shift"
+  end)
   local keyString = key[2]
   -- add a little mapping for space
   if keyString == 'space' then keyString = 'SPC' end
-  if #modifierTable == 1 and modifierTable[1] == 'shift' and string.len(keyString) == 1 then
+  if containShift then
     -- shift + key map to Uppercase key
     -- shift + d --> D
     -- if key is not on letter(space), don't do it.
-    return keyboardUpper(keyString)
-  else
-    -- append each modifiers together
-    local keyName = ''
-    if #modifierTable >= 1 then
-      for count = 1, #modifierTable do
-        local modifier = modifierTable[count]
-        if count == 1 then
-          keyName = obj.helperModifierMapping[modifier] .. ' + '
-        else
-          keyName = keyName .. obj.helperModifierMapping[modifier] .. ' + '
-        end
+    keyString = keyboardUpper(keyString)
+  end
+  -- append each modifiers together
+  local keyName = ''
+  if #modifierTable >= 1 then
+    for count = 1, #modifierTable do
+      local modifier = modifierTable[count]
+      if count == 1 then
+        keyName = obj.helperModifierMapping[modifier]
+      else
+        keyName = keyName .. obj.helperModifierMapping[modifier]
       end
     end
-    -- finally append key, e.g. 'f', after modifers
-    return keyName .. keyString
   end
+  -- finally append key, e.g. 'f', after modifers
+  return keyName .. keyString
 end
 
 -- Function to compare two letters

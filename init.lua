@@ -73,6 +73,7 @@ function executeWithPathPopulated (command)
 end
 
 -- load the spoon list
+---@diagnostic disable
 S = {
     ---@type spoon.CountDown
     countdown = hs.loadSpoon("CountDown"),
@@ -184,7 +185,7 @@ spoon.RecursiveBinder.helperFormat = {
     textStyle = {     -- An hs.styledtext object
         font = {
             name = "Fira Code",
-            size = 16
+            size = 14
         }
     }
 }
