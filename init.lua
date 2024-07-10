@@ -128,10 +128,8 @@ local function launch_app_by_name (appName, currentSpace)
     end
 end
 
-local function launch_app_by_id (app_id)
-    return function()
-        hs.application.launchOrFocusByBundleID(app_id)
-    end
+local function launch_app_by_id (bundleId, currentSpace)
+    return launch_app_by_name(hs.application.nameForBundleID(bundleId), currentSpace)
 end
 
 --- Countdown
