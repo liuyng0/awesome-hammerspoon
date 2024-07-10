@@ -113,7 +113,7 @@ spoon.AppBindings:bind(
     }
 )
 
-local function launch_app_by_name (appName, currentSpace)
+local function launch_app (appName, currentSpace)
     if currentSpace then
         return function()
             hs.application.launchOrFocus(appName)
@@ -126,10 +126,6 @@ local function launch_app_by_name (appName, currentSpace)
                 end
             end)
     end
-end
-
-local function launch_app_by_id (bundleId, currentSpace)
-    return launch_app_by_name(hs.application.nameForBundleID(bundleId), currentSpace)
 end
 
 --- Countdown
@@ -225,20 +221,22 @@ local keyMap = {
         [sk('l', 'lock screen')] = function() hs.caffeinate.lockScreen() end
     },
     --- Launch Applications
+    --- NOTE: don't try to launch by id
+    --- The name get from bundle id might not much the name from yabai
     [sk('l', 'launch+')] = {
-        [sk("space", "Emacs")] = launch_app_by_name("Emacs"),
-        [sk("t", "terminal")] = launch_app_by_name("iTerm2"),
-        [sk("c", "chrome")] = launch_app_by_id("com.google.Chrome"),
-        [sk("i", "intellij")] = launch_app_by_id("com.jetbrains.intellij"),
-        [sk("m", "activity monitor")] = launch_app_by_id(
-            "com.apple.ActivityMonitor"),
-        [sk("d", "dash")] = launch_app_by_name("Dash"),
-        [sk("s", "slack")] = launch_app_by_name("Slack"),
-        [sk("o", "omniGraffle")] = launch_app_by_name("OmniGraffle"),
-        [sk("q", "quip")] = launch_app_by_name("Quip"),
-        [sk("h", "hammerspoon")] = launch_app_by_name("Hammerspoon"),
-        [sk("a", "android studio")] = launch_app_by_name("Android Studio"),
-        [sk("p", "pyCharm")] = launch_app_by_name("PyCharm"),
+        [sk("space", "Emacs")] = launch_app("Emacs"),
+        [sk("t", "terminal")] = launch_app("iTerm2"),
+        [sk("c", "chrome")] = launch_app("Google Chrome"),
+        [sk("i", "intellij")] = launch_app("IntelliJ IDEA"),
+        [sk("m", "activity monitor")] = launch_app(
+            "Activity Monitor"),
+        [sk("d", "dash")] = launch_app("Dash"),
+        [sk("s", "slack")] = launch_app("Slack"),
+        [sk("o", "omniGraffle")] = launch_app("OmniGraffle"),
+        [sk("q", "quip")] = launch_app("Quip"),
+        [sk("h", "hammerspoon")] = launch_app("Hammerspoon"),
+        [sk("a", "android studio")] = launch_app("Android Studio"),
+        [sk("p", "pyCharm")] = launch_app("PyCharm"),
     },
     [sk('t', "time/schedule+")] = {
         [sk("p", "pause/resume")] = S.countdown.pauseOrResume,
