@@ -28,7 +28,12 @@ local wf = hs.window.filter
 local cwrap = U.command.cwrap
 --- The program is fixed to spoon.Yabai.program
 local function execSync (args)
-  return command.execTaskInShellSync(obj.program .. " " .. args, nil, false)
+  local cmd = obj.program .. " " .. args
+  output, ec, stderr = command.execTaskInShellSync(cmd, nil, false)
+  if not ec or ec ~= 0 then
+    error(string.format("Failed command command: %s, error: %s", cmd, stderr))
+  end
+  return output
 end
 
 local function execYabaiScriptSync (script)
@@ -158,6 +163,7 @@ end
 
 function obj:focusOtherWindow ()
   obj:callBackWithOtherWindow(function(_, selected)
+                  selected:unminimize()
     selected:raise()
     selected:focus()
   end)
@@ -217,7 +223,7 @@ end
 --- @return boolean true if switched to app, flase if no window with specified app name
 function obj:switchToApp (appName)
   local focus = obj:focusedWSD()
-  local windows = hs.json.decode(execSync(string.format("-m query --windows | jq -r '.[] | select(.app == \"%s\")'",
+  local windows = hs.json.decode(execSync(string.format("-m query --windows | jq -r '.[] | select(.app == \"%s\")' | jq -n '[inputs]'",
     appName)))
   if not windows then
     return false
@@ -226,7 +232,7 @@ function obj:switchToApp (appName)
   local targetWindow
   ---@type Window
   if type(windows) == 'table' and #windows == 0 then
-    windows = { windows }
+    return false
   end
   for _, win in pairs(windows) do
     if focus and win.space == focus.spaceIndex then

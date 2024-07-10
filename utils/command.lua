@@ -46,7 +46,7 @@ obj.execTaskInShellSync = (function()
     end
 
     local done = false
-    local out = nil
+    local out, ec, error
 
     local cmd = {}
     if withLogin == true then
@@ -63,10 +63,9 @@ obj.execTaskInShellSync = (function()
 
     local t = hs.task.new(os.getenv("SHELL"), function(exitCode, stdOut, stdErr)
       callback(exitCode, stdOut, stdErr)
-      obj.logger.d("cmd: ", cmdWithArgs)
-      obj.logger.d("out: ", stdOut)
-      obj.logger.d("err: ", stdErr)
       out = stdOut
+      ec = exitCode
+      err = stdErr
       done = true
     end, cmd)
 
@@ -76,7 +75,7 @@ obj.execTaskInShellSync = (function()
       coroutine.applicationYield()
     end
 
-    return out
+    return out, ec, err
   end
 
   return function(cmdWithArgs, callback, withEnv)
