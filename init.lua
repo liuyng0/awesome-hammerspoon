@@ -113,8 +113,8 @@ spoon.AppBindings:bind(
     }
 )
 
-local function launch_app_by_name (appName, crossSpace)
-    if not crossSpace then
+local function launch_app_by_name (appName, currentSpace)
+    if currentSpace then
         return function()
             hs.application.launchOrFocus(appName)
         end
@@ -228,8 +228,8 @@ local keyMap = {
     },
     --- Launch Applications
     [sk('l', 'launch+')] = {
-        [sk("space", "Emacs")] = launch_app_by_name("Emacs", true),
-        [sk("t", "terminal")] = launch_app_by_name("iTerm2", true),
+        [sk("space", "Emacs")] = launch_app_by_name("Emacs"),
+        [sk("t", "terminal")] = launch_app_by_name("iTerm2"),
         [sk("c", "chrome")] = launch_app_by_id("com.google.Chrome"),
         [sk("i", "intellij")] = launch_app_by_id("com.jetbrains.intellij"),
         [sk("m", "activity monitor")] = launch_app_by_id(
