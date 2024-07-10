@@ -20,13 +20,19 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.logger = hs.logger.new("Yabai")
 obj.program = "/opt/homebrew/bin/yabai"
+obj.scriptPath = os.getenv("HOME") .. "/.config/yabai/"
 
 local M = U.moses
 local command = U.command
 local wf = hs.window.filter
-
+local cwrap = U.command.cwrap
+--- The program is fixed to spoon.Yabai.program
 local function execSync (args)
   return command.execTaskInShellSync(obj.program .. " " .. args, nil, false)
+end
+
+local function execYabaiScriptSync (script)
+  return command.execTaskInShellSync(obj.scriptPath .. script, nil, false)
 end
 
 --- @return Window[]
@@ -114,7 +120,7 @@ local function getWindows (winIds)
     end
     return false
   end):getWindows()
-  obj.logger.w("Select from other windows: " .. hs.inspect(windows))
+  obj.logger.d("Select from other windows: " .. hs.inspect(windows))
   return windows
 end
 
@@ -130,17 +136,41 @@ local function selectWindow (winIds, callback)
     end
     return
   end
-  obj.logger.w("Select from other windows: " .. hs.inspect(winIds))
+  obj.logger.d("Select from other windows: " .. hs.inspect(winIds))
   N.hints.windowHints(getWindows(winIds), callback)
-  obj.logger.w("hs.hints.windowHints done!")
+  obj.logger.d("hs.hints.windowHints done!")
 end
 
 function obj:gotoSpace (spaceIndex)
   execSync("-m space --focus " .. spaceIndex)
 end
 
+function obj:swapWithOtherWindow ()
+  obj:callBackWithOtherWindow(function(focused, selected)
+    --- Just run the cwrap since in callback
+    cwrap(
+      function()
+        obj:swapWindows(focused:id(), selected:id())
+      end
+    )()
+  end)
+end
+
 function obj:focusOtherWindow ()
+  obj:callBackWithOtherWindow(function(_, selected)
+    selected:raise()
+    selected:focus()
+  end)
+end
+
+--- callback will be pass into two windows - (focus, selected)
+--- both are windows
+function obj:callBackWithOtherWindow (callback)
   local focus = obj:focusedWSD()
+  if not focus then
+    obj.logger.e("no focus, do nothing")
+    return
+  end
   local visibleSpaceIndexs = M.chain(obj:spaces())
       :select(
       ---@param s Space
@@ -178,124 +208,10 @@ function obj:focusOtherWindow ()
         function(w, _) return (not focus or w.id ~= focus.windowId) end)
       :map(function(w, _) return w.id end)
       :value()
-  selectWindow(winIds, function(win)
-    win:raise()
-    win:focus()
+  selectWindow(winIds, function(selected)
+    callback(hs.window.get(focus.windowId), selected)
   end)
 end
-
--- function obj:moveFocusedWindowToNextSpace (follow)
---   local nextSpace = obj:getNextSpaces(true)[1]
---   local follow_param
---   if follow and follow == true then
---     follow_param = " --focus"
---   else
---     follow_param = ""
---   end
---   obj.yabai("window", "--space " .. nextSpace .. follow_param)
--- end
-
--- function obj:getFocusedWindow ()
---   return M.chain(obj:windows()):
---   select( --- @param window Window
---     function(window, _)
---       return window["has-focus"]
---     end
---   ):value()[1]
--- end
-
--- function obj:focusedSpace ()
---   return M.chain(obj:spaces()):
---   select( --- @param space Space
---     function(space, _)
---       return space["has-focus"] == true
---     end
---   ):value()[1]
--- end
-
--- --- @param spaces Space[] | number[]
--- function obj:focusSpace (spaces)
---   M.chain(spaces):each(
---   --- @param space Space | number
---     function(space, _)
---       local spaceIndex = type(space) == "number" and space or space.index
---       obj.yabai("space", "--focus " .. spaceIndex)
---     end
---   ):value()
--- end
-
--- function obj:gotoNextSpaces ()
---   obj:focusSpace(obj:getNextSpaces())
--- end
-
--- function obj:getCurrentSpaces ()
---   return M.chain(obj:spaces()):
---   select(
---   --- @param space Space
---     function(space, _)
---       return space["is-visible"] == true
---     end
---   ): --- @param space Space
---   groupBy(
---     function(space, _)
---       return space.display
---     end
---   ):map(
---     function(displayIds, _)
---       return displayIds[1]
---     end
---   ):value()
--- end
-
--- --- @return number[] spaceIndex
--- function obj:getNextSpaces (onlyCurrentDisplay)
---   local spacesMap = obj:getCurrentSpaces()
---   obj.logger.w("spacesMap" .. hs.inspect(spacesMap))
---   local cycleNext = function(ids, current)
---     -- obj.logger.e("ids" ..
---     --    hs.inspect(ids) .. " current: " .. hs.inspect(current))
---     local sorted = M.sort(ids)
---     local index = M.detect(sorted, current)
---     local count = 1
---     for v, _ in M.cycle(sorted, 2) do
---       if count == index + 1 then
---         return v
---       end
---       count = count + 1
---     end
---   end
-
---   local displays = obj:displays()
---   if onlyCurrentDisplay then
---     displays =
---         M.chain(displays):
---         select(
---         --- @param display Display
---           function(display, _)
---             return display["has-focus"] == true
---           end
---         ):value()
---   end
---   return M.chain(displays):sort(
---   --- @param a Display
---   --- @param b Display
---     function(a, b)
---       if (a["has-focus"] == true) then
---         return true
---       end
---       if (b["has-focus"] == true) then
---         return false
---       end
---       return a.index < b.index
---     end
---   ):
---   map(
---   --- @param a Display
---     function(a, _)
---       return cycleNext(a.spaces, spacesMap[a.index].index)
---     end
---   ):value()
--- end
 
 --- Switch to app window prefer current mission control
 --- @return boolean true if switched to app, flase if no window with specified app name
@@ -350,6 +266,18 @@ function obj:stackAppWindows ()
           obj:stackWindows(focus.windowId, w.id)
         end)
       :value()
+end
+
+function obj:reArrangeSpaces ()
+  execYabaiScriptSync("keep_fixed_spaces")
+end
+
+function obj:bindFunction (commands)
+  return cwrap(function()
+    for _, cmd in pairs(commands) do
+      execSync(cmd)
+    end
+  end)
 end
 
 --- @return spoon.Yabai

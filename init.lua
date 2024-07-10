@@ -293,9 +293,10 @@ local keyMap = {
         [sk("o", "other window")] = cwrap(
             function() S.yabai:focusOtherWindow() end
         ),
+        -- Swap with other window
+        [{ { "control" }, "s", "swap-o" }] = cwrap(function() S.yabai:swapWithOtherWindow() end),
         [sk("O", "open")] =
             function() S.screen:selectFromCoveredWindow() end,
-        [{ { "control" }, "o", "swap-o" }] = function() S.screen:swapWithOther() end,
         -- to Space
         [sk("S", "space+")] = {
             [sk("n", "Move to Next Space(not follow)")] = moveToNextSpace(false),
@@ -310,6 +311,14 @@ local keyMap = {
     [sk("o", "other window")] = cwrap(
         function() S.yabai:focusOtherWindow() end
     ),
+    -- Toggle Float window
+    [sk("f", "toggle float window")] = S.yabai:bindFunction({
+        "-m window --toggle float",
+        "-m window --grid 24:24:1:1:22:22",
+    }),
+
+    -- Swap with other window
+    [{ { "control" }, "s", "swap-o" }] = cwrap(function() S.yabai:swapWithOtherWindow() end),
 
     [sk('s', 'space+')] = {
         [sk("n", "goto next spaces")] = gotoNextSpace,
@@ -380,6 +389,11 @@ local keyMap = {
             [sk('o', 'to other')] = function() S.screen:stackWithOther() end,
             [sk('a', 'application')] = cwrap(function() S.yabai:stackAppWindows() end),
         },
+        [sk("r", "reArrangeSpaces")] = cwrap(
+            function()
+                S.yabai:reArrangeSpaces()
+            end
+        ),
         [sk("c", "current")] = cwrap(
             function()
                 local info = S.yabai:focusedWSD()
