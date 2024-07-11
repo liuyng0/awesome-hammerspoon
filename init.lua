@@ -308,30 +308,31 @@ local keyMap = {
         function() S.yabai:focusOtherWindow() end
     ),
     -- Toggle Float window
-    [sk("f", "toggle float window")] = S.yabai:bindFunction({
-        "-m window --toggle float",
-        "-m window --grid 24:24:1:1:22:22",
-    }),
+    -- TODO: currently this causing issues - windows under the floating window cannot be raised and focused
+    -- [sk("f", "toggle float window")] = S.yabai:bindFunction({
+    --     "-m window --toggle float",
+    --     "-m window --grid 24:24:1:1:22:22",
+    -- }),
 
     -- Swap with other window
     [{ { "control" }, "s", "swap-o" }] = cwrap(function() S.yabai:swapWithOtherWindow() end),
+    [ctrl("l", "layout")] = cwrap(
+        (function()
+            local layouts = { [1] = "bsp", [2] = "stack" }
+            local now = 1
+            return function()
+                local next = now + 1
+                if next == 3 then next = 1 end
+                S.yabai:switchLayout(layouts[next])
+                now = next
+            end
+        end)()
+    ),
 
     [sk('s', 'space+')] = {
         [sk("n", "next space(s)")] = gotoNextSpace,
         [sk("m", "mission control i/o")] = toggleMissionControl,
         [sk("d", "show desktop i/o")] = toggleShowDesktop,
-        [sk("l", "layout i/o")] = cwrap(
-            (function()
-                local layouts = { [1] = "bsp", [2] = "stack" }
-                local now = 1
-                return function()
-                    local next = now + 1
-                    if next == 3 then next = 1 end
-                    S.yabai:switchLayout(layouts[next])
-                    now = next
-                end
-            end)()
-        )
     },
     --- Spaces
     [sk("1", "focus space (1-8)")] = ybfn.focusSpace(1),
@@ -344,7 +345,7 @@ local keyMap = {
     [sk("8")] = ybfn.focusSpace(8),
 
     --- Exposes
-    [sk('e', 'expose+')] = (function()
+    [sk('e', 'expose')] = (function()
         local exposeAll = N.expose.new({ "Emacs", "Chrome", "Intellij", "iTerm2" },
             { showThumbnails = true })
         exposeAll:setCallback(
@@ -353,9 +354,7 @@ local keyMap = {
                 logger.w("focus on window: " .. win:id())
                 win:focus()
             end)
-        return {
-            [sk("f", "focus")] = function() exposeAll:toggleShow() end
-        }
+        return function() exposeAll:toggleShow() end
     end)(),
     --- Variable Toggles
     [sk('v', "variable on/off")] = {
