@@ -26,6 +26,7 @@ local M = U.moses
 local command = U.command
 local wf = hs.window.filter
 local cwrap = U.command.cwrap
+
 --- The program is fixed to spoon.Yabai.program
 local function execSync (args)
   local cmd = obj.program .. " " .. args
@@ -161,12 +162,23 @@ function obj:swapWithOtherWindow ()
   end)
 end
 
+local function focusWindowWithHS(_, selected)
+      selected:unminimize()
+      selected:raise()
+      selected:focus()
+end
+
+function obj.focusWindowWithYabai(_, selected)
+  cwrap(function()
+      execSync("-m window " .. selected:id() .. " --focus")
+      end)()
+end
+
 function obj:focusOtherWindow ()
-  obj:callBackWithOtherWindow(function(_, selected)
-                  selected:unminimize()
-    selected:raise()
-    selected:focus()
-  end)
+  obj:callBackWithOtherWindow(
+    -- focusWindowWithHS
+    obj.focusWindowWithYabai
+  )
 end
 
 --- callback will be pass into two windows - (focus, selected)
