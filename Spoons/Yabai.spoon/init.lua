@@ -27,16 +27,21 @@ local command = U.command
 local wf = hs.window.filter
 local cwrap = U.command.cwrap
 
---- The program is fixed to spoon.Yabai.program
-local function execSync (args)
-  local cmd = obj.program .. " " .. args
-  output, ec, stderr = command.execTaskInShellSync(cmd, nil, false)
+local function execSync(cmd)
+  local output, ec, stderr = command.execTaskInShellSync(cmd, nil, false)
   if not ec or ec ~= 0 then
     error(string.format("Failed command command: %s, error: %s", cmd, stderr))
   end
   return output
 end
 
+--- The program is fixed to spoon.Yabai.program
+local function execYabaiSync (args)
+  local cmd = obj.program .. " " .. args
+  return execSync(cmd)
+end
+
+--- Run script under the scriptPath
 local function execYabaiScriptSync (script)
   return command.execTaskInShellSync(obj.scriptPath .. script, nil, false)
 end
@@ -44,25 +49,25 @@ end
 --- @return Window[]
 function obj:windows (index)
   ---@type Window[]
-  return hs.json.decode(execSync([[-m query --windows]] .. (index and " --window " .. index or "")))
+  return hs.json.decode(execYabaiSync([[-m query --windows]] .. (index and " --window " .. index or "")))
 end
 
 --- @return Space[]
 function obj:spaces (index)
   ---@type Space[]
-  return hs.json.decode(execSync([[-m query --spaces]] .. (index and " --space " .. index or "")))
+  return hs.json.decode(execYabaiSync([[-m query --spaces]] .. (index and " --space " .. index or "")))
 end
 
 --- @return Display[]
 function obj:displays (index)
   ---@type Display[]
-  return hs.json.decode(execSync([[-m query --displays]] .. (index and " --display " .. index or "")))
+  return hs.json.decode(execYabaiSync([[-m query --displays]] .. (index and " --display " .. index or "")))
 end
 
 --- @return Focus?
 function obj:focusedWSD ()
   ---@type string|nil
-  local windowJson = execSync [===[-m query --windows | jq '.[] | select(.["has-focus"] == true)']===]
+  local windowJson = execYabaiSync [===[-m query --windows | jq '.[] | select(.["has-focus"] == true)']===]
   if windowJson then
     ---@type Window
     local window = hs.json.decode(windowJson)
@@ -92,26 +97,26 @@ end
 function obj:moveWindowToSpace (winId, spaceIndex, follow)
   local focus = obj:focusedWSD()
   local _winId = winId or (focus and focus.windowId)
-  local spacesLen = toint(execSync("-m query --spaces | jq -rj '. | length'"))
+  local spacesLen = toint(execYabaiSync("-m query --spaces | jq -rj '. | length'"))
 
   if spacesLen >= spaceIndex then
     -- adding the window selector to move command solves some buggy behavior by yabai when dealing with windows without menubars
-    execSync("-m window " .. _winId .. " --space " .. spaceIndex .. (follow and " --focus " or ""))
+    execYabaiSync("-m window " .. _winId .. " --space " .. spaceIndex .. (follow and " --focus " or ""))
   else
     obj.logger.e("spaceIndex exceeded" .. spacesLen .. " " .. spaceIndex)
   end
 end
 
 function obj:swapWindows (winId, otherWinId)
-  execSync("-m window " .. winId .. " --swap " .. otherWinId)
+  execYabaiSync("-m window " .. winId .. " --swap " .. otherWinId)
 end
 
 function obj:stackWindows (winId, otherWinId)
-  execSync("-m window " .. winId .. " --stack " .. otherWinId)
+  execYabaiSync("-m window " .. winId .. " --stack " .. otherWinId)
 end
 
 function obj:switchLayout (layout)
-  execSync("-m space --layout " .. layout)
+  execYabaiSync("-m space --layout " .. layout)
 end
 
 local function getWindows (winIds)
@@ -148,7 +153,7 @@ local function selectWindow (winIds, callback)
 end
 
 function obj:gotoSpace (spaceIndex)
-  execSync("-m space --focus " .. spaceIndex)
+  execYabaiSync("-m space --focus " .. spaceIndex)
 end
 
 function obj:swapWithOtherWindow ()
@@ -170,7 +175,7 @@ end
 
 function obj.focusWindowWithYabai(_, selected)
   cwrap(function()
-      execSync("-m window " .. selected:id() .. " --focus")
+      execYabaiSync("-m window " .. selected:id() .. " --focus")
       end)()
 end
 
@@ -217,7 +222,7 @@ function obj:callBackWithOtherWindow (callback)
 
   ---@type Window[]?
   local windows = hs.json.decode(
-    execSync(
+    execYabaiSync(
       string.format("-m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
         spaceSelector(visibleSpaceIndexs))))
   local winIds = M.chain(windows)
@@ -235,7 +240,7 @@ end
 --- @return boolean true if switched to app, flase if no window with specified app name
 function obj:switchToApp (appName)
   local focus = obj:focusedWSD()
-  local windows = hs.json.decode(execSync(string.format("-m query --windows | jq -r '.[] | select(.app == \"%s\")' | jq -n '[inputs]'",
+  local windows = hs.json.decode(execYabaiSync(string.format("-m query --windows | jq -r '.[] | select(.app == \"%s\")' | jq -n '[inputs]'",
     appName)))
   if not windows then
     return false
@@ -256,9 +261,9 @@ function obj:switchToApp (appName)
   end
   if targetWindow then
     if not focus or targetWindow.space ~= focus.spaceIndex then
-      execSync("-m space --focus " .. targetWindow.space)
+      execYabaiSync("-m space --focus " .. targetWindow.space)
     end
-    execSync("-m window --focus " .. targetWindow.id)
+    execYabaiSync("-m window --focus " .. targetWindow.id)
     return true
   end
   return false
@@ -271,7 +276,7 @@ function obj:stackAppWindows ()
   end
   ---@type Window[]?
   local windows = hs.json.decode(
-    execSync(
+    execYabaiSync(
       string.format("-m query --windows | jq -r '.[] | select(.app == \"%s\" and .space == %d)' | jq -n '[inputs]'",
         focus.app, focus.spaceIndex)))
   M.chain(windows)
@@ -293,9 +298,21 @@ end
 function obj:bindFunction (commands)
   return cwrap(function()
     for _, cmd in pairs(commands) do
-      execSync(cmd)
+      execYabaiSync(cmd)
     end
   end)
+end
+
+function obj:restartYabaiService()
+  return cwrap(function()
+      execSync(string.format("%s --restart-service || %s --start-service", obj.program, obj.program))
+      end)
+end
+
+function obj:stopYabaiService()
+  return cwrap(function()
+      execSync(string.format("%s --stop-service", obj.program))
+      end)
 end
 
 --- @return spoon.Yabai

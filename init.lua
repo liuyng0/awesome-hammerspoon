@@ -317,10 +317,10 @@ local keyMap = {
     [{ { "control" }, "s", "swap-o" }] = cwrap(function() S.yabai:swapWithOtherWindow() end),
 
     [sk('s', 'space+')] = {
-        [sk("n", "goto next spaces")] = gotoNextSpace,
-        [sk("m", "toggle mission control")] = toggleMissionControl,
-        [sk("d", "toggle show desktop")] = toggleShowDesktop,
-        [sk("l", "toggle space layout")] = cwrap(
+        [sk("n", "next space(s)")] = gotoNextSpace,
+        [sk("m", "mission control i/o")] = toggleMissionControl,
+        [sk("d", "show desktop i/o")] = toggleShowDesktop,
+        [sk("l", "layout i/o")] = cwrap(
             (function()
                 local layouts = { [1] = "bsp", [2] = "stack" }
                 local now = 1
@@ -381,21 +381,24 @@ local keyMap = {
         end
     },
     [sk('y', "yabai+")] = {
+        [ctrl("r", "restart")] = S.yabai:restartYabaiService(),
+        [ctrl("x", "stop")] = S.yabai:stopYabaiService(),
         [sk("s", "stack")] = {
             [sk('o', 'to other')] = function() S.screen:stackWithOther() end,
             [sk('a', 'application')] = cwrap(function() S.yabai:stackAppWindows() end),
         },
-        [sk("r", "reArrangeSpaces")] = cwrap(
-            function()
-                S.yabai:reArrangeSpaces()
-            end
-        ),
-        [sk("c", "current")] = cwrap(
+        [sk("i", "info")] = cwrap(
             function()
                 local info = S.yabai:focusedWSD()
                 bfn.showDebug(hs.inspect(info))
             end
-        )
+        ),
+        [sk("r", "re-spaces")] = cwrap(
+            function()
+                S.yabai:reArrangeSpaces()
+            end
+        ),
+
     }
 }
 local hyper = { { "shift", "command", "control", "option" }, "1", }
