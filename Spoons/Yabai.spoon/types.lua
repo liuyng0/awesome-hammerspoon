@@ -69,3 +69,13 @@
 ---@field frame Frame
 ---@field app string
 ---@field title string
+
+---@class Scratchpad
+---@field appName string
+---@field yabaiAppName string
+---@field grid string
+---@field opacity number
+
+---@class ScratchpadsConfig
+---@field spaceIndex number
+---@field pads Scratchpad[]
