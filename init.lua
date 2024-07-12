@@ -414,7 +414,8 @@ local keyMap = {
                 spaceIndex = 5,
                 pads = {
                     pad('t', "iTerm2", "iTerm", nil, 0.9),
-                    pad('h', "Hammerspoon")
+                    pad('s', "Slack", "Slack")
+                    -- pad('h', "Hammerspoon")
                 }
             }
             S.yabai.configPads(configuration)

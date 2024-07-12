@@ -33,7 +33,7 @@ local wf = hs.window.filter
 local cwrap = U.command.cwrap
 
 local function execSync (cmd, ignoreError)
-  obj.logger.w("run yabai command: [" .. cmd .. "]")
+  obj.logger.d("run yabai command: [" .. cmd .. "]")
   local output, ec, stderr = command.execTaskInShellSync(cmd, nil, false)
   if ec and ec ~= 0 then
     if ignoreError then
@@ -418,13 +418,13 @@ end
 function obj:showScratchpad (yabaiAppName)
   local fn = function()
       ---@type Scratchpad
-      local scratchPad = M.chain(obj.padsConfig.pads)
+      local scratchPad = M.chain(obj.padsConfig.pads )
       :filter(function(pad, _)
             return pad.yabaiAppName == yabaiAppName
             end)
       :value()
       if #scratchPad == 0 then
-        obj.logger.w("No scratchPad found " .. yabaiAppName .. ", config: ".. hs.inspect(obj.padsConfig.pads))
+        obj.logger.d("No scratchPad found " .. yabaiAppName .. ", config: ".. hs.inspect(obj.padsConfig.pads))
         return
       end
       scratchPad = scratchPad[1]
@@ -432,15 +432,15 @@ function obj:showScratchpad (yabaiAppName)
       local currentWorkspace = obj:focusedSpace()[1]
       local thisAppWindows = getPadWindows({yabaiAppName})
       if #thisAppWindows == 0 then
-        obj.logger.w("No appWindow found for " .. yabaiAppName)
+        obj.logger.d("No appWindow found for " .. yabaiAppName)
         return
       end
       _hideAllScratchpads(yabaiAppName)
       local chosenWindow = thisAppWindows[1]
-      obj.logger.w("chosenWindow type:" .. type(chosenWindow) .. " " .. hs.inspect(chosenWindow))
+      obj.logger.d("chosenWindow type:" .. type(chosenWindow) .. " " .. hs.inspect(chosenWindow))
       local spaceSwitch = (chosenWindow.space ~= currentWorkspace) and "--space " .. currentWorkspace or ""
-      local toggleFloat = (chosenWindow["is-floating"] and "" .. "--toggle float" or "")
-      execSync(string.format("%s -m window %d --grid %s --opacity %.2f %s %s --focus", obj.program, chosenWindow.id, scratchPad.grid, scratchPad.opacity, spaceSwitch, toggleFloat))
+      local toggleFloat = ((not chosenWindow["is-floating"]) and "" .. "--toggle float" or "")
+      execSync(string.format("%s -m window %d %s %s --grid %s --opacity %.2f --focus", obj.program, chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity))
   end
   return cwrap(fn)
 end
