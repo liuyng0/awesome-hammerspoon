@@ -303,6 +303,7 @@ local keyMap = {
             [sk("a", "Choose Window (All App)")] = listWindowAll,
         },
     },
+    [sk("S", "switch spaces")] = cwrap(function() S.yabai:swapVisibleSpaces() end),
     -- Other window
     [sk("o", "other window")] = cwrap(
         function() S.yabai:focusOtherWindow() end

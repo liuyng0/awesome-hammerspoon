@@ -186,14 +186,7 @@ function obj:focusOtherWindow ()
   )
 end
 
---- callback will be pass into two windows - (focus, selected)
---- both are windows
-function obj:callBackWithOtherWindow (callback)
-  local focus = obj:focusedWSD()
-  if not focus then
-    obj.logger.e("no focus, do nothing")
-    return
-  end
+local function visibleSpaces()
   local visibleSpaceIndexs = M.chain(obj:spaces())
       :select(
       ---@param s Space
@@ -208,6 +201,36 @@ function obj:callBackWithOtherWindow (callback)
       )
       :value()
 
+    return visibleSpaceIndexs
+end
+
+function obj:focusedSpace()
+  local spaceIndexes = M.chain(obj:spaces())
+      :select(
+      ---@param s Space
+        function(s, _)
+          return s["has-focus"]
+        end)
+      :map(
+      ---@param s Space
+        function(s, _)
+          return s.index
+        end
+      )
+      :value()
+
+    return spaceIndexes
+end
+
+--- callback will be pass into two windows - (focus, selected)
+--- both are windows
+function obj:callBackWithOtherWindow (callback)
+  local focus = obj:focusedWSD()
+  if not focus then
+    obj.logger.e("no focus, do nothing")
+    return
+  end
+  local visibleSpaceIndexs = visibleSpaces()
   if not visibleSpaceIndexs then
     return
   end
@@ -313,6 +336,17 @@ function obj:stopYabaiService()
   return cwrap(function()
       execSync(string.format("%s --stop-service", obj.program))
       end)
+end
+
+function obj:swapVisibleSpaces()
+  local spaces = obj:focusedSpace()
+  local focus = obj:focusedWSD()
+  if not spaces or #spaces ~= 2 then
+    obj.logger.w("Only support swap two spaces")
+    return
+  end
+  local other = focus and spaces[1] == focus.spaceIndex and spaces[2] or spaces[1]
+  execYabaiSync(string.format("-m space --switch %d", other))
 end
 
 --- @return spoon.Yabai
