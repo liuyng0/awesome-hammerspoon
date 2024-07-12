@@ -439,7 +439,8 @@ function obj:showScratchpad (yabaiAppName)
       local chosenWindow = thisAppWindows[1]
       obj.logger.w("chosenWindow type:" .. type(chosenWindow) .. " " .. hs.inspect(chosenWindow))
       local spaceSwitch = (chosenWindow.space ~= currentWorkspace) and "--space " .. currentWorkspace or ""
-      execSync(string.format("%s -m window %d --grid %s --opacity %.2f %s --focus", obj.program, chosenWindow.id, scratchPad.grid, scratchPad.opacity, spaceSwitch))
+      local toggleFloat = (chosenWindow["is-floating"] and "" .. "--toggle float" or "")
+      execSync(string.format("%s -m window %d --grid %s --opacity %.2f %s %s --focus", obj.program, chosenWindow.id, scratchPad.grid, scratchPad.opacity, spaceSwitch, toggleFloat))
   end
   return cwrap(fn)
 end
