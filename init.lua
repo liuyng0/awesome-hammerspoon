@@ -423,7 +423,7 @@ local keyMap = {
         }
         ---@param p Scratchpad
         for _, p in pairs(configuration.pads) do
-            result[p.key] = S.yabai.showScratchpad(p.yabaiAppName)
+            result[p.key] = S.yabai:showScratchpad(p.yabaiAppName)
         end
         return result
     end)(),

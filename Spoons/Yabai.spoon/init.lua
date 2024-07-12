@@ -416,7 +416,7 @@ function obj:hideAllScratchpads ()
 end
 
 function obj:showScratchpad (yabaiAppName)
-  return cwrap(function()
+  local fn = function()
       ---@type Scratchpad
       local scratchPad = M.chain(obj.padsConfig.pads)
       :filter(function(pad, _)
@@ -424,21 +424,24 @@ function obj:showScratchpad (yabaiAppName)
             end)
       :value()
       if #scratchPad == 0 then
+        obj.logger.w("No scratchPad found " .. yabaiAppName .. ", config: ".. hs.inspect(obj.padsConfig.pads))
         return
       end
+      scratchPad = scratchPad[1]
       ---@type Window[]
+      local currentWorkspace = obj:focusedSpace()[1]
       local thisAppWindows = getPadWindows({yabaiAppName})
-      local currentWorkspace = obj:focusedSpace()
       if #thisAppWindows == 0 then
+        obj.logger.w("No appWindow found for " .. yabaiAppName)
         return
       end
-      local chosenWindow = thisAppWindows[1]
       _hideAllScratchpads(yabaiAppName)
-      if chosenWindow.space ~= currentWorkspace then
-        execSync(string.format("%s -m window %d --space %d", obj.program, chosenWindow.id, currentWorkspace))
-      end
-      execSync(string.format("%s -m window %d --grid %s", obj.program, chosenWindow.id, scratchPad.grid, scratchPad.opacity))
-  end)
+      local chosenWindow = thisAppWindows[1]
+      obj.logger.w("chosenWindow type:" .. type(chosenWindow) .. " " .. hs.inspect(chosenWindow))
+      local spaceSwitch = (chosenWindow.space ~= currentWorkspace) and "--space " .. currentWorkspace or ""
+      execSync(string.format("%s -m window %d --grid %s --opacity %.2f %s --focus", obj.program, chosenWindow.id, scratchPad.grid, scratchPad.opacity, spaceSwitch))
+  end
+  return cwrap(fn)
 end
 
 --- @return spoon.Yabai
