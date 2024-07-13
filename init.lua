@@ -187,7 +187,8 @@ local keyMap = {
     --- Search with HSearch
     [sk('/', 'hsearch')] = function() S.hsearch:toggleShow() end,
     [sk('c', 'control+')] = {
-        [sk('l', 'lock screen')] = function() hs.caffeinate.lockScreen() end
+        [sk('l', 'lock screen')] = function() hs.caffeinate.lockScreen() end,
+      [sk("c", "toggle console")] = function() hs.toggleConsole() end,
     },
     --- Launch Applications
     --- NOTE: don't try to launch by id
@@ -347,12 +348,7 @@ local keyMap = {
                 G, S, N, U)
         end
     },
-    --- Hammerspoon
-    [sk('h', "hammerspoon")] = {
-        [sk("c", "toggle console")] = function()
-            hs.toggleConsole()
-        end
-    },
+    --- Yabai
     [sk('y', "yabai+")] = {
         [ctrl("r", "restart")] = S.yabai:restartYabaiService(),
         [ctrl("x", "stop")] = S.yabai:stopYabaiService(),
@@ -390,8 +386,7 @@ local keyMap = {
                     pad('t', "iTerm2", "iTerm", nil, 0.9),
                     pad('s', "Slack", "Slack"),
                     pad('o', "OmniGraffle", "OmniGraffle"),
-                    pad('m', "Music", "Music")
-                    -- pad('h', "Hammerspoon")
+                    pad('m', "Music", "Music"),
                 }
             }
             S.yabai.configPads(configuration)
