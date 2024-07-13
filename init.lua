@@ -114,18 +114,16 @@ spoon.AppBindings:bind(
 )
 
 local function launch_app (appName, currentSpace)
-    if currentSpace then
-        return function()
-            hs.application.launchOrFocus(appName)
-        end
-    else
-        return
-            cwrap(function()
+    return cwrap(function()
+            S.yabai.hideScratchpadsNowrap()
+            if currentSpace then
+                hs.application.launchOrFocus(appName)
+            else
                 if not S.yabai:switchToApp(appName) then
                     hs.application.launchOrFocus(appName)
                 end
-            end)
-    end
+            end
+    end)
 end
 
 --- Countdown
@@ -224,19 +222,23 @@ local keyMap = {
     --- NOTE: don't try to launch by id
     --- The name get from bundle id might not much the name from yabai
     [sk('l', 'launch+')] = {
+        --- begin
+        --- NOTE: define in the scratchpad
+        -- [sk("o", "omniGraffle")] = launch_app("OmniGraffle"),
+        -- [sk("t", "terminal")] = launch_app("iTerm2"),
+        -- [sk("s", "slack")] = launch_app("Slack"),
+        --- end
         [sk("space", "Emacs")] = launch_app("Emacs"),
-        [sk("t", "terminal")] = launch_app("iTerm2"),
         [sk("c", "chrome")] = launch_app("Google Chrome"),
         [sk("i", "intellij")] = launch_app("IntelliJ IDEA"),
         [sk("m", "activity monitor")] = launch_app(
             "Activity Monitor"),
         [sk("d", "dash")] = launch_app("Dash"),
-        [sk("s", "slack")] = launch_app("Slack"),
-        [sk("o", "omniGraffle")] = launch_app("OmniGraffle"),
-        [sk("q", "quip")] = launch_app("Quip"),
         [sk("h", "hammerspoon")] = launch_app("Hammerspoon"),
         [sk("a", "android studio")] = launch_app("Android Studio"),
         [sk("p", "pyCharm")] = launch_app("PyCharm"),
+        --- Unused
+        --- [sk("q", "quip")] = launch_app("Quip"),
     },
     [sk('t', "time/schedule+")] = {
         [sk("p", "pause/resume")] = S.countdown.pauseOrResume,
@@ -400,6 +402,7 @@ local keyMap = {
         ),
     },
     --- Scratch pad
+    [ctrl('h', 'hide pads')] = S.yabai:hideAllScratchpads(),
     [sk('p', "scratchpad+")] = (function()
             ---@type ScratchpadConfig
             local defaultGrid = "24:24:1:1:22:22"
@@ -414,13 +417,14 @@ local keyMap = {
                 spaceIndex = 5,
                 pads = {
                     pad('t', "iTerm2", "iTerm", nil, 0.9),
-                    pad('s', "Slack", "Slack")
+                    pad('s', "Slack", "Slack"),
+                    pad('o', "OmniGraffle", "OmniGraffle"),
                     -- pad('h', "Hammerspoon")
                 }
             }
             S.yabai.configPads(configuration)
         local result = {
-            [ctrl('h', "hideAll")] = S.yabai:hideAllScratchpads(),
+            [sk('h', "hideAll")] = S.yabai:hideAllScratchpads(),
         }
         ---@param p Scratchpad
         for _, p in pairs(configuration.pads) do

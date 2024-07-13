@@ -388,7 +388,7 @@ local function getPadWindows (yabaiAppNames)
 end
 
 --- @excludeYabaiAppName excluded app name
-local function _hideAllScratchpads (excludeYabaiAppName)
+function obj.hideScratchpadsNowrap (excludeYabaiAppName)
   local otherPads = M.chain(obj.padsConfig.pads)
       :map(function(pad, _)
         return pad.yabaiAppName
@@ -412,7 +412,7 @@ local function _hideAllScratchpads (excludeYabaiAppName)
 end
 
 function obj:hideAllScratchpads ()
-  return cwrap(function() execSync(_hideAllScratchpads()) end)
+  return cwrap(function() obj.hideScratchpadsNowrap() end)
 end
 
 function obj:showScratchpad (yabaiAppName)
@@ -435,12 +435,18 @@ function obj:showScratchpad (yabaiAppName)
         obj.logger.d("No appWindow found for " .. yabaiAppName)
         return
       end
-      _hideAllScratchpads(yabaiAppName)
+      obj.hideScratchpadsNowrap(yabaiAppName)
       local chosenWindow = thisAppWindows[1]
       obj.logger.d("chosenWindow type:" .. type(chosenWindow) .. " " .. hs.inspect(chosenWindow))
       local spaceSwitch = (chosenWindow.space ~= currentWorkspace) and "--space " .. currentWorkspace or ""
       local toggleFloat = ((not chosenWindow["is-floating"]) and "" .. "--toggle float" or "")
-      execSync(string.format("%s -m window %d %s %s --grid %s --opacity %.2f --focus", obj.program, chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity))
+      local focuseCommand = string.format(
+        "%s -m window %d %s %s --grid %s --opacity %.2f --focus",
+        obj.program, chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity)
+      local gridCommand = string.format(
+        "%s -m window %d --grid %s",
+        obj.program, chosenWindow.id, scratchPad.grid)
+      execSync(focuseCommand .. " && " .. gridCommand)
   end
   return cwrap(fn)
 end
