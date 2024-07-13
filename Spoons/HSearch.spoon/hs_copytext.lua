@@ -12,6 +12,9 @@ local function script_path()
     local str = debug.getinfo(2, "S").source:sub(2)
     return str:match("(.*/)")
 end
+local function getScript (filename)
+    return os.getenv("HOME") .. "/.hammerspoon/scripts/" .. filename
+end
 
 obj.spoonPath = script_path()
 obj.disabled = true

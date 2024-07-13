@@ -45,14 +45,6 @@ if privateconf then
     require("private/config")
 end
 
-function getScript (filename)
-    return os.getenv("HOME") .. "/.hammerspoon/scripts/" .. filename
-end
-
-function getVifFile (filename)
-    return os.getenv("HOME") .. "/vif/" .. filename
-end
-
 __my_path = nil
 function populatePathMaybe ()
     if not __my_path then
@@ -88,8 +80,6 @@ S = {
     space = hs.loadSpoon("Space"),
     ---@type spoon.Links
     links = hs.loadSpoon("Links"),
-    ---@type spoon.SplitView
-    splitview = hs.loadSpoon("SplitView"),
     ---@type spoon.AppBindings
     appbindings = hs.loadSpoon("AppBindings"),
     ---@type spoon.ChooserStyle

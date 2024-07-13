@@ -6,6 +6,10 @@ obj.name = "Links"
 obj.version = "1.0"
 obj.author = "Chophi <chophi@foxmail.com>"
 
+local function getVifFile (filename)
+    return os.getenv("HOME") .. "/vif/" .. filename
+end
+
 local json = hs.json
 
 local linksFile = getVifFile("links.json")

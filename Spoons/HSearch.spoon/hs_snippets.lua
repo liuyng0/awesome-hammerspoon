@@ -13,6 +13,10 @@ local function script_path()
     return str:match("(.*/)")
 end
 
+local function getScript (filename)
+    return os.getenv("HOME") .. "/.hammerspoon/scripts/" .. filename
+end
+
 obj.spoonPath = script_path()
 obj.disabled = true
 -- Define the source's overview. A unique `keyword` key should exist, so this source can be found.
