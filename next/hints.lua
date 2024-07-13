@@ -7,7 +7,7 @@ local hints = require "hs.libhints"
 local window = require "hs.window"
 local hotkey = require "hs.hotkey"
 local modal_hotkey = hotkey.modal
-
+hints.logger = hs.logger.new("Next.Hints")
 --- hs.hints.hintChars
 --- Variable
 --- This controls the set of characters that will be used for window hints. They must be characters found in hs.keycodes.map
@@ -63,7 +63,7 @@ local bumpThresh = 40 ^ 2
 local bumpMove = 80
 
 local invalidWindowRoles = {
-  AXScrollArea = true,  --This excludes the main finder window.
+  AXScrollArea = true, --This excludes the main finder window.
   AXUnknown = true
 }
 
@@ -198,11 +198,28 @@ function hints.setupModal ()
   k:bind({}, 'escape', function()
     hints.closeHints(); k:exit()
   end)
+  k:bind({ "control" }, 'q', function()
+    hints.closeHints(); k:exit()
+  end)
 
   for _, c in ipairs(hintChars) do
     k:bind({}, c, function() hints.processChar(c) end)
   end
   return k
+end
+
+local function shortenHintDict (hintDict)
+  print("hints before shorten: " .. hs.inspect(hintDict))
+  local result = {}
+  for k, v in pairs(hintDict) do
+    if type(v) == "table" and v['count'] == 1 then
+      result[k] = v[hintChars[1]]
+    else
+      result[k] = v
+    end
+  end
+  print("hints after shorten: " .. hs.inspect(result))
+  return result
 end
 
 --- hs.hints.windowHints([windows, callback, allowNonStandard])
@@ -242,8 +259,16 @@ function hints.windowHints (windows, callback, allowNonStandard)
     if app and app:bundleID() and isValidWindow(win, allowNonStandard) then
       if hints.style == "vimperator" then
         local appchar = string.upper(string.sub(app:title(), 1, 1))
-        if hintDict[appchar] == nil then
-          appchar = string.upper(string.sub(string.gsub(app:path(), "(%w+)/", ""), 2, 2))
+        local function contains (arr, key)
+          for _, v in pairs(arr) do
+            if v == key then
+              return true
+            end
+          end
+          return false
+        end
+        if not contains(hintChars, appchar) then
+          appchar = string.upper(string.sub(string.gsub(app:path(), "([%w-_]+)/", ""), 2, 2))
         end
         if hintDict[appchar] == nil then
           hintDict[appchar] = {}
@@ -253,6 +278,9 @@ function hints.windowHints (windows, callback, allowNonStandard)
         hints.addWindow(hintDict, win)
       end
     end
+  end
+  if hints.style == "vimperator" then
+    hintDict = shortenHintDict(hintDict)
   end
   takenPositions = {}
   if next(hintDict) ~= nil then

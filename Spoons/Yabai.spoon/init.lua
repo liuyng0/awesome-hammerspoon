@@ -233,7 +233,6 @@ function obj:selectOtherWindow (callback)
   local cmd = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
                             obj.yabaiProgram,
                             spaceSelector(visibleSpaceIndexs))
-  obj.logger.w("command: " .. cmd)
   ---@type Window[]?
   local windows = hs.json.decode(execSync(cmd))
   local scratchPads = getscratchPadYabaiAppNames()
@@ -247,10 +246,6 @@ function obj:selectOtherWindow (callback)
           end
           -- filter out scratch pads
           if M.contains(scratchPads, w.app) then
-            return false
-          end
-          -- filter out non standard windows
-          if w.role ~= "AXWindow" then
             return false
           end
           return true

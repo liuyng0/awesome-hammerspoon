@@ -6,12 +6,15 @@
 
 ---@class spoon.WindowSelector
 local obj = {}
+obj.__index = obj
 
 -- imports
 local M = U.moses
 local wf = hs.window.filter
-
-obj.__index = obj
+--- @type next.hints
+local hints = require("next/hints")
+hints.style = "vimperator"
+hints.showTitleThresh = 8
 
 -- Metadata
 obj.name = "WindowSelector"
@@ -72,7 +75,7 @@ function obj.selectWindow (winIds, callback, allowNonStandard)
   end
 
   obj.logger.w("Select from other windows: " .. hs.inspect(windows))
-  N.hints.windowHints(windows, callback, allowNonStandard)
+  hints.windowHints(windows, callback, allowNonStandard)
   obj.logger.d("hs.hints.windowHints done!")
 end
 
