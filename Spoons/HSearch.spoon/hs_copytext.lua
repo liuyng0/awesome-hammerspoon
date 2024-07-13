@@ -33,7 +33,7 @@ obj.init_func = function()
 
     local command = orgSourceFeedScript .. " " .. "-t links -f " .. privconf.hssearch_copy_texts_filepaths
     -- logger:d("Start to call: " .. command)
-    local output, status, exitType, rc = executeWithPathPopulated(command)
+    local output, status = U.command.execTaskInShellSync(command, nil, false)
 
     -- logger:d(output, status, exitType, rct)
     local chooser_data = {}

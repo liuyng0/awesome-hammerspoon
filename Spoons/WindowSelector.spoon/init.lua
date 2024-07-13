@@ -74,7 +74,7 @@ function obj.selectWindow (winIds, callback, allowNonStandard)
     return
   end
 
-  obj.logger.w("Select from other windows: " .. hs.inspect(windows))
+  obj.logger.d("Select from other windows: " .. hs.inspect(windows))
   hints.windowHints(windows, callback, allowNonStandard)
   obj.logger.d("hs.hints.windowHints done!")
 end

@@ -139,7 +139,7 @@ function hints.displayHintsForDict (dict, prefixstring, showTitles, allowNonStan
         end
         c = d
         if c.y < 0 then
-          print("hs.hints: Skipping offscreen window: " .. win:title())
+          hints.logger.d("hs.hints: Skipping offscreen window: " .. win:title())
         else
           local suffixString = ""
           if showTitles then
@@ -209,7 +209,7 @@ function hints.setupModal ()
 end
 
 local function shortenHintDict (hintDict)
-  print("hints before shorten: " .. hs.inspect(hintDict))
+  hints.logger.d("hints before shorten: " .. hs.inspect(hintDict))
   local result = {}
   for k, v in pairs(hintDict) do
     if type(v) == "table" and v['count'] == 1 then
@@ -218,7 +218,7 @@ local function shortenHintDict (hintDict)
       result[k] = v
     end
   end
-  print("hints after shorten: " .. hs.inspect(result))
+  hints.logger.d("hints after shorten: " .. hs.inspect(result))
   return result
 end
 

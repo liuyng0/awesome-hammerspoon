@@ -32,12 +32,10 @@ obj.init_func = function()
     local orgSourceFeedScript = getScript("org-source-feed.py")
 
     local command = orgSourceFeedScript .. " -t source-code" .. " -f " .. privconf.hssearch_code_snippets_filepaths
-    -- logger:d("Start to call: " .. command)
-    local output, status, exitType, rc = executeWithPathPopulated(command)
-
-    -- logger:d(output, status, exitType, rct)
+    local output, status = U.command.execTaskInShellSync(command, nil, false)
     local chooser_data = {}
     if status and output ~= "" then
+        ---@as table
         local snippets = hs.json.decode(output)
         local index = 1
         for _, s in pairs(snippets) do

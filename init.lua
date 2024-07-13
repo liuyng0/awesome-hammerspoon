@@ -1,6 +1,7 @@
 local logger = hs.logger.new("init.lua", "debug")
 --- Always can manual reload
 local hsreload_keys = { { "ctrl", "shift", "option" }, "R" }
+logger.i("Bind reload key to " .. hs.inspect(hsreload_keys))
 hs.hotkey.bind(
     hsreload_keys[1],
     hsreload_keys[2],
@@ -10,9 +11,10 @@ hs.hotkey.bind(
     end
 )
 
+--- Setup libraries
+logger.i("Setup libraries")
 --- Global variables
 G = {}
-
 --- Utils
 U = {
     ---@type Moses
@@ -21,7 +23,6 @@ U = {
     ---@type utils.command
     command = require("utils/command")
 }
-
 --- New extensions, actually are overriddens for the extensions
 N = {
     ---@type next.expose
@@ -30,7 +31,7 @@ N = {
     hints = require("next/hints")
 }
 
-local cwrap = U.command.cwrap
+logger.i("Setup private path")
 local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
 if not privatepath then
     -- Create `~/.hammerspoon/private` directory if not exists.
@@ -45,26 +46,7 @@ if privateconf then
     require("private/config")
 end
 
-__my_path = nil
-function populatePathMaybe ()
-    if not __my_path then
-        local output, status, exitType, rc = hs.execute("echo \\$PATH", true)
-        if status and output ~= "" then
-            output = hs.fnutils.split(output, "\n")
-            __my_path = output[#output - 1]
-        end
-    end
-end
-
-populatePathMaybe()
-
-function executeWithPathPopulated (command)
-    populatePathMaybe()
-    if __my_path then
-        return hs.execute("export PATH=" .. __my_path .. " && " .. command)
-    end
-end
-
+logger.i("Load Spoons")
 -- load the spoon list
 ---@diagnostic disable
 S = {
@@ -103,6 +85,7 @@ spoon.AppBindings:bind(
     }
 )
 
+local cwrap = U.command.cwrap
 local function launch_app (appName, currentSpace)
     return cwrap(function()
             S.yabai.hideScratchpadsNowrap()
@@ -488,9 +471,4 @@ G.autoReloadWatcher:start()
 
 require("hs.ipc")
 
--- NOTE: Keep this the last.
-if __my_path then
-    hs.alert.show("Hammerspoon config loaded, path loaded.")
-else
-    hs.alert.show("Hammerspoon config loaded, load PATH failure")
-end
+hs.alert.show("Hammerspoon config loaded, path loaded.")
