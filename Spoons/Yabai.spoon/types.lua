@@ -71,8 +71,9 @@
 ---@field title string
 
 ---@class Scratchpad
+---@field key table
 ---@field appName string
----@field yabaiAppName string
+---@field yabaiAppName string?
 ---@field grid string
 ---@field opacity number
 

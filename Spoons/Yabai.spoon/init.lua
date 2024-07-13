@@ -19,7 +19,7 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 --- Variable
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.logger = hs.logger.new("Yabai")
-obj.program = "/opt/homebrew/bin/yabai"
+obj.yabaiProgram = "/opt/homebrew/bin/yabai"
 obj.scriptPath = os.getenv("HOME") .. "/.config/yabai/"
 ---@type ScratchpadsConfig
 obj.padsConfig = {
@@ -29,8 +29,8 @@ obj.padsConfig = {
 
 local M = U.moses
 local command = U.command
-local wf = hs.window.filter
 local cwrap = U.command.cwrap
+local ws = hs.loadSpoon("WindowSelector") --[[@as spoon.WindowSelector]]
 
 local function execSync (cmd, ignoreError)
   obj.logger.d("run yabai command: [" .. cmd .. "]")
@@ -48,7 +48,7 @@ end
 
 --- The program is fixed to spoon.Yabai.program
 local function execYabaiSync (args)
-  local cmd = obj.program .. " " .. args
+  local cmd = obj.yabaiProgram .. " " .. args
   return execSync(cmd)
 end
 
@@ -130,45 +130,12 @@ function obj:switchLayout (layout)
   execYabaiSync("-m space --layout " .. layout)
 end
 
-local function getWindows (winIds)
-  if not winIds or type(winIds) ~= "table" then
-    return {}
-  end
-  local windows = wf.new(function(w)
-    for _, id in pairs(winIds) do
-      if id == w:id() then
-        return true
-      end
-    end
-    return false
-  end):getWindows()
-  obj.logger.d("Select from other windows: " .. hs.inspect(windows))
-  return windows
-end
-
-local function selectWindow (winIds, callback)
-  if #winIds < 1 then
-    obj.logger.w("Not enough windows, skip")
-  end
-  if #winIds == 1 then
-    obj.logger.w("Single window, just call the callback!")
-    local window = hs.window.get(winIds[1])
-    if callback then
-      callback(window)
-    end
-    return
-  end
-  obj.logger.d("Select from other windows: " .. hs.inspect(winIds))
-  N.hints.windowHints(getWindows(winIds), callback)
-  obj.logger.d("hs.hints.windowHints done!")
-end
-
 function obj:gotoSpace (spaceIndex)
   execYabaiSync("-m space --focus " .. spaceIndex)
 end
 
 function obj:swapWithOtherWindow ()
-  obj:callBackWithOtherWindow(function(focused, selected)
+  obj:selectOtherWindow(function(focused, selected)
     --- Just run the cwrap since in callback
     cwrap(
       function()
@@ -178,6 +145,7 @@ function obj:swapWithOtherWindow ()
   end)
 end
 
+---@diagnostic disable: unused-function, unused-local
 local function focusWindowWithHS (_, selected)
   selected:unminimize()
   selected:raise()
@@ -191,7 +159,7 @@ function obj.focusWindowWithYabai (_, selected)
 end
 
 function obj:focusOtherWindow ()
-  obj:callBackWithOtherWindow(
+  obj:selectOtherWindow(
   -- focusWindowWithHS
     obj.focusWindowWithYabai
   )
@@ -233,9 +201,17 @@ function obj:focusedSpace ()
   return spaceIndexes
 end
 
---- callback will be pass into two windows - (focus, selected)
---- both are windows
-function obj:callBackWithOtherWindow (callback)
+local function getscratchPadYabaiAppNames()
+  return  M.chain(obj.padsConfig.pads)
+      :map(function(pad, _)
+        return pad.yabaiAppName
+      end)
+      :value()
+end
+
+--- @param callback function(focused: hs.window, selected: hs.window)
+function obj:selectOtherWindow (callback)
+  ---@as Focus
   local focus = obj:focusedWSD()
   if not focus then
     obj.logger.e("no focus, do nothing")
@@ -249,23 +225,39 @@ function obj:callBackWithOtherWindow (callback)
   local function spaceSelector (indexes)
     local result = string.format(".space == %d", indexes[1])
     for i = 2, #indexes do
-      result = result .. "or" .. string.format(".space == %d", indexes[i])
+      result = result .. " or " .. string.format(".space == %d", indexes[i])
     end
     return result
   end
 
+  local cmd = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
+                            obj.yabaiProgram,
+                            spaceSelector(visibleSpaceIndexs))
+  obj.logger.w("command: " .. cmd)
   ---@type Window[]?
-  local windows = hs.json.decode(
-    execYabaiSync(
-      string.format("-m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
-        spaceSelector(visibleSpaceIndexs))))
+  local windows = hs.json.decode(execSync(cmd))
+  local scratchPads = getscratchPadYabaiAppNames()
   local winIds = M.chain(windows)
       :select(
       ---@param w Window
-        function(w, _) return (not focus or w.id ~= focus.windowId) end)
+        function(w, _)
+          -- filter out focused window
+          if focus and w.id == focus.windowId then
+            return false
+          end
+          -- filter out scratch pads
+          if M.contains(scratchPads, w.app) then
+            return false
+          end
+          -- filter out non standard windows
+          if w.role ~= "AXWindow" then
+            return false
+          end
+          return true
+        end)
       :map(function(w, _) return w.id end)
       :value()
-  selectWindow(winIds, function(selected)
+  ws.selectWindow(winIds, function(selected)
     callback(hs.window.get(focus.windowId), selected)
   end)
 end
@@ -340,13 +332,13 @@ end
 
 function obj:restartYabaiService ()
   return cwrap(function()
-    execSync(string.format("%s --restart-service || %s --start-service", obj.program, obj.program))
+    execSync(string.format("%s --restart-service || %s --start-service", obj.yabaiProgram, obj.yabaiProgram))
   end)
 end
 
 function obj:stopYabaiService ()
   return cwrap(function()
-    execSync(string.format("%s --stop-service", obj.program))
+    execSync(string.format("%s --stop-service", obj.yabaiProgram))
   end)
 end
 
@@ -381,7 +373,7 @@ local function getPadWindows (yabaiAppNames)
       selectStr = selectStr .. " or " .. condition
     end
   end
-  local windowsQuery = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'", obj.program,
+  local windowsQuery = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'", obj.yabaiProgram,
     selectStr)
   ---@diagnostic disable
   return hs.json.decode(execSync(windowsQuery))
@@ -406,7 +398,7 @@ function obj.hideScratchpadsNowrap (excludeYabaiAppName)
       :each(
       ---@param w Window
         function(w, _)
-          execSync(string.format("%s -m window %d --space %d", obj.program, w.id, obj.padsConfig.spaceIndex))
+          execSync(string.format("%s -m window %d --space %d", obj.yabaiProgram, w.id, obj.padsConfig.spaceIndex))
         end
       ):value()
 end
@@ -442,10 +434,10 @@ function obj:showScratchpad (yabaiAppName)
       local toggleFloat = ((not chosenWindow["is-floating"]) and "" .. "--toggle float" or "")
       local focuseCommand = string.format(
         "%s -m window %d %s %s --grid %s --opacity %.2f --focus",
-        obj.program, chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity)
+        obj.yabaiProgram, chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity)
       local gridCommand = string.format(
         "%s -m window %d --grid %s",
-        obj.program, chosenWindow.id, scratchPad.grid)
+        obj.yabaiProgram, chosenWindow.id, scratchPad.grid)
       execSync(focuseCommand .. " && " .. gridCommand)
   end
   return cwrap(fn)
