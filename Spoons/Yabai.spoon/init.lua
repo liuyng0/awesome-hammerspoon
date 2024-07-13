@@ -261,6 +261,7 @@ end
 --- @return boolean true if switched to app, flase if no window with specified app name
 function obj:switchToApp (appName)
   local focus = obj:focusedWSD()
+  local currentSpace = obj:focusedSpace()[1]
   local windows = hs.json.decode(execYabaiSync(string.format(
     "-m query --windows | jq -r '.[] | select(.app == \"%s\")' | jq -n '[inputs]'",
     appName)))
@@ -282,7 +283,7 @@ function obj:switchToApp (appName)
     end
   end
   if targetWindow then
-    if not focus or targetWindow.space ~= focus.spaceIndex then
+    if targetWindow.space ~= currentSpace then
       execYabaiSync("-m space --focus " .. targetWindow.space)
     end
     execYabaiSync("-m window --focus " .. targetWindow.id)

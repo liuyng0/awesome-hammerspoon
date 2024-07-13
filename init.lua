@@ -185,9 +185,7 @@ end)()
 local bfn = require("bind_functions")
 local keyMap = {
     --- Search with HSearch
-    [sk('/', 'search+')] = {
-        [sk('h', 'h-search')] = function() S.hsearch:toggleShow() end,
-    },
+    [sk('/', 'hsearch')] = function() S.hsearch:toggleShow() end,
     [sk('c', 'control+')] = {
         [sk('l', 'lock screen')] = function() hs.caffeinate.lockScreen() end
     },
@@ -392,6 +390,7 @@ local keyMap = {
                     pad('t', "iTerm2", "iTerm", nil, 0.9),
                     pad('s', "Slack", "Slack"),
                     pad('o', "OmniGraffle", "OmniGraffle"),
+                    pad('m', "Music", "Music")
                     -- pad('h', "Hammerspoon")
                 }
             }
@@ -468,7 +467,5 @@ end
 G.autoReloadWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", autoReload)
 G.autoReloadWatcher:start()
 
-
 require("hs.ipc")
-
 hs.alert.show("Hammerspoon config loaded, path loaded.")
