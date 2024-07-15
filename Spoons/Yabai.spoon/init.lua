@@ -439,5 +439,36 @@ function obj:showScratchpad (yabaiAppName)
   return cwrap(fn)
 end
 
+--- Currently only work for two screen
+function obj:focuseNextScreen()
+  local currentSpaceIndex = obj:focusedSpace()[1]
+  local visibleSpaces = hs.json.decode(execSync(string.format(
+      "%s -m query --spaces | jq -r '.[] | select(.[\"is-visible\"] == true)' | jq -n '[inputs]'",
+      obj.yabaiProgram
+  )))
+  local otherSpaces = M.chain(visibleSpaces)
+  :filter(function(s, _) ---@param s Space
+        return s.index ~= currentSpaceIndex
+        end)
+  :value()
+  if M.count(otherSpaces) == 0 then
+    obj.logger.w("No next space, do nothing!")
+  end
+  ---@type Space
+  local nextSpace = otherSpaces[1]
+  local focusFirstWindowCommand = ""
+  if nextSpace["first-window"] ~= 0 then
+    focusFirstWindowCommand = string.format(" && %s -m window --focus %d",
+                                            obj.yabaiProgram,
+                                            nextSpace["first-window"])
+  end
+  execSync(string.format(
+             "%s -m display --focus %d %s",
+             obj.yabaiProgram,
+             nextSpace.display,
+             focusFirstWindowCommand
+  ))
+end
+
 --- @return spoon.Yabai
 return obj
