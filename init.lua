@@ -183,6 +183,10 @@ local ybfn = (function()
 end)()
 ---@type BindFunctions
 local bfn = require("bind_functions")
+
+--- Make console not always on top
+hs.consoleOnTop(false)
+
 local keyMap = {
     --- Search with HSearch
     [sk('/', 'hsearch')] = function() S.hsearch:toggleShow() end,
