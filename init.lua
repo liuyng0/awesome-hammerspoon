@@ -392,6 +392,7 @@ local keyMap = {
                     pad('s', "Slack", "Slack"),
                     pad('o', "OmniGraffle", "OmniGraffle"),
                     pad('m', "Music", "Music"),
+                    pad('a', "Activity Monitor", "Activity Monitor"),
                 }
             }
             S.yabai.configPads(configuration)
