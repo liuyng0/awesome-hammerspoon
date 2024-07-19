@@ -201,8 +201,8 @@ function obj:focusedSpace ()
   return spaceIndexes
 end
 
-local function getscratchPadYabaiAppNames()
-  return  M.chain(obj.padsConfig.pads)
+local function getscratchPadYabaiAppNames ()
+  return M.chain(obj.padsConfig.pads)
       :map(function(pad, _)
         return pad.yabaiAppName
       end)
@@ -231,8 +231,8 @@ function obj:selectOtherWindow (callback)
   end
 
   local cmd = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
-                            obj.yabaiProgram,
-                            spaceSelector(visibleSpaceIndexs))
+    obj.yabaiProgram,
+    spaceSelector(visibleSpaceIndexs))
   ---@type Window[]?
   local windows = hs.json.decode(execSync(cmd))
   local scratchPads = getscratchPadYabaiAppNames()
@@ -369,7 +369,8 @@ local function getPadWindows (yabaiAppNames)
       selectStr = selectStr .. " or " .. condition
     end
   end
-  local windowsQuery = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'", obj.yabaiProgram,
+  local windowsQuery = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
+    obj.yabaiProgram,
     selectStr)
   ---@diagnostic disable
   return hs.json.decode(execSync(windowsQuery))
@@ -405,69 +406,89 @@ end
 
 function obj:showScratchpad (yabaiAppName)
   local fn = function()
-      ---@type Scratchpad
-      local scratchPad = M.chain(obj.padsConfig.pads )
-      :filter(function(pad, _)
-            return pad.yabaiAppName == yabaiAppName
-            end)
-      :value()
-      if #scratchPad == 0 then
-        obj.logger.d("No scratchPad found " .. yabaiAppName .. ", config: ".. hs.inspect(obj.padsConfig.pads))
-        return
-      end
-      scratchPad = scratchPad[1]
-      ---@type Window[]
-      local currentWorkspace = obj:focusedSpace()[1]
-      local thisAppWindows = getPadWindows({yabaiAppName})
-      if #thisAppWindows == 0 then
-        obj.logger.d("No appWindow found for " .. yabaiAppName)
-        return
-      end
-      obj.hideScratchpadsNowrap(yabaiAppName)
-      local chosenWindow = thisAppWindows[1]
-      obj.logger.d("chosenWindow type:" .. type(chosenWindow) .. " " .. hs.inspect(chosenWindow))
-      local spaceSwitch = (chosenWindow.space ~= currentWorkspace) and "--space " .. currentWorkspace or ""
-      local toggleFloat = ((not chosenWindow["is-floating"]) and "" .. "--toggle float" or "")
-      local focuseCommand = string.format(
-        "%s -m window %d %s %s --grid %s --opacity %.2f --focus",
-        obj.yabaiProgram, chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity)
-      local gridCommand = string.format(
-        "%s -m window %d --grid %s",
-        obj.yabaiProgram, chosenWindow.id, scratchPad.grid)
-      execSync(focuseCommand .. " && " .. gridCommand)
+    ---@type Scratchpad
+    local scratchPad = M.chain(obj.padsConfig.pads)
+        :filter(function(pad, _)
+          return pad.yabaiAppName == yabaiAppName
+        end)
+        :value()
+    if #scratchPad == 0 then
+      obj.logger.d("No scratchPad found " .. yabaiAppName .. ", config: " .. hs.inspect(obj.padsConfig.pads))
+      return
+    end
+    scratchPad = scratchPad[1]
+    ---@type Window[]
+    local currentWorkspace = obj:focusedSpace()[1]
+    local thisAppWindows = getPadWindows({ yabaiAppName })
+    if #thisAppWindows == 0 then
+      obj.logger.d("No appWindow found for " .. yabaiAppName)
+      return
+    end
+    obj.hideScratchpadsNowrap(yabaiAppName)
+    local chosenWindow = thisAppWindows[1]
+    obj.logger.d("chosenWindow type:" .. type(chosenWindow) .. " " .. hs.inspect(chosenWindow))
+    local spaceSwitch = (chosenWindow.space ~= currentWorkspace) and "--space " .. currentWorkspace or ""
+    local toggleFloat = ((not chosenWindow["is-floating"]) and "" .. "--toggle float" or "")
+    local focuseCommand = string.format(
+      "%s -m window %d %s %s --grid %s --opacity %.2f --focus",
+      obj.yabaiProgram, chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity)
+    local gridCommand = string.format(
+      "%s -m window %d --grid %s",
+      obj.yabaiProgram, chosenWindow.id, scratchPad.grid)
+    execSync(focuseCommand .. " && " .. gridCommand)
   end
   return cwrap(fn)
 end
 
+---@return Window[]
+local function getVisiblePads (spaceIndex)
+  local allPads = M.chain(obj.padsConfig.pads)
+      :map(function(pad, _)
+        return pad.yabaiAppName
+      end)
+      :value()
+
+  return M.chain(getPadWindows(allPads))
+      :filter(function(win, _) ---@param win Window
+        return win.space == spaceIndex
+      end)
+      :value()
+end
+
 --- Currently only work for two screen
-function obj:focuseNextScreen()
+function obj:focuseNextScreen ()
   local currentSpaceIndex = obj:focusedSpace()[1]
   local visibleSpaces = hs.json.decode(execSync(string.format(
-      "%s -m query --spaces | jq -r '.[] | select(.[\"is-visible\"] == true)' | jq -n '[inputs]'",
-      obj.yabaiProgram
+    "%s -m query --spaces | jq -r '.[] | select(.[\"is-visible\"] == true)' | jq -n '[inputs]'",
+    obj.yabaiProgram
   )))
   local otherSpaces = M.chain(visibleSpaces)
-  :filter(function(s, _) ---@param s Space
+      :filter(function(s, _) ---@param s Space
         return s.index ~= currentSpaceIndex
-        end)
-  :value()
+      end)
+      :value()
   if M.count(otherSpaces) == 0 then
     obj.logger.w("No next space, do nothing!")
   end
   ---@type Space
   local nextSpace = otherSpaces[1]
-  local focusFirstWindowCommand = ""
-  if nextSpace["first-window"] ~= 0 then
-    focusFirstWindowCommand = string.format(" && %s -m window --focus %d",
-                                            obj.yabaiProgram,
-                                            nextSpace["first-window"])
+  local targetWindow = nil
+  local visiblePads = getVisiblePads(nextSpace.index)
+  if M.count(visiblePads) > 0 then
+    targetWindow = visiblePads[1].id
+  elseif nextSpace["first-window"] ~= 0 then
+    targetWindow = nextSpace["first-window"]
   end
-  execSync(string.format(
-             "%s -m display --focus %d %s",
-             obj.yabaiProgram,
-             nextSpace.display,
-             focusFirstWindowCommand
-  ))
+
+  if targetWindow then
+    execSync(string.format("%s -m window --focus %d", obj.yabaiProgram, targetWindow))
+  else
+    execSync(string.format(
+      "%s -m display --focus %d",
+      obj.yabaiProgram,
+      nextSpace.display
+    ))
+  end
 end
 
 --- @return spoon.Yabai
