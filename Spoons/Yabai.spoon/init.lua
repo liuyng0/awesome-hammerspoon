@@ -158,10 +158,11 @@ function obj.focusWindowWithYabai (_, selected)
   end)()
 end
 
-function obj:focusOtherWindow ()
+function obj:focusOtherWindow (onlyFocusedApp)
   obj:selectOtherWindow(
   -- focusWindowWithHS
-    obj.focusWindowWithYabai
+    obj.focusWindowWithYabai,
+    onlyFocusedApp
   )
 end
 
@@ -210,15 +211,15 @@ local function getscratchPadYabaiAppNames ()
 end
 
 --- @param callback function(focused: hs.window, selected: hs.window)
-function obj:selectOtherWindow (callback)
+function obj:selectOtherWindow (callback, onlyFocusedApp)
   ---@as Focus
   local focus = obj:focusedWSD()
   if not focus then
     obj.logger.e("no focus, do nothing")
     return
   end
-  local visibleSpaceIndexs = visibleSpaces()
-  if not visibleSpaceIndexs then
+  local visibleSpaceIndexes = visibleSpaces()
+  if not visibleSpaceIndexes then
     return
   end
 
@@ -230,9 +231,11 @@ function obj:selectOtherWindow (callback)
     return result
   end
 
+  local queryString = onlyFocusedApp
+    and string.format("(%s) and %s", spaceSelector(visibleSpaceIndexes), ".app == \"" .. focus.app .. "\"")
+    or spaceSelector(visibleSpaceIndexes)
   local cmd = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
-    obj.yabaiProgram,
-    spaceSelector(visibleSpaceIndexs))
+    obj.yabaiProgram, queryString)
   ---@type Window[]?
   local windows = hs.json.decode(execSync(cmd))
   local scratchPads = getscratchPadYabaiAppNames()

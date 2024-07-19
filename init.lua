@@ -88,14 +88,14 @@ spoon.AppBindings:bind(
 local cwrap = U.command.cwrap
 local function launch_app (appName, currentSpace)
     return cwrap(function()
-            S.yabai.hideScratchpadsNowrap()
-            if currentSpace then
+        S.yabai.hideScratchpadsNowrap()
+        if currentSpace then
+            hs.application.launchOrFocus(appName)
+        else
+            if not S.yabai:switchToApp(appName) then
                 hs.application.launchOrFocus(appName)
-            else
-                if not S.yabai:switchToApp(appName) then
-                    hs.application.launchOrFocus(appName)
-                end
             end
+        end
     end)
 end
 
@@ -192,7 +192,7 @@ local keyMap = {
     [sk('/', 'hsearch')] = function() S.hsearch:toggleShow() end,
     [sk('c', 'control+')] = {
         [sk('l', 'lock screen')] = function() hs.caffeinate.lockScreen() end,
-      [sk("c", "toggle console")] = function() hs.toggleConsole() end,
+        [sk("c", "toggle console")] = function() hs.toggleConsole() end,
     },
     --- Launch Applications
     --- NOTE: don't try to launch by id
@@ -287,6 +287,12 @@ local keyMap = {
     [sk("o", "other window")] = cwrap(
         function() S.yabai:focusOtherWindow() end
     ),
+    -- Other window (current app)
+    [sk("j", "other window(app)")] = cwrap(
+        function() S.yabai:focusOtherWindow(true) end
+    ),
+
+
     -- Toggle Float window
     -- TODO: currently this causing issues - windows under the floating window cannot be raised and focused
     -- [sk("f", "toggle float window")] = S.yabai:bindFunction({
@@ -376,26 +382,29 @@ local keyMap = {
     --- Scratch pad
     [ctrl('h', 'hide pads')] = S.yabai:hideAllScratchpads(),
     [sk('p', "scratchpad+")] = (function()
-            ---@type ScratchpadConfig
-            local defaultGrid = "24:24:1:1:22:22"
-            local defaultOpacity = 1.0
-            local function pad(key, yabaiAppName, appName, grid, opacity)
-                return {key=sk(key, yabaiAppName), appName=appName or yabaiAppName,
-                        yabaiAppName=yabaiAppName,
-                        grid=grid or defaultGrid,
-                        opacity=opacity or defaultOpacity}
-            end
-            local configuration = {
-                spaceIndex = 5,
-                pads = {
-                    pad('t', "iTerm2", "iTerm", nil, 0.9),
-                    pad('s', "Slack", "Slack"),
-                    pad('o', "OmniGraffle", "OmniGraffle"),
-                    pad('m', "Music", "Music"),
-                    pad('a', "Activity Monitor", "Activity Monitor"),
-                }
+        ---@type ScratchpadConfig
+        local defaultGrid = "24:24:1:1:22:22"
+        local defaultOpacity = 1.0
+        local function pad (key, yabaiAppName, appName, grid, opacity)
+            return {
+                key = sk(key, yabaiAppName),
+                appName = appName or yabaiAppName,
+                yabaiAppName = yabaiAppName,
+                grid = grid or defaultGrid,
+                opacity = opacity or defaultOpacity
             }
-            S.yabai.configPads(configuration)
+        end
+        local configuration = {
+            spaceIndex = 5,
+            pads = {
+                pad('t', "iTerm2", "iTerm", nil, 0.9),
+                pad('s', "Slack", "Slack"),
+                pad('o', "OmniGraffle", "OmniGraffle"),
+                pad('m', "Music", "Music"),
+                pad('a', "Activity Monitor", "Activity Monitor"),
+            }
+        }
+        S.yabai.configPads(configuration)
         local result = {
             [sk('h', "hideAll")] = S.yabai:hideAllScratchpads(),
         }
