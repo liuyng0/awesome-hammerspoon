@@ -13,7 +13,6 @@ local M = U.moses
 local wf = hs.window.filter
 --- @type next.hints
 local hints = require("next/hints")
-hints.style = "vimperator"
 hints.showTitleThresh = 8
 
 -- Metadata
@@ -75,7 +74,22 @@ function obj.selectWindow (winIds, callback, allowNonStandard)
   end
 
   obj.logger.d("Select from other windows: " .. hs.inspect(windows))
+  local applicationCount = M.chain(windows)
+  :groupBy(
+      function (w, _) ---@param w hs.window
+        return w:application():title()
+      end)
+  :count()
+  :value()
+
+  if applicationCount > 1 then
+    hints.style = "vimperator"
+  else
+    hints.style = nil
+  end
+
   hints.windowHints(windows, callback, allowNonStandard)
+
   obj.logger.d("hs.hints.windowHints done!")
 end
 
