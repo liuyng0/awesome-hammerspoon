@@ -13,6 +13,14 @@ local M = U.moses
 local wf = hs.window.filter
 --- @type next.hints
 local hints = require("next/hints")
+
+--- Re-order the alphabets
+obj.hintChars = {
+  "H", "J", "K", "L", "Y", "U", "I", "O", "P", "B", "M", "N",
+  "A", "C", "D", "E", "F", "G", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" }
+obj.hintCharsVimperator = obj.hintChars
+
+--- Show title with more windows
 hints.showTitleThresh = 8
 
 -- Metadata
