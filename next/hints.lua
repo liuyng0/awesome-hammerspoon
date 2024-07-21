@@ -123,7 +123,13 @@ function obj.displayHintsForDict (dict, prefixstring, showTitles, allowNonStanda
   if showTitles == nil then
     showTitles = obj._dictSize(hintDict) <= obj.showTitleThresh
   end
-  for key, val in pairs(dict) do
+  local chars = obj.style == "vimperator" and obj.hintCharsVimperator or obj.hintChars
+  for _, ch in pairs(chars) do
+    if not dict[ch] then
+      break
+    end
+    local key = ch
+    local val = dict[ch]
     if type(val) == "userdata" and val:screen() then -- this is an onscreen window
       local win = val
       local app = win:application()
