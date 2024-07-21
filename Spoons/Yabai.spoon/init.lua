@@ -18,7 +18,7 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 --- Yabai.logger
 --- Variable
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
-obj.logger = hs.logger.new("Yabai")
+obj.logger = hs.logger.new("Yabai", "info")
 obj.yabaiProgram = "/opt/homebrew/bin/yabai"
 obj.scriptPath = os.getenv("HOME") .. "/.config/yabai/"
 ---@type ScratchpadsConfig
@@ -33,7 +33,7 @@ local cwrap = U.command.cwrap
 local ws = hs.loadSpoon("WindowSelector") --[[@as spoon.WindowSelector]]
 
 local function execSync (cmd, ignoreError)
-  obj.logger.d("run yabai command: [" .. cmd .. "]")
+  obj.logger.i("run yabai command: [" .. cmd .. "]")
   local output, ec, stderr = command.execTaskInShellSync(cmd, nil, false)
   if ec and ec ~= 0 then
     if ignoreError then
@@ -235,7 +235,8 @@ function obj:selectOtherWindow (callback, onlyFocusedApp)
     and string.format("(%s) and %s", spaceSelector(visibleSpaceIndexes), ".app == \"" .. focus.app .. "\"")
     or spaceSelector(visibleSpaceIndexes)
   local cmd = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
-    obj.yabaiProgram, queryString)
+    obj.yabaiProgram,
+    queryString)
   ---@type Window[]?
   local windows = hs.json.decode(execSync(cmd))
   local scratchPads = getscratchPadYabaiAppNames()
