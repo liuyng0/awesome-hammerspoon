@@ -6,9 +6,9 @@
 --- [Click to download](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/RecursiveBinder.spoon.zip)
 
 local obj = {}
+obj.logger = hs.logger.new("RecursiveBinder")
 
 local eventtap = require("hs.eventtap")
-local color = require("hs.drawing.color")
 local F = U.F
 local M = U.moses
 
@@ -58,6 +58,7 @@ obj.helperFormat = {
 --- @field prefixKeySeq string normalized trigger key, eg: 'root/control-a'
 --- @field key string the last normalized key, eg: "control-b"
 --- @field action function actual function for leaf node and binding function for non-leaf
+--- @field eventtap hs.eventtap?
 
 --- RecursiveBinder.showBindHelper()
 --- Variable
@@ -80,7 +81,6 @@ obj.helperModifierMapping = {
   shift = '⇧',
 }
 
-obj.logger = hs.logger.new("RecursiveBinder")
 
 -- used by next model to close previous helper
 obj.previousHelperMessage = nil
@@ -326,18 +326,18 @@ local function suppressKeysOtherThenOurs (modal, onSuppress)
             eventtap.event.rawFlagMasks.alternate |
             eventtap.event.rawFlagMasks.shift)
       local eventType
-      if (flags & eventtap.event.types.keyDown) ~= 0 then
-        eventType = "keyDown"
-      else
+      if (event:getType() & eventtap.event.types.keyUp) == eventtap.event.types.keyUp then
         eventType = "keyUp"
+      else
+        eventType = "keyDown"
       end
       local pid = event:getProperty(hs.eventtap.event.properties
         .eventSourceUnixProcessID)
       local keys = passThroughKeys[event:getKeyCode()]
       if keys ~= nil and M.contains(keys, flags) then
-        -- hs.printf("passing:     %3d 0x%08x pid=%d, eventType=%s",
-        --   event:getKeyCode(), flags,
-        --   pid, event:getType())
+        obj.logger.df("passing:     %3d 0x%08x pid=%d, eventType=%s, eventType(string)=%s",
+          event:getKeyCode(), flags,
+          pid, event:getType(), eventType)
         return false -- pass it through so hotkey can catch it
       else
         if onSuppress then
@@ -413,7 +413,9 @@ local function decorateRoot (rootNode)
         freshHelper()
       end
     end
+    --- type hs.eventtap
     local thisTap = suppressKeysOtherThenOurs(curNode.modal, onSuppress)
+    curNode.eventtap = thisTap
     local eventTaps = {}
     table.insert(eventTaps, thisTap)
     for _, childNode in pairs(curNode.children) do
@@ -422,15 +424,15 @@ local function decorateRoot (rootNode)
         table.insert(eventTaps, tap)
       end
     end
-    --- @param self hs.hotkey.modal
-    --- @diagnostic disable: duplicate-set-field
-    curNode.modal.entered = function(self)
-      -- obj.logger.i(
-      --   F(
-      --     "Enter eventtap for modal with [{curNode.prefixKeySeq}]+[{curNode.key}]",
-      --     curNode))
-      thisTap:start()
-    end
+    -- --- @param self hs.hotkey.modal
+    -- --- @diagnostic disable: duplicate-set-field
+    -- curNode.modal.entered = function(self)
+    --   -- obj.logger.i(
+    --   --   F(
+    --   --     "Enter eventtap for modal with [{curNode.prefixKeySeq}]+[{curNode.key}]",
+    --   --     curNode))
+    --   thisTap:start()
+    -- end
     return eventTaps
   end
 
@@ -459,10 +461,9 @@ local function decorateRoot (rootNode)
       tap:stop()
       count = count + 1
     end
-    -- obj.logger.i(
-    --   F(
-    --     "Stopped {count} eventtaps for modal triggerred from [{curNode.prefixKeySeq}] + [{curNode.key}]",
-    --     count, curNode))
+    obj.logger.i(
+      F("Stopped {count} eventtaps for modal triggerred from [{curNode.prefixKeySeq}] + [{curNode.key}]",
+        count, curNode))
   end
   deRegisterEventTaps(rootNode, stopAllEventTaps)
 
@@ -521,19 +522,31 @@ function obj.buildModals (keymap, parent, prefixKeySeq, lastKey)
       prefixKeySeq .. "/" .. lastKey, createKeyName(key))
     table.insert(thisNode.children, child)
     -- key[1] is modifiers, i.e. {'shift'}, key[2] is key, i.e. 'f'
-    --- NOTE: This has to be bind to releaseFn, so the eventTap won't suppress the release key
-    thisNode.modal:bind(key[1], key[2], nil, function()
-      thisNode.modal:exit()
+    thisNode.modal:bind(key[1], key[2], function()
+      obj.logger.i(
+        F("Enter modal [{child.prefixKeySeq}]+[{child.key}] ~~", child))
       killHelper()
       child.action()
+    end,
+    --- NOTE: The eventtap should be only enabled on release key tap, to avoid eat the release key.
+    function()
+      --- NOTE: this node should be exit later here, so the release fun will be called.
+      thisNode.modal:exit()
+      if child.eventtap then
+        obj.logger.i(
+          F("Enter eventtap for modal with [{child.prefixKeySeq}]+[{child.key}]", child))
+        child.eventtap:start()
+      else
+        obj.logger.i(
+          F("eventtap for modal with [{child.prefixKeySeq}]+[{child.key}] is null!!", child))
+      end
     end)
     if #key >= 3 then
       keyFuncNameTable[createKeyName(key)] = key[3]
     end
   end
   for _, escKey in pairs(obj.escapeKeys) do
-    --- NOTE: This has to be bind to releaseFn, so the eventTap won't suppress the release key
-    thisNode.modal:bind(escKey[1], escKey[2], nil, function()
+    thisNode.modal:bind(escKey[1], escKey[2], function()
       thisNode.modal:exit()
       killHelper()
     end)
@@ -553,8 +566,9 @@ function obj.recursiveBind (keymap, rootKey)
   local root = obj.buildModals(keymap, nil, "/",
     createKeyName(rootKey))
   decorateRoot(root)
-  --- NOTE: This has to be bind to releaseFn, so the eventTap won't suppress the release key
-  hs.hotkey.bind(rootKey[1], rootKey[2], nil, root.action)
+  --- NOTE: The eventtap should be only enabled on release key tap, to avoid eat the release key.
+  hs.hotkey.bind(rootKey[1], rootKey[2], root.action,
+                 function() if root.eventtap then root.eventtap:start() end end)
 end
 
 -- function testrecursiveModal(keymap)
