@@ -11,6 +11,7 @@ obj.logger = hs.logger.new("RecursiveBinder")
 local eventtap = require("hs.eventtap")
 local F = U.F
 local M = U.moses
+local suppressKeys = hs.loadSpoon("ModalKeySuppress") --[[@as spoon.ModalKeySuppress]]
 
 obj.__index = obj
 
@@ -275,84 +276,6 @@ local function killHelper ()
   hs.alert.closeSpecific(obj.previousHelperID)
 end
 
-
--- Create an eventtap to surpress the unbinded keys
-local function suppressKeysOtherThenOurs (modal, onSuppress)
-  local passThroughKeys = {}
-
-  -- this is annoying because the event's raw flag bitmasks differ from the bitmasks used by hotkey, so
-  -- we have to convert here for the lookup
-
-  for _, v in pairs(modal.keys) do
-    -- parse for flags, get keycode for each
-    local kc, mods = tostring(v._hk):match("keycode: (%d+), mods: (0x[^ ]+)")
-    local hkFlags = tonumber(mods)
-    local flags = 0
-    if (hkFlags & 256) == 256 then
-      hkFlags, flags = hkFlags - 256, flags | eventtap.event.rawFlagMasks
-          .command
-    end
-    if (hkFlags & 512) == 512 then
-      hkFlags, flags = hkFlags - 512, flags | eventtap.event.rawFlagMasks.shift
-    end
-    if (hkFlags & 2048) == 2048 then
-      hkFlags, flags = hkFlags - 2048,
-          flags | eventtap.event.rawFlagMasks.alternate
-    end
-    if (hkFlags & 4096) == 4096 then
-      hkFlags, flags = hkFlags - 4096,
-          flags | eventtap.event.rawFlagMasks.control
-    end
-    if hkFlags ~= 0 then
-      obj.logger.d("unexpected flag pattern detected for " .. tostring(v._hk))
-    end
-    if passThroughKeys[tonumber(kc)] ~= nil then
-      table.insert(passThroughKeys[tonumber(kc)], flags)
-    else
-      passThroughKeys[tonumber(kc)] = { flags }
-    end
-  end
-
-  local eventtap = eventtap.new(
-    {
-      eventtap.event.types.keyDown,
-      eventtap.event.types.keyUp
-    },
-    function(event)
-      -- check only the flags we care about and filter the rest
-      local flags =
-          event:getRawEventData().CGEventData.flags &
-          (eventtap.event.rawFlagMasks.command | eventtap.event.rawFlagMasks.control |
-            eventtap.event.rawFlagMasks.alternate |
-            eventtap.event.rawFlagMasks.shift)
-      local eventType
-      if (event:getType() & eventtap.event.types.keyUp) == eventtap.event.types.keyUp then
-        eventType = "keyUp"
-      else
-        eventType = "keyDown"
-      end
-      local pid = event:getProperty(hs.eventtap.event.properties
-        .eventSourceUnixProcessID)
-      local keys = passThroughKeys[event:getKeyCode()]
-      if keys ~= nil and M.contains(keys, flags) then
-        obj.logger.df("passing:     %3d 0x%08x pid=%d, eventType=%s, eventType(string)=%s",
-          event:getKeyCode(), flags,
-          pid, event:getType(), eventType)
-        return false -- pass it through so hotkey can catch it
-      else
-        if onSuppress then
-          onSuppress(event)
-        end
-        -- hs.printf("suppressing: %3d 0x%08x pid=%d, eventType=%s",
-        --   event:getKeyCode(), flags,
-        --   pid, event:getType())
-        return true -- delete it if we got this far -- it's a key that we want suppressed
-      end
-    end
-  )
-  return eventtap
-end
-
 --- Decorate the modal with eventtap to suppress non-binded keys
 --- @param rootNode BindNode
 local function decorateRoot (rootNode)
@@ -414,7 +337,7 @@ local function decorateRoot (rootNode)
       end
     end
     --- type hs.eventtap
-    local thisTap = suppressKeysOtherThenOurs(curNode.modal, onSuppress)
+    local thisTap = suppressKeys.suppress(curNode.modal, onSuppress)
     curNode.eventtap = thisTap
     local eventTaps = {}
     table.insert(eventTaps, thisTap)
