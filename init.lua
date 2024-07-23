@@ -296,8 +296,6 @@ local keyMap = {
         function() S.yabai:focusOtherWindow(false, true) end
     ),
 
-
-
     -- Toggle Float window
     -- TODO: currently this causing issues - windows under the floating window cannot be raised and focused
     -- [sk("f", "toggle float window")] = S.yabai:bindFunction({
@@ -337,15 +335,17 @@ local keyMap = {
 
     --- Exposes
     [sk('e', 'expose')] = (function()
-        local exposeAll = N.expose.new({ "Emacs", "Chrome", "Intellij", "iTerm2" },
-            { showThumbnails = true })
+        local exposeAll = N.expose.new{ "Emacs", "Chrome", "Intellij", "iTerm2" }
         exposeAll:setCallback(
         ---@param win hs.window
             function(win)
                 logger.w("focus on window: " .. win:id())
                 win:focus()
             end)
-        return function() exposeAll:toggleShow() end
+        return function()
+            logger.w("Start expose")
+            exposeAll:toggleShow()
+        end
     end)(),
     --- Variable Toggles
     [sk('v', "variable on/off")] = {

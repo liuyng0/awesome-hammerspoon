@@ -49,6 +49,7 @@ local tinsert, tremove, tsort, setmetatable, rawset = table.insert, table.remove
 local geom = require 'hs.geometry'
 local drawing, image = require 'hs.drawing', require 'hs.image'
 local window, screen = require 'hs.window', require 'hs.screen'
+---@type hs.window.filter
 local windowfilter = require 'hs.window.filter'
 local application, spaces = require 'hs.application', require 'hs.spaces'
 local eventtap = require 'hs.eventtap'
