@@ -386,39 +386,8 @@ local keyMap = {
     },
     --- Scratch pad
     [ctrl('h', 'hide pads')] = S.yabai:hideAllScratchpads(),
-    [sk('p', "scratchpad+")] = (function()
-        ---@type ScratchpadConfig
-        local defaultGrid = "24:24:1:1:22:22"
-        local defaultOpacity = 1.0
-        local function pad (key, yabaiAppName, appName, grid, opacity)
-            return {
-                key = sk(key, yabaiAppName),
-                appName = appName or yabaiAppName,
-                yabaiAppName = yabaiAppName,
-                grid = grid or defaultGrid,
-                opacity = opacity or defaultOpacity
-            }
-        end
-        local configuration = {
-            spaceIndex = 5,
-            pads = {
-                pad('t', "iTerm2", "iTerm", nil, 0.9),
-                pad('s', "Slack", "Slack"),
-                pad('o', "OmniGraffle", "OmniGraffle"),
-                pad('m', "Music", "Music"),
-                pad('a', "Activity Monitor", "Activity Monitor"),
-            }
-        }
-        S.yabai.configPads(configuration)
-        local result = {
-            [sk('h', "hideAll")] = S.yabai:hideAllScratchpads(),
-        }
-        ---@param p Scratchpad
-        for _, p in pairs(configuration.pads) do
-            result[p.key] = S.yabai:showScratchpad(p.yabaiAppName)
-        end
-        return result
-    end)(),
+    [sk('p', "pad+(next space)")] = bfn.makePadMap(false),
+    [ctrl('p', "pad+(this space)")] = bfn.makePadMap(true),
 }
 local hyper = { { "shift", "command", "control", "option" }, "1", }
 spoon.RecursiveBinder.recursiveBind(keyMap, hyper)
