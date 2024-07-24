@@ -347,7 +347,7 @@ function obj:stopYabaiService ()
 end
 
 function obj:swapVisibleSpaces ()
-  local spaces = obj:focusedSpace()
+  local spaces = visibleSpaces()
   local focus = obj:focusedWSD()
   if not spaces or #spaces ~= 2 then
     obj.logger.w("Only support swap two spaces")
@@ -463,14 +463,17 @@ local function getVisiblePads (spaceIndex)
       :value()
 end
 
---- Currently only work for two screen
-function obj:focuseNextScreen ()
-  local currentSpaceIndex = obj:focusedSpace()[1]
-  local visibleSpaces = hs.json.decode(execSync(string.format(
+local function visibleSpaces()
+  return hs.json.decode(execSync(string.format(
     "%s -m query --spaces | jq -r '.[] | select(.[\"is-visible\"] == true)' | jq -n '[inputs]'",
     obj.yabaiProgram
   )))
-  local otherSpaces = M.chain(visibleSpaces)
+end
+--- Currently only work for two screen
+function obj:focusNextScreen ()
+  local currentSpaceIndex = obj:focusedSpace()[1]
+  local spaces = visibleSpaces()
+  local otherSpaces = M.chain(spaces)
       :filter(function(s, _) ---@param s Space
         return s.index ~= currentSpaceIndex
       end)
