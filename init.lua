@@ -291,6 +291,11 @@ local keyMap = {
     [sk("j", "other window(app)")] = cwrap(
         function() S.yabai:focusOtherWindow(true) end
     ),
+    -- Other window (current space)
+    [sk("u", "other window(space)")] = cwrap(
+        function() S.yabai:focusOtherWindow(false, true) end
+    ),
+
 
 
     -- Toggle Float window

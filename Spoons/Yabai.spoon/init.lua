@@ -158,11 +158,12 @@ function obj.focusWindowWithYabai (_, selected)
   end)()
 end
 
-function obj:focusOtherWindow (onlyFocusedApp)
+function obj:focusOtherWindow (onlyFocusedApp, onlyFocusedSpace)
   obj:selectOtherWindow(
   -- focusWindowWithHS
     obj.focusWindowWithYabai,
-    onlyFocusedApp
+    onlyFocusedApp,
+    onlyFocusedSpace
   )
 end
 
@@ -211,7 +212,7 @@ local function getscratchPadYabaiAppNames ()
 end
 
 --- @param callback function(focused: hs.window, selected: hs.window)
-function obj:selectOtherWindow (callback, onlyFocusedApp)
+function obj:selectOtherWindow (callback, onlyFocusedApp, onlyFocusedSpace)
   ---@as Focus
   local focus = obj:focusedWSD()
   if not focus then
@@ -224,6 +225,9 @@ function obj:selectOtherWindow (callback, onlyFocusedApp)
   end
 
   local function spaceSelector (indexes)
+    if onlyFocusedSpace then
+      return string.format(".space == %d", focus.spaceIndex)
+    end
     local result = string.format(".space == %d", indexes[1])
     for i = 2, #indexes do
       result = result .. " or " .. string.format(".space == %d", indexes[i])
