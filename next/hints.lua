@@ -125,46 +125,45 @@ function obj.displayHintsForDict (dict, prefixstring, showTitles, allowNonStanda
   end
   local chars = obj.style == "vimperator" and obj.hintCharsVimperator or obj.hintChars
   for _, ch in pairs(chars) do
-    if not dict[ch] then
-      break
-    end
-    local key = ch
-    local val = dict[ch]
-    if type(val) == "userdata" and val:screen() then -- this is an onscreen window
-      local win = val
-      local app = win:application()
-      local fr = win:frame()
-      local sfr = win:screen():frame()
-      if app and app:bundleID() and isValidWindow(win, allowNonStandard) then
-        local c = { x = fr.x + (fr.w / 2) - sfr.x, y = fr.y + (fr.h / 2) - sfr.y }
-        local d = obj.bumpPos(c.x, c.y)
-        if d.y > (sfr.y + sfr.h - bumpMove) then
-          d.x = d.x + bumpMove
-          d.y = fr.y + (fr.h / 2) - sfr.y
-          d = obj.bumpPos(d.x, d.y)
-        end
-        c = d
-        if c.y < 0 then
-          obj.logger.d("hs.hints: Skipping offscreen window: " .. win:title())
-        else
-          local suffixString = ""
-          if showTitles then
-            local win_title = win:title()
-            if obj.titleMaxSize > 1 and utf8.len(win_title) > obj.titleMaxSize then
-              local end_idx = utf8.offset(win_title, math.max(0, obj.titleMaxSize - 3)) - 1
-              win_title = string.sub(win_title, 1, end_idx) .. "..."
-            end
-            suffixString = ": " .. win_title
+    if dict[ch] ~= nil then
+      local key = ch
+      local val = dict[ch]
+      if type(val) == "userdata" and val:screen() then -- this is an onscreen window
+        local win = val
+        local app = win:application()
+        local fr = win:frame()
+        local sfr = win:screen():frame()
+        if app and app:bundleID() and isValidWindow(win, allowNonStandard) then
+          local c = { x = fr.x + (fr.w / 2) - sfr.x, y = fr.y + (fr.h / 2) - sfr.y }
+          local d = obj.bumpPos(c.x, c.y)
+          if d.y > (sfr.y + sfr.h - bumpMove) then
+            d.x = d.x + bumpMove
+            d.y = fr.y + (fr.h / 2) - sfr.y
+            d = obj.bumpPos(d.x, d.y)
           end
-          -- print(win:title().." x:"..c.x.." y:"..c.y) -- debugging
-          local hint = obj.new(c.x, c.y, prefixstring .. key .. suffixString, app:bundleID(), win:screen(),
-            obj.fontName, obj.fontSize, obj.iconAlpha)
-          table.insert(takenPositions, c)
-          table.insert(openHints, hint)
+          c = d
+          if c.y < 0 then
+            obj.logger.d("hs.hints: Skipping offscreen window: " .. win:title())
+          else
+            local suffixString = ""
+            if showTitles then
+              local win_title = win:title()
+              if obj.titleMaxSize > 1 and utf8.len(win_title) > obj.titleMaxSize then
+                local end_idx = utf8.offset(win_title, math.max(0, obj.titleMaxSize - 3)) - 1
+                win_title = string.sub(win_title, 1, end_idx) .. "..."
+              end
+              suffixString = ": " .. win_title
+            end
+            -- print(win:title().." x:"..c.x.." y:"..c.y) -- debugging
+            local hint = obj.new(c.x, c.y, prefixstring .. key .. suffixString, app:bundleID(), win:screen(),
+              obj.fontName, obj.fontSize, obj.iconAlpha)
+            table.insert(takenPositions, c)
+            table.insert(openHints, hint)
+          end
         end
+      elseif type(val) == "table" then -- this is another window dict
+        obj.displayHintsForDict(val, prefixstring .. key, showTitles, allowNonStandard)
       end
-    elseif type(val) == "table" then -- this is another window dict
-      obj.displayHintsForDict(val, prefixstring .. key, showTitles, allowNonStandard)
     end
   end
 end
