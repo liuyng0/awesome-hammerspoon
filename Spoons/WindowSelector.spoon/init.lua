@@ -19,7 +19,7 @@ hints.hintChars = {
   "J", "U", "M",
   "H", "Y", "N",
   "K", "L",  "I", "O", "P", "B",
-  "A", "C", "D", "E", "F", "G", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" }
+  "A", "C", "D", "E", "F", "G", "Q", "R", "S", "T", "V", "W", "X", "Z" }
 hints.hintCharsVimperator = hints.hintChars
 
 --- Show title with more windows
