@@ -449,6 +449,9 @@ function obj.buildModals (keymap, parent, prefixKeySeq, lastKey)
       obj.logger.i(
         F("Enter modal [{child.prefixKeySeq}]+[{child.key}] ~~", child))
       killHelper()
+      if child.isLeaf then
+        thisNode.modal:exit()
+      end
       child.action()
     end,
     --- NOTE: The eventtap should be only enabled on release key tap, to avoid eat the release key.
