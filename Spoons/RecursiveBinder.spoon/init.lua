@@ -29,13 +29,13 @@ obj.escapeKeys = { { { "" }, 'escape' } }
 
 --- RecursiveBinder.helperEntryEachLine
 --- Variable
---- Number of entries each line of helper. Default to 5.
+--- Number of entries each line of helper. Default to 4.
 obj.helperEntryEachLine = 5
 
 --- RecursiveBinder.helperEntryLengthInChar
 --- Variable
---- Length of each entry in char. Default to 20.
-obj.helperEntryLengthInChar = 20
+--- Length of each entry in char. Default to 25.
+obj.helperEntryLengthInChar = 25
 
 --- RecursiveBinder.helperFormat
 --- Variable
@@ -231,7 +231,6 @@ end
 local function showHelper (keyFuncNameTable)
   local helper = ''
   local separator = ''
-  local lastLine = ''
   local count = 0
 
   -- START
@@ -250,15 +249,23 @@ local function showHelper (keyFuncNameTable)
     count = count + 1
     local newEntry = keyName .. ' -> ' .. funcName
     -- make sure each entry is of the same length
-    if string.len(newEntry) > obj.helperEntryLengthInChar then
+    local compensateLen = 0
+    -- The modifier key is not shown as length as it calculated from string.len
+    for _, v in pairs(obj.helperModifierMapping) do
+      if string.match(keyName, v) ~= nil then
+        compensateLen = compensateLen - 2;
+      end
+    end
+    local len = string.len(newEntry) + compensateLen
+    if len > obj.helperEntryLengthInChar then
       newEntry =
           string.sub(newEntry, 1, obj.helperEntryLengthInChar - 2) .. '..'
-    elseif string.len(newEntry) < obj.helperEntryLengthInChar then
+    elseif len < obj.helperEntryLengthInChar then
       newEntry = newEntry ..
-          string.rep(' ', obj.helperEntryLengthInChar - string.len(newEntry))
+        string.rep(' ', obj.helperEntryLengthInChar - len)
     end
     -- create new line for every helperEntryEachLine entries
-    if count % (obj.helperEntryEachLine + 1) == 0 then
+    if (count - 1) % obj.helperEntryEachLine == 0 then
       separator = '\n '
     elseif count == 1 then
       separator = ' '
@@ -268,6 +275,7 @@ local function showHelper (keyFuncNameTable)
     helper = helper .. separator .. newEntry
   end
   helper = string.match(helper, '[^\n].+$')
+  -- obj.logger.wf("Helper message is:\n%s", helper)
   obj.previousHelperMessage = helper
   obj.previousHelperID = hs.alert.show(helper, obj.helperFormat, true)
 end
