@@ -283,6 +283,8 @@ local keyMap = {
     },
     [sk("S", "switch spaces")] = cwrap(function() S.yabai:swapVisibleSpaces() end),
     [sk("n", "next screen")] = cwrap(function() S.yabai:focusNextScreen() end),
+    [sk("k", "other window(visible)")] = cwrap(function() S.yabai:focusVisibleWindow() end),
+    [sk("i", "other window(visible,cs)")] = cwrap(function() S.yabai:focusVisibleWindow(true) end),
     -- Other window
     [sk("o", "other window")] = cwrap(
         function() S.yabai:focusOtherWindow() end

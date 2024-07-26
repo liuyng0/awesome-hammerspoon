@@ -485,7 +485,7 @@ local function getVisiblePads (spaceIndex)
 
   return M.chain(getPadWindows(allPads))
       :filter(function(win, _) ---@param win Window
-        return win.space == spaceIndex
+        return win.space == spaceIndex and win["is-visible"]
       end)
       :value()
 end
@@ -510,6 +510,26 @@ function obj:focusNextScreen ()
       nextSpace.display
     ))
   end
+end
+
+--- Currently only work for two screen
+function obj:focusVisibleWindow(onlyCurrentSpace)
+  ---@type Window[]
+  local windows = obj:windows()
+  local currentSpace, _ = twoSpaces()
+  obj.logger.wf("current space is %d", currentSpace.index)
+  local winIds = M.chain(windows)
+  :filter(function(w, _) ---@param w Window
+        return w["is-visible"] and w.app ~= "Hammerspoon" and (not w["has-focus"])
+          and ((onlyCurrentSpace == nil) or (currentSpace == nil) or (currentSpace.index== w.space))
+  end)
+  :map(function(w, _) ---@param w Window
+      return w.id
+      end)
+  :value()
+  ws.selectWindow(winIds, function(selected)
+                    obj.focusWindowWithYabai(nil, selected)
+                    end)
 end
 
 --- @return spoon.Yabai
