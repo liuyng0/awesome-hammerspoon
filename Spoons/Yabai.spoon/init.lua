@@ -40,7 +40,8 @@ local function execSync (cmd, ignoreError)
       obj.logger.w(string.format("Failed command command: %s, error: %s", cmd, stderr))
       return ""
     else
-      error(string.format("Failed command command: %s, error: %s", cmd, stderr))
+      obj.logger.e(string.format("Failed command command: %s, error: %s", cmd, stderr))
+      return ""
     end
   end
   return output
@@ -425,7 +426,9 @@ function obj.hideScratchpadsNowrap (excludeYabaiAppName)
       :each(
       ---@param w Window
         function(w, _)
-          execSync(string.format("%s -m window %d --space %d", obj.yabaiProgram, w.id, obj.padsConfig.spaceIndex))
+          execSync(string.format("%s -m window %d --space %d && %s -m window %d --minimize",
+                                 obj.yabaiProgram, w.id, obj.padsConfig.spaceIndex,
+          obj.yabaiProgram, w.id))
         end
       ):value()
 end
