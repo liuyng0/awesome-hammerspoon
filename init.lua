@@ -71,7 +71,9 @@ S = {
     ---@type spoon.Yabai
     yabai = hs.loadSpoon("Yabai"),
     ---@type spoon.RecursiveBinder
-    recursivebinder = hs.loadSpoon("RecursiveBinder")
+    recursivebinder = hs.loadSpoon("RecursiveBinder"),
+    ---@type spoon.BingDaily
+    bingdaily = hs.loadSpoon("BingDaily")
 }
 
 local APP_GOODNOTES = "Goodnotes"
@@ -324,6 +326,7 @@ local keyMap = {
         [sk("n", "next space(s)")] = gotoNextSpace,
         [sk("m", "mission control i/o")] = toggleMissionControl,
         [sk("d", "show desktop i/o")] = toggleShowDesktop,
+        [sk("b", "bing daily")] = S.bingdaily.bingRequest,
     },
     --- Spaces
     [sk("1", "focus space (1-8)")] = ybfn.focusSpace(1),
