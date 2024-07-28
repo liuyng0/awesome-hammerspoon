@@ -52,7 +52,7 @@ end
 local function cwrapAspace(fmt, ...)
    local x = table.unpack({...})
    return cwrap(function()
-         aerospace(fmt, x)
+      aerospace(fmt, x)
    end)
 end
 

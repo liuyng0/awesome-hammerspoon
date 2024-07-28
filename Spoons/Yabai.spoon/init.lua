@@ -348,6 +348,10 @@ function obj.bindFunction (commands)
   end)
 end
 
+function obj.toggleZoomFullScreen()
+  return obj.bindFunction({string.format("-m window --toggle zoom-fullscreen")})
+end
+
 function obj.startOrRestartServiceFunc ()
   return cwrap(function()
     execSync(string.format("%s --restart-service || %s --start-service", obj.program, obj.program))

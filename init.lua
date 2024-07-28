@@ -188,6 +188,7 @@ local keyMap = {
             [sk("c", "Choose Window (Current App)")] = listWindowCurrent,
             [sk("a", "Choose Window (All App)")] = listWindowAll,
         },
+        [sk("f", "fullscreen")] = S.wm.toggleZoomFullScreen(),
     },
     [sk("S", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
     [sk("n", "next screen")] = S.wm.focusNextScreenFunc(),

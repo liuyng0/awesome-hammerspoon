@@ -42,6 +42,7 @@ local function registerWM()
    obj.stackAppWindowsFunc = wm.stackAppWindowsFunc
    obj.startOrRestartServiceFunc = wm.startOrRestartServiceFunc
    obj.stopServiceFunc = wm.stopServiceFunc
+   obj.toggleZoomFullScreen = wm.toggleZoomFullScreen
 end
 
 registerWM()
