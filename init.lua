@@ -62,8 +62,8 @@ S = {
     chooserstyle = hs.loadSpoon("ChooserStyle"),
     ---@type spoon.Emacs
     emacs = hs.loadSpoon("Emacs"),
-    ---@type spoon.Yabai
-    yabai = hs.loadSpoon("Yabai"),
+    ---@type spoon.WindowManager
+    wm = hs.loadSpoon("WindowManager"),
     ---@type spoon.RecursiveBinder
     recursivebinder = hs.loadSpoon("RecursiveBinder"),
     ---@type spoon.BingDaily
@@ -88,15 +88,6 @@ local function countDownMins (mins)
     end
 end
 
-local moveToNextSpace = function(follow)
-    return function()
-        S.yabai:moveFocusedWindowToNextSpace(follow)
-    end
-end
---- Space Map
-local gotoNextSpace = function()
-    S.yabai:gotoNextSpaces()
-end
 local toggleMissionControl = function()
     hs.spaces.toggleMissionControl()
 end
@@ -124,7 +115,9 @@ local sk = S.recursivebinder.singleKey
 local ctrl = function(singleKey, description)
     return { { "control" }, singleKey, description }
 end
-local cwrap = U.command.cwrap
+local shift = function(singleKey, description)
+    return { { "shift" }, singleKey, description }
+end
 
 ---@type BindFunctions
 local bfn = require("bind_functions")
@@ -149,15 +142,15 @@ local keyMap = {
         -- [sk("t", "terminal")] = S.yabai:launchAppFunc("iTerm2"),
         -- [sk("s", "slack")] = S.yabai:launchAppFunc("Slack"),
         --- end
-        [sk("space", "Emacs")] = S.yabai:launchAppFunc("Emacs"),
-        [sk("c", "chrome")] = S.yabai:launchAppFunc("Google Chrome"),
-        [sk("i", "intellij")] = S.yabai:launchAppFunc("IntelliJ IDEA"),
-        [sk("m", "activity monitor")] = S.yabai:launchAppFunc(
+        [sk("space", "Emacs")] = S.wm:launchAppFunc("Emacs"),
+        [sk("c", "chrome")] = S.wm:launchAppFunc("Google Chrome"),
+        [sk("i", "intellij")] = S.wm:launchAppFunc("IntelliJ IDEA"),
+        [sk("m", "activity monitor")] = S.wm:launchAppFunc(
             "Activity Monitor"),
-        [sk("d", "dash")] = S.yabai:launchAppFunc("Dash"),
-        [sk("h", "hammerspoon")] = S.yabai:launchAppFunc("Hammerspoon"),
-        [sk("a", "android studio")] = S.yabai:launchAppFunc("Android Studio"),
-        [sk("p", "pyCharm")] = S.yabai:launchAppFunc("PyCharm"),
+        [sk("d", "dash")] = S.wm:launchAppFunc("Dash"),
+        [sk("h", "hammerspoon")] = S.wm:launchAppFunc("Hammerspoon"),
+        [sk("a", "android studio")] = S.wm:launchAppFunc("Android Studio"),
+        [sk("p", "pyCharm")] = S.wm:launchAppFunc("PyCharm"),
         --- Unused
         --- [sk("q", "quip")] = S.yabai:launchAppFunc("Quip"),
     },
@@ -170,93 +163,59 @@ local keyMap = {
         [sk("6", "60 minutes")] = countDownMins(60),
     },
     [sk('w', 'windows+')] = {
-        [sk("1", "move to & focus space 1-8")] = S.yabai.moveW2SFunc(1, true),
-        [sk("2")] = S.yabai.moveW2SFunc(2, true),
-        [sk("3")] = S.yabai.moveW2SFunc(3, true),
-        [sk("4")] = S.yabai.moveW2SFunc(4, true),
-        [sk("5")] = S.yabai.moveW2SFunc(5, true),
-        [sk("6")] = S.yabai.moveW2SFunc(6, true),
-        [sk("7")] = S.yabai.moveW2SFunc(7, true),
-        [sk("8")] = S.yabai.moveW2SFunc(8, true),
-        [ctrl("1", "move to space 1-8")] = S.yabai.moveW2SFunc(1, false),
-        [ctrl("2")] = S.yabai.moveW2SFunc(2, false),
-        [ctrl("3")] = S.yabai.moveW2SFunc(3, false),
-        [ctrl("4")] = S.yabai.moveW2SFunc(4, false),
-        [ctrl("5")] = S.yabai.moveW2SFunc(5, false),
-        [ctrl("6")] = S.yabai.moveW2SFunc(6, false),
-        [ctrl("7")] = S.yabai.moveW2SFunc(7, false),
-        [ctrl("8")] = S.yabai.moveW2SFunc(8, false),
+        [sk("1", "move to & focus space 1-8")] = S.wm.moveW2SFunc(1, true),
+        [sk("2")] = S.wm.moveW2SFunc(2, true),
+        [sk("3")] = S.wm.moveW2SFunc(3, true),
+        [sk("4")] = S.wm.moveW2SFunc(4, true),
+        [sk("5")] = S.wm.moveW2SFunc(5, true),
+        [sk("6")] = S.wm.moveW2SFunc(6, true),
+        [sk("7")] = S.wm.moveW2SFunc(7, true),
+        [sk("8")] = S.wm.moveW2SFunc(8, true),
+        [shift("1", "move to space 1-8")] = S.wm.moveW2SFunc(1, false),
+        [shift("2")] = S.wm.moveW2SFunc(2, false),
+        [shift("3")] = S.wm.moveW2SFunc(3, false),
+        [shift("4")] = S.wm.moveW2SFunc(4, false),
+        [shift("5")] = S.wm.moveW2SFunc(5, false),
+        [shift("6")] = S.wm.moveW2SFunc(6, false),
+        [shift("7")] = S.wm.moveW2SFunc(7, false),
+        [shift("8")] = S.wm.moveW2SFunc(8, false),
 
         -- Other window
-        [sk("o", "other window")] = cwrap(
-            function() S.yabai:focusOtherWindow() end
-        ),
-        -- Swap with other window
-        [{ { "control" }, "s", "swap-o" }] = cwrap(function() S.yabai:swapWithOtherWindow() end),
-        -- to Space
-        [sk("S", "space+")] = {
-            [sk("n", "Move to Next Space(not follow)")] = moveToNextSpace(false),
-            [sk("f", "Move to Next Space(follow)")] = moveToNextSpace(true),
-        },
+        [sk("o", "other window")] = S.wm:focusOtherWindowFunc(),        -- Swap with other window
+        [{ { "control" }, "s", "swap-o" }] = S.wm.swapWithOtherWindowFunc(),
         [sk("c", "choose+")] = {
             [sk("c", "Choose Window (Current App)")] = listWindowCurrent,
             [sk("a", "Choose Window (All App)")] = listWindowAll,
         },
     },
-    [sk("S", "switch spaces")] = cwrap(function() S.yabai:swapVisibleSpaces() end),
-    [sk("n", "next screen")] = cwrap(function() S.yabai:focusNextScreen() end),
-    [sk("k", "other window(visible)")] = cwrap(function() S.yabai:focusVisibleWindow() end),
-    [sk("i", "other window(visible,cs)")] = cwrap(function() S.yabai:focusVisibleWindow(true) end),
+    [sk("S", "switch spaces")] = S.wm:swapVisibleSpacesFunc(),
+    [sk("n", "next screen")] = S.wm:focusNextScreenFunc(),
+    [sk("k", "other window(visible)")] = S.wm:focusVisibleWindowFunc(),
+    [sk("i", "other window(visible,cs)")] = S.wm:focusVisibleWindowFunc(true),
     -- Other window
-    [sk("o", "other window")] = cwrap(
-        function() S.yabai:focusOtherWindow() end
-    ),
+    [sk("o", "other window")] = S.wm:focusOtherWindowFunc(),
     -- Other window (current app)
-    [sk("j", "other window(app)")] = cwrap(
-        function() S.yabai:focusOtherWindow(true) end
-    ),
+    [sk("j", "other window(app)")] = S.wm:focusOtherWindowFunc(true),
     -- Other window (current space)
-    [sk("u", "other window(space)")] = cwrap(
-        function() S.yabai:focusOtherWindow(false, true) end
-    ),
-
-    -- Toggle Float window
-    -- TODO: currently this causing issues - windows under the floating window cannot be raised and focused
-    -- [sk("f", "toggle float window")] = S.yabai:bindFunction({
-    --     "-m window --toggle float",
-    --     "-m window --grid 24:24:1:1:22:22",
-    -- }),
-
+    [sk("u", "other window(space)")] = S.wm:focusOtherWindowFunc(false, true),
     -- Swap with other window
-    [{ { "control" }, "s", "swap-o" }] = cwrap(function() S.yabai:swapWithOtherWindow() end),
-    [ctrl("l", "layout")] = cwrap(
-        (function()
-            local layouts = { [1] = "bsp", [2] = "stack" }
-            local now = 1
-            return function()
-                local next = now + 1
-                if next == 3 then next = 1 end
-                S.yabai:switchLayout(layouts[next])
-                now = next
-            end
-        end)()
-    ),
+    [{ { "control" }, "s", "swap-o" }] = S.wm:swapWithOtherWindowFunc(),
+    [ctrl("l", "layout")] = S.wm.nextLayoutFunc(),
 
     [sk('s', 'space+')] = {
-        [sk("n", "next space(s)")] = gotoNextSpace,
         [sk("m", "mission control i/o")] = toggleMissionControl,
         [sk("d", "show desktop i/o")] = toggleShowDesktop,
         [sk("b", "bing daily")] = S.bingdaily.bingRequest
     },
     --- Spaces
-    [sk("1", "focus space (1-8)")] = S.yabai.focusSpaceFunc(1),
-    [sk("2", nil)] = S.yabai.focusSpaceFunc(2),
-    [sk("3")] = S.yabai.focusSpaceFunc(3),
-    [sk("4")] = S.yabai.focusSpaceFunc(4),
-    [sk("5")] = S.yabai.focusSpaceFunc(5),
-    [sk("6")] = S.yabai.focusSpaceFunc(6),
-    [sk("7")] = S.yabai.focusSpaceFunc(7),
-    [sk("8")] = S.yabai.focusSpaceFunc(8),
+    [sk("1", "focus space (1-8)")] = S.wm.focusSpaceFunc(1),
+    [sk("2", nil)] = S.wm.focusSpaceFunc(2),
+    [sk("3")] = S.wm.focusSpaceFunc(3),
+    [sk("4")] = S.wm.focusSpaceFunc(4),
+    [sk("5")] = S.wm.focusSpaceFunc(5),
+    [sk("6")] = S.wm.focusSpaceFunc(6),
+    [sk("7")] = S.wm.focusSpaceFunc(7),
+    [sk("8")] = S.wm.focusSpaceFunc(8),
 
     --- Exposes
     [sk('e', 'expose')] = (function()
@@ -281,27 +240,18 @@ local keyMap = {
     },
     --- Yabai
     [sk('y', "yabai+")] = {
-        [ctrl("r", "restart")] = S.yabai:restartYabaiService(),
-        [ctrl("x", "stop")] = S.yabai:stopYabaiService(),
+        [ctrl("r", "restart")] = S.wm:startOrRestartServiceFunc(),
+        [ctrl("x", "stop")] = S.wm:stopServiceFunc(),
         [sk("s", "stack")] = {
-            [sk('a', 'application')] = cwrap(function() S.yabai:stackAppWindows() end),
+            [sk('a', 'application')] = S.wm:stackAppWindowsFunc()
         },
-        [sk("i", "info")] = cwrap(
-            function()
-                local info = S.yabai:focusedWSD()
-                bfn.showDebug(hs.inspect(info))
-            end
-        ),
-        [sk("r", "re-spaces")] = cwrap(
-            function()
-                S.yabai:reArrangeSpaces()
-            end
-        ),
+        [sk("i", "info")] = S.wm:showInfoFunc(),
+        [sk("r", "re-spaces")] = S.wm:reArrangeSpacesFunc(),
     },
     --- Scratch pad
-    [ctrl('h', 'hide pads')] = S.yabai:hideAllScratchpads(),
-    [sk('p', "pad+(next space)")] = bfn.makePadMap(false),
-    [ctrl('p', "pad+(this space)")] = bfn.makePadMap(true),
+    [ctrl('h', 'hide pads')] = S.wm:hideAllScratchpadsFunc(),
+    [sk('p', "pad+(next space)")] = S.wm.makePadMapFunc(false),
+    [ctrl('p', "pad+(this space)")] = S.wm.makePadMapFunc(true),
 }
 local hyper = { { "shift", "command", "control", "option" }, "1", }
 spoon.RecursiveBinder.recursiveBind(keyMap, hyper)

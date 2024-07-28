@@ -59,25 +59,25 @@ local function execYabaiScriptSync (script)
 end
 
 --- @return Window[]
-function obj:windows (index)
+function obj.windows (index)
   ---@type Window[]
   return hs.json.decode(execYabaiSync([[-m query --windows]] .. (index and " --window " .. index or "")))
 end
 
 --- @return Space[]
-function obj:spaces (index)
+function obj.spaces (index)
   ---@type Space[]
   return hs.json.decode(execYabaiSync([[-m query --spaces]] .. (index and " --space " .. index or "")))
 end
 
 --- @return Display[]
-function obj:displays (index)
+function obj.displays (index)
   ---@type Display[]
   return hs.json.decode(execYabaiSync([[-m query --displays]] .. (index and " --display " .. index or "")))
 end
 
 --- @return Focus?
-function obj:focusedWSD ()
+function obj.focusedWSD ()
   ---@type string|nil
   local windowJson = execYabaiSync [===[-m query --windows | jq '.[] | select(.["has-focus"] == true)']===]
   if windowJson then
@@ -106,8 +106,8 @@ local function toint (val)
 end
 
 --- move window to space
-function obj:moveWindowToSpace (winId, spaceIndex, follow)
-  local focus = obj:focusedWSD()
+function obj.moveWindowToSpace (winId, spaceIndex, follow)
+  local focus = obj.focusedWSD()
   local _winId = winId or (focus and focus.windowId)
   local spacesLen = toint(execYabaiSync("-m query --spaces | jq -rj '. | length'"))
 
@@ -119,32 +119,36 @@ function obj:moveWindowToSpace (winId, spaceIndex, follow)
   end
 end
 
-function obj:swapWindows (winId, otherWinId)
+function obj.swapWindows (winId, otherWinId)
   execYabaiSync("-m window " .. winId .. " --swap " .. otherWinId)
 end
 
-function obj:stackWindows (winId, otherWinId)
+function obj.stackWindows (winId, otherWinId)
   execYabaiSync("-m window " .. winId .. " --stack " .. otherWinId)
 end
 
-function obj:switchLayout (layout)
+function obj.switchLayout (layout)
   execYabaiSync("-m space --layout " .. layout)
 end
 
-function obj:gotoSpace (spaceIndex)
+function obj.gotoSpace (spaceIndex)
   execYabaiSync("-m space --focus " .. spaceIndex)
 end
 
-function obj:swapWithOtherWindow ()
-  obj:selectOtherWindow(function(focused, selected)
+function obj.swapWithOtherWindow ()
+  obj.selectOtherWindow(function(focused, selected)
     --- Just run the cwrap since in callback
     cwrap(
       function()
-        obj:swapWindows(focused:id(), selected:id())
+        obj.swapWindows(focused:id(), selected:id())
       end
     )()
   end)
 end
+function obj.swapWithOtherWindowFunc()
+  cwrap(function() obj.swapWithOtherWindow() end)
+end
+
 
 ---@diagnostic disable: unused-function, unused-local
 local function focusWindowWithHS (_, selected)
@@ -159,8 +163,8 @@ function obj.focusWindowWithYabai (_, selected)
   end)()
 end
 
-function obj:focusOtherWindow (onlyFocusedApp, onlyFocusedSpace)
-  obj:selectOtherWindow(
+function obj.focusOtherWindow (onlyFocusedApp, onlyFocusedSpace)
+  obj.selectOtherWindow(
   -- focusWindowWithHS
     obj.focusWindowWithYabai,
     onlyFocusedApp,
@@ -168,8 +172,14 @@ function obj:focusOtherWindow (onlyFocusedApp, onlyFocusedSpace)
   )
 end
 
+function obj.focusOtherWindowFunc(onlyFocusedApp, onlyFocusedSpace)
+  return cwrap(
+        function() obj.focusOtherWindow(onlyFocusedApp, onlyFocusedSpace) end
+    )
+end
+
 local function visibleSpaceIndexes ()
-  local visibleSpaceIndexs = M.chain(obj:spaces())
+  local visibleSpaceIndexs = M.chain(obj.spaces())
       :select(
       ---@param s Space
         function(s, _)
@@ -187,8 +197,8 @@ local function visibleSpaceIndexes ()
 end
 
 ---@return Space?
-function obj:focusedSpace ()
-  local spaces = M.chain(obj:spaces())
+function obj.focusedSpace ()
+  local spaces = M.chain(obj.spaces())
       :select(
       ---@param s Space
         function(s, _)
@@ -211,9 +221,9 @@ local function getscratchPadYabaiAppNames ()
 end
 
 --- @param callback function(focused: hs.window, selected: hs.window)
-function obj:selectOtherWindow (callback, onlyFocusedApp, onlyFocusedSpace)
+function obj.selectOtherWindow (callback, onlyFocusedApp, onlyFocusedSpace)
   ---@as Focus
-  local focus = obj:focusedWSD()
+  local focus = obj.focusedWSD()
   if not focus then
     obj.logger.e("no focus, do nothing")
     return
@@ -266,9 +276,9 @@ end
 
 --- Switch to app window prefer current mission control
 --- @return boolean true if switched to app, flase if no window with specified app name
-function obj:switchToApp (appName)
-  local focus = obj:focusedWSD()
-  local fspace = obj:focusedSpace()
+function obj.switchToApp (appName)
+  local focus = obj.focusedWSD()
+  local fspace = obj.focusedSpace()
   local currentSpace = fspace and fspace.index or nil
   local windows = hs.json.decode(execYabaiSync(string.format(
     "-m query --windows | jq -r '.[] | select(.app == \"%s\")' | jq -n '[inputs]'",
@@ -300,8 +310,8 @@ function obj:switchToApp (appName)
   return false
 end
 
-function obj:stackAppWindows ()
-  local focus = obj:focusedWSD()
+function obj.stackAppWindows ()
+  local focus = obj.focusedWSD()
   if not focus then
     return
   end
@@ -317,16 +327,20 @@ function obj:stackAppWindows ()
       :each(
       ---@param w Window
         function(w, _)
-          obj:stackWindows(focus.windowId, w.id)
+          obj.stackWindows(focus.windowId, w.id)
         end)
       :value()
 end
 
-function obj:reArrangeSpaces ()
-  execYabaiScriptSync("keep_fixed_spaces")
+function obj.stackAppWindowsFunc()
+  return cwrap(function() obj.stackAppWindows() end)
 end
 
-function obj:bindFunction (commands)
+function obj.reArrangeSpacesFunc ()
+  return cwrap(function() execYabaiScriptSync("keep_fixed_spaces") end)
+end
+
+function obj.bindFunction (commands)
   return cwrap(function()
     for _, cmd in pairs(commands) do
       execYabaiSync(cmd)
@@ -334,13 +348,13 @@ function obj:bindFunction (commands)
   end)
 end
 
-function obj:restartYabaiService ()
+function obj.startOrRestartServiceFunc ()
   return cwrap(function()
     execSync(string.format("%s --restart-service || %s --start-service", obj.yabaiProgram, obj.yabaiProgram))
   end)
 end
 
-function obj:stopYabaiService ()
+function obj.stopServiceFunc ()
   return cwrap(function()
     execSync(string.format("%s --stop-service", obj.yabaiProgram))
   end)
@@ -355,7 +369,7 @@ end
 
 ---@return Space?, Space?
 local function twoSpaces()
-  local fspace = obj:focusedSpace()
+  local fspace = obj.focusedSpace()
   local currentSpace = fspace or nil
   local spaces = visibleSpaces()
   local otherSpaces = M.chain(spaces)
@@ -369,9 +383,9 @@ local function twoSpaces()
 end
 
 
-function obj:swapVisibleSpaces ()
+function obj.swapVisibleSpaces ()
   local spaces = visibleSpaceIndexes()
-  local focus = obj:focusedWSD()
+  local focus = obj.focusedWSD()
   if not spaces or #spaces ~= 2 then
     obj.logger.w("Only support swap two spaces")
     return
@@ -380,6 +394,9 @@ function obj:swapVisibleSpaces ()
   execYabaiSync(string.format("-m space --switch %d", other))
 end
 
+function obj.swapVisibleSpacesFunc()
+  return cwrap(function() obj.swapVisibleSpaces() end);
+end
 ---@param padsConfig ScratchpadsConfig
 function obj.configPads (padsConfig)
   obj.padsConfig = padsConfig
@@ -433,11 +450,11 @@ function obj.hideScratchpadsNowrap (excludeYabaiAppName)
       ):value()
 end
 
-function obj:hideAllScratchpads ()
+function obj.hideAllScratchpadsFunc ()
   return cwrap(function() obj.hideScratchpadsNowrap() end)
 end
 
-function obj:showScratchpad (yabaiAppName, onCurrentSpace)
+function obj.showScratchpad (yabaiAppName, onCurrentSpace)
   local fn = function()
     ---@type Scratchpad
     local scratchPad = M.chain(obj.padsConfig.pads)
@@ -491,7 +508,7 @@ local function getVisiblePads (spaceIndex)
 end
 
 --- Currently only work for two screen
-function obj:focusNextScreen ()
+function obj.focusNextScreen ()
   local targetWindow = nil
   local _, nextSpace = twoSpaces()
   local visiblePads = getVisiblePads(nextSpace.index)
@@ -512,10 +529,14 @@ function obj:focusNextScreen ()
   end
 end
 
+function obj.focusNextScreenFunc()
+  return cwrap(function() obj.focusNextScreen() end)
+end
+
 --- Currently only work for two screen
-function obj:focusVisibleWindow(onlyCurrentSpace)
+function obj.focusVisibleWindow(onlyCurrentSpace)
   ---@type Window[]
-  local windows = obj:windows()
+  local windows = obj.windows()
   local currentSpace, _ = twoSpaces()
   obj.logger.wf("current space is %d", currentSpace.index)
   local winIds = M.chain(windows)
@@ -532,30 +553,98 @@ function obj:focusVisibleWindow(onlyCurrentSpace)
                     end)
 end
 
-function obj:launchAppFunc (appName, currentSpace)
+function obj.focusVisibleWindowFunc(onlyCurrentSpace)
+  return cwrap(function() obj.focusVisibleWindow(onlyCurrentSpace) end)
+end
+
+function obj.launchAppFunc (appName, currentSpace)
     return cwrap(function()
         obj.hideScratchpadsNowrap()
         if currentSpace then
             hs.application.launchOrFocus(appName)
         else
-            if not obj:switchToApp(appName) then
+            if not obj.switchToApp(appName) then
                 hs.application.launchOrFocus(appName)
             end
         end
     end)
 end
 
-function obj:focusSpaceFunc(spaceIndex)
+function obj.focusSpaceFunc(spaceIndex)
        return cwrap(function()
-            obj:gotoSpace(spaceIndex)
+            obj.gotoSpace(spaceIndex)
         end)
 end
 
-function obj:moveW2SFunc(spaceIndex, follow)
+function obj.moveW2SFunc(spaceIndex, follow)
         return cwrap(function()
-            obj:moveWindowToSpace(nil, spaceIndex, follow)
+            obj.moveWindowToSpace(nil, spaceIndex, follow)
         end)
     end
+
+local sk = hs.loadSpoon("RecursiveBinder").singleKey
+local function ctrl (singleKey, description)
+  return { { "control" }, singleKey, description }
+end
+
+function obj.makePadMapFunc (curSpace)
+  ---@type ScratchpadConfig
+  local defaultGrid = "24:24:1:1:22:22"
+  local defaultOpacity = 1.0
+  local function pad (key, yabaiAppName, appName, grid, opacity)
+    return {
+      key = sk(key, yabaiAppName),
+      appName = appName or yabaiAppName,
+      yabaiAppName = yabaiAppName,
+      grid = grid or defaultGrid,
+      opacity = opacity or defaultOpacity
+    }
+  end
+  local configuration = {
+    spaceIndex = 5,
+    pads = {
+      pad('t', "iTerm2", "iTerm", nil, 0.9),
+      pad('s', "Slack", "Slack"),
+      pad('o', "OmniGraffle", "OmniGraffle"),
+      pad('m', "Music", "Music"),
+      pad('a', "Activity Monitor", "Activity Monitor"),
+    }
+  }
+  obj.configPads(configuration)
+  local result = {
+    [sk('h', "hideAll")] = obj.hideAllScratchpadsFunc(),
+  }
+  ---@param p Scratchpad
+  for _, p in pairs(configuration.pads) do
+    result[p.key] = obj.showScratchpad(p.yabaiAppName, curSpace)
+  end
+  return result
+end
+
+function obj.nextLayoutFunc()
+            local layouts = { [1] = "bsp", [2] = "stack" }
+            local now = 1
+   return cwrap(
+            function()
+                local next = now + 1
+                if next == 3 then next = 1 end
+                obj.switchLayout(layouts[next])
+                now = next
+                end)
+end
+
+---@type spoon.Alerts
+alerts = hs.loadSpoon("Alerts")
+
+function obj.showInfoFunc()
+  return cwrap(
+            function()
+                local info = obj.focusedWSD()
+                alerts.showDebug(hs.inspect(info))
+            end
+        )
+end
+
 
 --- @return spoon.Yabai
 return obj

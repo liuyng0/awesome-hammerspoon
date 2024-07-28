@@ -1,23 +1,10 @@
 ---@class BindFunctions
 local obj = {}
-local sk = hs.loadSpoon("RecursiveBinder").singleKey
-local function ctrl (singleKey, description)
-  return { { "control" }, singleKey, description }
-end
-
 local function color (hex, alpha)
   return { hex = hex, alpha = alpha }
 end
+
 obj.defaultFont = "Fira Code"
-obj.defaultHelperStyle = {
-  atScreenEdge = 0, -- Bottom edge (default value)
-  textStyle = {     -- An hs.styledtext object
-    font = {
-      name = obj.defaultFont,
-      size = 12
-    }
-  }
-}
 obj.defaultStyledTextStle = {
   text = {
     font = {
@@ -84,44 +71,6 @@ function obj.toggleDebugLogger (names, ...)
         return tb
       end)()
       ):show()
-end
-
-function obj.showDebug (msg)
-  hs.alert.show(msg, obj.defaultHelperStyle)
-end
-
-function obj.makePadMap (curSpace)
-  ---@type ScratchpadConfig
-  local defaultGrid = "24:24:1:1:22:22"
-  local defaultOpacity = 1.0
-  local function pad (key, yabaiAppName, appName, grid, opacity)
-    return {
-      key = sk(key, yabaiAppName),
-      appName = appName or yabaiAppName,
-      yabaiAppName = yabaiAppName,
-      grid = grid or defaultGrid,
-      opacity = opacity or defaultOpacity
-    }
-  end
-  local configuration = {
-    spaceIndex = 5,
-    pads = {
-      pad('t', "iTerm2", "iTerm", nil, 0.9),
-      pad('s', "Slack", "Slack"),
-      pad('o', "OmniGraffle", "OmniGraffle"),
-      pad('m', "Music", "Music"),
-      pad('a', "Activity Monitor", "Activity Monitor"),
-    }
-  }
-  S.yabai.configPads(configuration)
-  local result = {
-    [sk('h', "hideAll")] = S.yabai:hideAllScratchpads(),
-  }
-  ---@param p Scratchpad
-  for _, p in pairs(configuration.pads) do
-    result[p.key] = S.yabai:showScratchpad(p.yabaiAppName, curSpace)
-  end
-  return result
 end
 
 return obj
