@@ -532,5 +532,18 @@ function obj:focusVisibleWindow(onlyCurrentSpace)
                     end)
 end
 
+function obj:launchAppFunc (appName, currentSpace)
+    return cwrap(function()
+        S.yabai.hideScratchpadsNowrap()
+        if currentSpace then
+            hs.application.launchOrFocus(appName)
+        else
+            if not S.yabai:switchToApp(appName) then
+                hs.application.launchOrFocus(appName)
+            end
+        end
+    end)
+end
+
 --- @return spoon.Yabai
 return obj

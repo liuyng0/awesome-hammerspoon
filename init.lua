@@ -81,20 +81,6 @@ spoon.AppBindings:bind(
     }
 )
 
-local cwrap = U.command.cwrap
-local function launch_app (appName, currentSpace)
-    return cwrap(function()
-        S.yabai.hideScratchpadsNowrap()
-        if currentSpace then
-            hs.application.launchOrFocus(appName)
-        else
-            if not S.yabai:switchToApp(appName) then
-                hs.application.launchOrFocus(appName)
-            end
-        end
-    end)
-end
-
 --- Countdown
 local function countDownMins (mins)
     return function()
@@ -178,21 +164,21 @@ local keyMap = {
     [sk('l', 'launch+')] = {
         --- begin
         --- NOTE: define in the scratchpad
-        -- [sk("o", "omniGraffle")] = launch_app("OmniGraffle"),
-        -- [sk("t", "terminal")] = launch_app("iTerm2"),
-        -- [sk("s", "slack")] = launch_app("Slack"),
+        -- [sk("o", "omniGraffle")] = S.yabai:launchAppFunc("OmniGraffle"),
+        -- [sk("t", "terminal")] = S.yabai:launchAppFunc("iTerm2"),
+        -- [sk("s", "slack")] = S.yabai:launchAppFunc("Slack"),
         --- end
-        [sk("space", "Emacs")] = launch_app("Emacs"),
-        [sk("c", "chrome")] = launch_app("Google Chrome"),
-        [sk("i", "intellij")] = launch_app("IntelliJ IDEA"),
-        [sk("m", "activity monitor")] = launch_app(
+        [sk("space", "Emacs")] = S.yabai:launchAppFunc("Emacs"),
+        [sk("c", "chrome")] = S.yabai:launchAppFunc("Google Chrome"),
+        [sk("i", "intellij")] = S.yabai:launchAppFunc("IntelliJ IDEA"),
+        [sk("m", "activity monitor")] = S.yabai:launchAppFunc(
             "Activity Monitor"),
-        [sk("d", "dash")] = launch_app("Dash"),
-        [sk("h", "hammerspoon")] = launch_app("Hammerspoon"),
-        [sk("a", "android studio")] = launch_app("Android Studio"),
-        [sk("p", "pyCharm")] = launch_app("PyCharm"),
+        [sk("d", "dash")] = S.yabai:launchAppFunc("Dash"),
+        [sk("h", "hammerspoon")] = S.yabai:launchAppFunc("Hammerspoon"),
+        [sk("a", "android studio")] = S.yabai:launchAppFunc("Android Studio"),
+        [sk("p", "pyCharm")] = S.yabai:launchAppFunc("PyCharm"),
         --- Unused
-        --- [sk("q", "quip")] = launch_app("Quip"),
+        --- [sk("q", "quip")] = S.yabai:launchAppFunc("Quip"),
     },
     [sk('t', "time/schedule+")] = {
         [sk("p", "pause/resume")] = S.countdown.pauseOrResume,
