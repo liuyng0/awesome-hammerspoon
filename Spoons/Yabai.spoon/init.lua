@@ -19,7 +19,7 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 --- Variable
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.logger = hs.logger.new("Yabai", "info")
-obj.yabaiProgram = "/opt/homebrew/bin/yabai"
+obj.program = "/opt/homebrew/bin/yabai"
 obj.scriptPath = os.getenv("HOME") .. "/.config/yabai/"
 ---@type ScratchpadsConfig
 obj.padsConfig = {
@@ -49,7 +49,7 @@ end
 
 --- The program is fixed to spoon.Yabai.program
 local function execYabaiSync (args)
-  local cmd = obj.yabaiProgram .. " " .. args
+  local cmd = obj.program .. " " .. args
   return execSync(cmd)
 end
 
@@ -248,7 +248,7 @@ function obj.selectOtherWindow (callback, onlyFocusedApp, onlyFocusedSpace)
     and string.format("(%s) and %s", spaceSelector(spaceIndexes), ".app == \"" .. focus.app .. "\"")
     or spaceSelector(spaceIndexes)
   local cmd = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
-    obj.yabaiProgram,
+    obj.program,
     queryString)
   ---@type Window[]?
   local windows = hs.json.decode(execSync(cmd))
@@ -350,20 +350,20 @@ end
 
 function obj.startOrRestartServiceFunc ()
   return cwrap(function()
-    execSync(string.format("%s --restart-service || %s --start-service", obj.yabaiProgram, obj.yabaiProgram))
+    execSync(string.format("%s --restart-service || %s --start-service", obj.program, obj.program))
   end)
 end
 
 function obj.stopServiceFunc ()
   return cwrap(function()
-    execSync(string.format("%s --stop-service", obj.yabaiProgram))
+    execSync(string.format("%s --stop-service", obj.program))
   end)
 end
 
 local function visibleSpaces()
   return hs.json.decode(execSync(string.format(
     "%s -m query --spaces | jq -r '.[] | select(.[\"is-visible\"] == true)' | jq -n '[inputs]'",
-    obj.yabaiProgram
+    obj.program
   )))
 end
 
@@ -418,7 +418,7 @@ local function getPadWindows (yabaiAppNames)
     end
   end
   local windowsQuery = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
-    obj.yabaiProgram,
+    obj.program,
     selectStr)
   ---@diagnostic disable
   return hs.json.decode(execSync(windowsQuery))
@@ -444,8 +444,8 @@ function obj.hideScratchpadsNowrap (excludeYabaiAppName)
       ---@param w Window
         function(w, _)
           execSync(string.format("%s -m window %d --space %d && %s -m window %d --minimize",
-                                 obj.yabaiProgram, w.id, obj.padsConfig.spaceIndex,
-          obj.yabaiProgram, w.id))
+                                 obj.program, w.id, obj.padsConfig.spaceIndex,
+          obj.program, w.id))
         end
       ):value()
 end
@@ -483,10 +483,10 @@ function obj.showScratchpad (yabaiAppName, onCurrentSpace)
     local toggleFloat = ((not chosenWindow["is-floating"]) and "" .. "--toggle float" or "")
     local focuseCommand = string.format(
       "%s -m window %d %s %s --grid %s --opacity %.2f --focus",
-      obj.yabaiProgram, chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity)
+      obj.program, chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity)
     local gridCommand = string.format(
       "%s -m window %d --grid %s",
-      obj.yabaiProgram, chosenWindow.id, scratchPad.grid)
+      obj.program, chosenWindow.id, scratchPad.grid)
     execSync(focuseCommand .. " && " .. gridCommand)
   end
   return cwrap(fn)
@@ -519,11 +519,11 @@ function obj.focusNextScreen ()
     targetWindow = nextSpace["first-window"]
   end
   if targetWindow then
-    execSync(string.format("%s -m window --focus %d", obj.yabaiProgram, targetWindow))
+    execSync(string.format("%s -m window --focus %d", obj.program, targetWindow))
   else
     execSync(string.format(
       "%s -m display --focus %d",
-      obj.yabaiProgram,
+      obj.program,
       nextSpace.display
     ))
   end

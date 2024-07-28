@@ -138,21 +138,22 @@ local keyMap = {
     [sk('l', 'launch+')] = {
         --- begin
         --- NOTE: define in the scratchpad
-        -- [sk("o", "omniGraffle")] = S.yabai:launchAppFunc("OmniGraffle"),
-        -- [sk("t", "terminal")] = S.yabai:launchAppFunc("iTerm2"),
-        -- [sk("s", "slack")] = S.yabai:launchAppFunc("Slack"),
+        -- [sk("o", "omniGraffle")] = S.wm.launchAppFunc("OmniGraffle"),
+        -- [sk("t", "terminal")] = S.wm.launchAppFunc("iTerm2"),
+        -- [sk("s", "slack")] = S.wm.launchAppFunc("Slack"),
         --- end
-        [sk("space", "Emacs")] = S.wm:launchAppFunc("Emacs"),
-        [sk("c", "chrome")] = S.wm:launchAppFunc("Google Chrome"),
-        [sk("i", "intellij")] = S.wm:launchAppFunc("IntelliJ IDEA"),
-        [sk("m", "activity monitor")] = S.wm:launchAppFunc(
+        [sk("space", "Emacs")] = S.wm.launchAppFunc("Emacs"),
+        [sk("c", "chrome")] = S.wm.launchAppFunc("Google Chrome"),
+        [sk("t", "iTerm")] = S.wm.launchAppFunc("iTerm"),
+        [sk("i", "intellij")] = S.wm.launchAppFunc("IntelliJ IDEA"),
+        [sk("m", "activity monitor")] = S.wm.launchAppFunc(
             "Activity Monitor"),
-        [sk("d", "dash")] = S.wm:launchAppFunc("Dash"),
-        [sk("h", "hammerspoon")] = S.wm:launchAppFunc("Hammerspoon"),
-        [sk("a", "android studio")] = S.wm:launchAppFunc("Android Studio"),
-        [sk("p", "pyCharm")] = S.wm:launchAppFunc("PyCharm"),
+        [sk("d", "dash")] = S.wm.launchAppFunc("Dash"),
+        [sk("h", "hammerspoon")] = S.wm.launchAppFunc("Hammerspoon"),
+        [sk("a", "android studio")] = S.wm.launchAppFunc("Android Studio"),
+        [sk("p", "pyCharm")] = S.wm.launchAppFunc("PyCharm"),
         --- Unused
-        --- [sk("q", "quip")] = S.yabai:launchAppFunc("Quip"),
+        --- [sk("q", "quip")] = S.wm.launchAppFunc("Quip"),
     },
     [sk('t', "time/schedule+")] = {
         [sk("p", "pause/resume")] = S.countdown.pauseOrResume,
@@ -179,27 +180,26 @@ local keyMap = {
         [shift("6")] = S.wm.moveW2SFunc(6, false),
         [shift("7")] = S.wm.moveW2SFunc(7, false),
         [shift("8")] = S.wm.moveW2SFunc(8, false),
-
         -- Other window
-        [sk("o", "other window")] = S.wm:focusOtherWindowFunc(),        -- Swap with other window
+        [sk("o", "other window")] = S.wm.focusOtherWindowFunc(),        -- Swap with other window
         [{ { "control" }, "s", "swap-o" }] = S.wm.swapWithOtherWindowFunc(),
         [sk("c", "choose+")] = {
             [sk("c", "Choose Window (Current App)")] = listWindowCurrent,
             [sk("a", "Choose Window (All App)")] = listWindowAll,
         },
     },
-    [sk("S", "switch spaces")] = S.wm:swapVisibleSpacesFunc(),
-    [sk("n", "next screen")] = S.wm:focusNextScreenFunc(),
-    [sk("k", "other window(visible)")] = S.wm:focusVisibleWindowFunc(),
-    [sk("i", "other window(visible,cs)")] = S.wm:focusVisibleWindowFunc(true),
+    [sk("S", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
+    [sk("n", "next screen")] = S.wm.focusNextScreenFunc(),
+    [sk("k", "other window(visible)")] = S.wm.focusVisibleWindowFunc(),
+    [sk("i", "other window(visible,cs)")] = S.wm.focusVisibleWindowFunc(true),
     -- Other window
-    [sk("o", "other window")] = S.wm:focusOtherWindowFunc(),
+    [sk("o", "other window")] = S.wm.focusOtherWindowFunc(),
     -- Other window (current app)
-    [sk("j", "other window(app)")] = S.wm:focusOtherWindowFunc(true),
+    [sk("j", "other window(app)")] = S.wm.focusOtherWindowFunc(true),
     -- Other window (current space)
-    [sk("u", "other window(space)")] = S.wm:focusOtherWindowFunc(false, true),
+    [sk("u", "other window(space)")] = S.wm.focusOtherWindowFunc(false, true),
     -- Swap with other window
-    [{ { "control" }, "s", "swap-o" }] = S.wm:swapWithOtherWindowFunc(),
+    [{ { "control" }, "s", "swap-o" }] = S.wm.swapWithOtherWindowFunc(),
     [ctrl("l", "layout")] = S.wm.nextLayoutFunc(),
 
     [sk('s', 'space+')] = {
@@ -240,16 +240,16 @@ local keyMap = {
     },
     --- Yabai
     [sk('y', "yabai+")] = {
-        [ctrl("r", "restart")] = S.wm:startOrRestartServiceFunc(),
-        [ctrl("x", "stop")] = S.wm:stopServiceFunc(),
+        [ctrl("r", "restart")] = S.wm.startOrRestartServiceFunc(),
+        [ctrl("x", "stop")] = S.wm.stopServiceFunc(),
         [sk("s", "stack")] = {
-            [sk('a', 'application')] = S.wm:stackAppWindowsFunc()
+            [sk('a', 'application')] = S.wm.stackAppWindowsFunc()
         },
-        [sk("i", "info")] = S.wm:showInfoFunc(),
-        [sk("r", "re-spaces")] = S.wm:reArrangeSpacesFunc(),
+        [sk("i", "info")] = S.wm.showInfoFunc(),
+        [sk("r", "re-spaces")] = S.wm.reArrangeSpacesFunc(),
     },
     --- Scratch pad
-    [ctrl('h', 'hide pads')] = S.wm:hideAllScratchpadsFunc(),
+    [ctrl('h', 'hide pads')] = S.wm.hideAllScratchpadsFunc(),
     [sk('p', "pad+(next space)")] = S.wm.makePadMapFunc(false),
     [ctrl('p', "pad+(this space)")] = S.wm.makePadMapFunc(true),
 }
