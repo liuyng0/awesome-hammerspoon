@@ -54,8 +54,6 @@ S = {
     countdown = hs.loadSpoon("CountDown"),
     ---@type spoon.HSearch
     hsearch = hs.loadSpoon("HSearch"),
-    ---@type spoon.WinWin
-    winwin = hs.loadSpoon("WinWin"),
     ---@type spoon.Screen
     screen = hs.loadSpoon("Screen"),
     ---@type spoon.Space
@@ -108,17 +106,6 @@ local function countDownMins (mins)
     end
 end
 
---- Windows Map
-local moveAndResize = function(method)
-    return function()
-        S.winwin:moveAndResize(method)
-    end
-end
-local moveToScreen = function(direction)
-    return function()
-        S.winwin:moveToScreen(direction)
-    end
-end
 local moveToNextSpace = function(follow)
     return function()
         S.yabai:moveFocusedWindowToNextSpace(follow)
@@ -244,27 +231,6 @@ local keyMap = {
         [ctrl("7")] = ybfn.moveW2S(7, false),
         [ctrl("8")] = ybfn.moveW2S(8, false),
 
-        [sk("h", "Halfleft")] = moveAndResize("halfleft"),
-        [sk("l", "Halfright")] = moveAndResize("halfright"),
-        [sk("k", "Halfup")] = moveAndResize("halfup"),
-        [sk("j", "Halfdown")] = moveAndResize("halfdown"),
-        -- to screen
-        [sk("n", "Next Screen")] = moveToScreen("next"),
-        [sk("p", "Previous Screen")] = moveToScreen("previous"),
-        -- undo
-        [sk("u", "Undo")] = function() S.winwin:undo() end,
-        -- Triple Window
-        [sk("a", "3-Left")] = moveAndResize("tripleLeft"),
-        [sk("s", "3-Center")] = moveAndResize("centerHalfWidth"),
-        [sk("d", "3-Right")] = moveAndResize("tripleRight"),
-        -- undo/redo
-        [sk("f", "Fullscreen")] = moveAndResize("fullscreen"),
-        [sk("m", "Maximize")] = moveAndResize("maximize"),
-        -- Rotate
-        [sk("r", "Rotate")] = function()
-            S.screen
-                :rotateVisibleWindows()
-        end,
         -- Other window
         [sk("o", "other window")] = cwrap(
             function() S.yabai:focusOtherWindow() end
@@ -326,7 +292,7 @@ local keyMap = {
         [sk("n", "next space(s)")] = gotoNextSpace,
         [sk("m", "mission control i/o")] = toggleMissionControl,
         [sk("d", "show desktop i/o")] = toggleShowDesktop,
-        [sk("b", "bing daily")] = S.bingdaily.bingRequest,
+        [sk("b", "bing daily")] = S.bingdaily.bingRequest
     },
     --- Spaces
     [sk("1", "focus space (1-8)")] = ybfn.focusSpace(1),
