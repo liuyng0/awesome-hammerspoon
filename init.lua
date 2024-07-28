@@ -54,10 +54,6 @@ S = {
     countdown = hs.loadSpoon("CountDown"),
     ---@type spoon.HSearch
     hsearch = hs.loadSpoon("HSearch"),
-    ---@type spoon.Screen
-    screen = hs.loadSpoon("Screen"),
-    ---@type spoon.Space
-    space = hs.loadSpoon("Space"),
     ---@type spoon.Links
     links = hs.loadSpoon("Links"),
     ---@type spoon.AppBindings
@@ -111,13 +107,6 @@ local moveToNextSpace = function(follow)
         S.yabai:moveFocusedWindowToNextSpace(follow)
     end
 end
-local listWindowCurrent = function()
-    S.screen:selectWindowFromFocusedApp()
-end
-local listWindowAll = function()
-    S.screen:selectWindowFromAllWindows()
-end
-
 --- Space Map
 local gotoNextSpace = function()
     S.yabai:gotoNextSpaces()
@@ -237,8 +226,6 @@ local keyMap = {
         ),
         -- Swap with other window
         [{ { "control" }, "s", "swap-o" }] = cwrap(function() S.yabai:swapWithOtherWindow() end),
-        [sk("O", "open")] =
-            function() S.screen:selectFromCoveredWindow() end,
         -- to Space
         [sk("S", "space+")] = {
             [sk("n", "Move to Next Space(not follow)")] = moveToNextSpace(false),
@@ -320,17 +307,7 @@ local keyMap = {
     end)(),
     --- Variable Toggles
     [sk('v', "variable on/off")] = {
-        [sk('w', 'window toggle')] = {
-            [sk("h", "highlight mode")] = function()
-                spoon.Screen
-                    :toggleWindowHighlightMode()
-            end,
-            [sk("i", "isolation mode (space)")] = function()
-                spoon.Screen
-                    :toggleCrossSpaces()
-            end,
-        },
-        [sk('d', 'toggle debug')] = function()
+       [sk('d', 'toggle debug')] = function()
             bfn.toggleDebugLogger({ "G", "S", "N", "U" },
                 G, S, N, U)
         end
@@ -340,7 +317,6 @@ local keyMap = {
         [ctrl("r", "restart")] = S.yabai:restartYabaiService(),
         [ctrl("x", "stop")] = S.yabai:stopYabaiService(),
         [sk("s", "stack")] = {
-            [sk('o', 'to other')] = function() S.screen:stackWithOther() end,
             [sk('a', 'application')] = cwrap(function() S.yabai:stackAppWindows() end),
         },
         [sk("i", "info")] = cwrap(
