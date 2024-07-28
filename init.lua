@@ -144,7 +144,8 @@ local keyMap = {
         --- end
         [sk("space", "Emacs")] = S.wm.launchAppFunc("Emacs"),
         [sk("c", "chrome")] = S.wm.launchAppFunc("Google Chrome"),
-        [sk("t", "iTerm")] = S.wm.launchAppFunc("iTerm"),
+        [sk("t", "iTerm")] = S.wm.launchAppFunc("iTerm2"),
+        [sk("s", "slack")] = S.wm.launchAppFunc("Slack"),
         [sk("i", "intellij")] = S.wm.launchAppFunc("IntelliJ IDEA"),
         [sk("m", "activity monitor")] = S.wm.launchAppFunc(
             "Activity Monitor"),

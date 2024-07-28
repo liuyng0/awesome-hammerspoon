@@ -559,7 +559,6 @@ end
 
 function obj.launchAppFunc (appName, currentSpace)
     return cwrap(function()
-        obj.hideScratchpadsNowrap()
         if currentSpace then
             hs.application.launchOrFocus(appName)
         else
