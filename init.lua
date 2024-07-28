@@ -124,27 +124,8 @@ local sk = S.recursivebinder.singleKey
 local ctrl = function(singleKey, description)
     return { { "control" }, singleKey, description }
 end
---- yabai functions
-local ybfn = (function()
-    local focusSpace = function(spaceIndex)
-        --- Yabai has problem to switch focus if the space is empty
-        return function()
-            hs.eventtap.keyStroke({ "control" }, string.format("%s", spaceIndex))
-        end
-        -- return cwrap(function()
-        --     S.yabai:gotoSpace(spaceIndex)
-        -- end)
-    end
-    local moveW2S = function(spaceIndex, follow)
-        return cwrap(function()
-            S.yabai:moveWindowToSpace(nil, spaceIndex, follow)
-        end)
-    end
-    return {
-        focusSpace = focusSpace,
-        moveW2S = moveW2S
-    }
-end)()
+local cwrap = U.command.cwrap
+
 ---@type BindFunctions
 local bfn = require("bind_functions")
 
@@ -189,22 +170,22 @@ local keyMap = {
         [sk("6", "60 minutes")] = countDownMins(60),
     },
     [sk('w', 'windows+')] = {
-        [sk("1", "move to & focus space 1-8")] = ybfn.moveW2S(1, true),
-        [sk("2")] = ybfn.moveW2S(2, true),
-        [sk("3")] = ybfn.moveW2S(3, true),
-        [sk("4")] = ybfn.moveW2S(4, true),
-        [sk("5")] = ybfn.moveW2S(5, true),
-        [sk("6")] = ybfn.moveW2S(6, true),
-        [sk("7")] = ybfn.moveW2S(7, true),
-        [sk("8")] = ybfn.moveW2S(8, true),
-        [ctrl("1", "move to space 1-8")] = ybfn.moveW2S(1, false),
-        [ctrl("2")] = ybfn.moveW2S(2, false),
-        [ctrl("3")] = ybfn.moveW2S(3, false),
-        [ctrl("4")] = ybfn.moveW2S(4, false),
-        [ctrl("5")] = ybfn.moveW2S(5, false),
-        [ctrl("6")] = ybfn.moveW2S(6, false),
-        [ctrl("7")] = ybfn.moveW2S(7, false),
-        [ctrl("8")] = ybfn.moveW2S(8, false),
+        [sk("1", "move to & focus space 1-8")] = S.yabai.moveW2SFunc(1, true),
+        [sk("2")] = S.yabai.moveW2SFunc(2, true),
+        [sk("3")] = S.yabai.moveW2SFunc(3, true),
+        [sk("4")] = S.yabai.moveW2SFunc(4, true),
+        [sk("5")] = S.yabai.moveW2SFunc(5, true),
+        [sk("6")] = S.yabai.moveW2SFunc(6, true),
+        [sk("7")] = S.yabai.moveW2SFunc(7, true),
+        [sk("8")] = S.yabai.moveW2SFunc(8, true),
+        [ctrl("1", "move to space 1-8")] = S.yabai.moveW2SFunc(1, false),
+        [ctrl("2")] = S.yabai.moveW2SFunc(2, false),
+        [ctrl("3")] = S.yabai.moveW2SFunc(3, false),
+        [ctrl("4")] = S.yabai.moveW2SFunc(4, false),
+        [ctrl("5")] = S.yabai.moveW2SFunc(5, false),
+        [ctrl("6")] = S.yabai.moveW2SFunc(6, false),
+        [ctrl("7")] = S.yabai.moveW2SFunc(7, false),
+        [ctrl("8")] = S.yabai.moveW2SFunc(8, false),
 
         -- Other window
         [sk("o", "other window")] = cwrap(
@@ -268,14 +249,14 @@ local keyMap = {
         [sk("b", "bing daily")] = S.bingdaily.bingRequest
     },
     --- Spaces
-    [sk("1", "focus space (1-8)")] = ybfn.focusSpace(1),
-    [sk("2", nil)] = ybfn.focusSpace(2),
-    [sk("3")] = ybfn.focusSpace(3),
-    [sk("4")] = ybfn.focusSpace(4),
-    [sk("5")] = ybfn.focusSpace(5),
-    [sk("6")] = ybfn.focusSpace(6),
-    [sk("7")] = ybfn.focusSpace(7),
-    [sk("8")] = ybfn.focusSpace(8),
+    [sk("1", "focus space (1-8)")] = S.yabai.focusSpaceFunc(1),
+    [sk("2", nil)] = S.yabai.focusSpaceFunc(2),
+    [sk("3")] = S.yabai.focusSpaceFunc(3),
+    [sk("4")] = S.yabai.focusSpaceFunc(4),
+    [sk("5")] = S.yabai.focusSpaceFunc(5),
+    [sk("6")] = S.yabai.focusSpaceFunc(6),
+    [sk("7")] = S.yabai.focusSpaceFunc(7),
+    [sk("8")] = S.yabai.focusSpaceFunc(8),
 
     --- Exposes
     [sk('e', 'expose')] = (function()

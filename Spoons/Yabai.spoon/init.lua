@@ -534,16 +534,28 @@ end
 
 function obj:launchAppFunc (appName, currentSpace)
     return cwrap(function()
-        S.yabai.hideScratchpadsNowrap()
+        obj.hideScratchpadsNowrap()
         if currentSpace then
             hs.application.launchOrFocus(appName)
         else
-            if not S.yabai:switchToApp(appName) then
+            if not obj:switchToApp(appName) then
                 hs.application.launchOrFocus(appName)
             end
         end
     end)
 end
+
+function obj:focusSpaceFunc(spaceIndex)
+       return cwrap(function()
+            obj:gotoSpace(spaceIndex)
+        end)
+end
+
+function obj:moveW2SFunc(spaceIndex, follow)
+        return cwrap(function()
+            obj:moveWindowToSpace(nil, spaceIndex, follow)
+        end)
+    end
 
 --- @return spoon.Yabai
 return obj
