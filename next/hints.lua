@@ -244,7 +244,7 @@ end
 ---  * If hints.style is set to "vimperator", every window hint is prefixed with the first character of the parent application's name
 ---  * To display hints only for the currently focused application, try something like:
 ---   * `hs.hints.windowHints(hs.window.focusedWindow():application():allWindows())`
-function obj.windowHints (windows, callback, allowNonStandard)
+function obj.windowHints (windows, callback, allowNonStandard, selectedWindows)
   if obj.style == "vimperator" then
     hintChars = obj.hintCharsVimperator
   else

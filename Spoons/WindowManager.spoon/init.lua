@@ -43,6 +43,8 @@ local function registerWM()
    obj.startOrRestartServiceFunc = wm.startOrRestartServiceFunc
    obj.stopServiceFunc = wm.stopServiceFunc
    obj.toggleZoomFullScreen = wm.toggleZoomFullScreen
+   obj.pickWindowsFunc = wm.pickWindowsFunc
+   obj.moveOthersToHiddenSpace = wm.moveOthersToHiddenSpace
 end
 
 registerWM()

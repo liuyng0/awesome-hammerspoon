@@ -76,24 +76,6 @@ function obj.displays (index)
   return hs.json.decode(execYabaiSync([[-m query --displays]] .. (index and " --display " .. index or "")))
 end
 
---- @return Focus?
-function obj.focusedWSD ()
-  ---@type string|nil
-  local windowJson = execYabaiSync [===[-m query --windows | jq '.[] | select(.["has-focus"] == true)']===]
-  if windowJson then
-    ---@type Window
-    local window = hs.json.decode(windowJson)
-    return {
-      windowId = window.id,
-      displayIndex = window.display,
-      spaceIndex = window.space,
-      frame = window.frame,
-      app = window.app,
-      title = window.title
-    }
-  end
-end
-
 local function toint (val)
   if val == nil then
     return nil
@@ -143,10 +125,10 @@ function obj.swapWithOtherWindow ()
         obj.swapWindows(focused:id(), selected:id())
       end
     )()
-  end)
+  end, false, "all")
 end
 function obj.swapWithOtherWindowFunc()
-  cwrap(function() obj.swapWithOtherWindow() end)
+  return cwrap(function() obj.swapWithOtherWindow() end)
 end
 
 
@@ -212,6 +194,49 @@ function obj.focusedSpace ()
   return spaceCount == 1 and spaces[1] or nil
 end
 
+local function visibleSpaces()
+  return hs.json.decode(execSync(string.format(
+    "%s -m query --spaces | jq -r '.[] | select(.[\"is-visible\"] == true)' | jq -n '[inputs]'",
+    obj.program
+  )))
+end
+
+---@return Space?, Space?
+local function twoSpaces()
+  local fspace = obj.focusedSpace()
+  local currentSpace = fspace or nil
+  local spaces = visibleSpaces()
+  local otherSpaces = M.chain(spaces)
+      :filter(function(s, _) ---@param s Space
+        return (not currentSpace) or s.index ~= currentSpace.index
+      end)
+      :value()
+  local otherSpacesCount = M.count(otherSpaces)
+  local nextSpace = otherSpacesCount >= 1 and otherSpaces[1] or nil
+  return currentSpace, nextSpace
+end
+
+--- @return Focus?
+function obj.focusedWSD ()
+  ---@type string|nil
+  local windowJson = execYabaiSync [===[-m query --windows | jq '.[] | select(.["has-focus"] == true)']===]
+  if windowJson then
+    ---@type Window
+    local window = hs.json.decode(windowJson)
+    local currentSpace, nextSpace = twoSpaces()
+    return {
+      windowId = window.id,
+      displayIndex = window.display,
+      spaceIndex = window.space,
+      frame = window.frame,
+      app = window.app,
+      title = window.title,
+      currentSpace = currentSpace,
+      nextSpace = nextSpace
+    }
+  end
+end
+
 local function getscratchPadYabaiAppNames ()
   return M.chain(obj.padsConfig.pads)
       :map(function(pad, _)
@@ -234,6 +259,9 @@ function obj.selectOtherWindow (callback, onlyFocusedApp, onlyFocusedSpace)
   end
 
   local function spaceSelector (indexes)
+    if type(onlyFocusedSpace) == "string" and onlyFocusedSpace == "all" then
+      return ""
+    end
     if onlyFocusedSpace then
       return string.format(".space == %d", focus.spaceIndex)
     end
@@ -247,7 +275,10 @@ function obj.selectOtherWindow (callback, onlyFocusedApp, onlyFocusedSpace)
   local queryString = onlyFocusedApp
     and string.format("(%s) and %s", spaceSelector(spaceIndexes), ".app == \"" .. focus.app .. "\"")
     or spaceSelector(spaceIndexes)
-  local cmd = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
+  if queryString ~= "" then
+    queryString = string.format(" | select(%s)", queryString)
+  end
+  local cmd = string.format("%s -m query --windows | jq -r '.[] %s' | jq -n '[inputs]'",
     obj.program,
     queryString)
   ---@type Window[]?
@@ -362,28 +393,6 @@ function obj.stopServiceFunc ()
   return cwrap(function()
     execSync(string.format("%s --stop-service", obj.program))
   end)
-end
-
-local function visibleSpaces()
-  return hs.json.decode(execSync(string.format(
-    "%s -m query --spaces | jq -r '.[] | select(.[\"is-visible\"] == true)' | jq -n '[inputs]'",
-    obj.program
-  )))
-end
-
----@return Space?, Space?
-local function twoSpaces()
-  local fspace = obj.focusedSpace()
-  local currentSpace = fspace or nil
-  local spaces = visibleSpaces()
-  local otherSpaces = M.chain(spaces)
-      :filter(function(s, _) ---@param s Space
-        return (not currentSpace) or s.index ~= currentSpace.index
-      end)
-      :value()
-  local otherSpacesCount = M.count(otherSpaces)
-  local nextSpace = otherSpacesCount >= 1 and otherSpaces[1] or nil
-  return currentSpace, nextSpace
 end
 
 
@@ -648,6 +657,37 @@ function obj.showInfoFunc()
         )
 end
 
+function obj.moveOthersToHiddenSpace()
+  return cwrap(function()
+      execSync(string.format("yabai -m query --windows --space | jq -r '.[] |" ..
+                             "select(.[\"has-focus\"] == false and .space != %d)'" ..
+                             "| jq '.id' | xargs -I{} yabai -m window {} --space %d",
+                             obj.padsConfig.spaceIndex, obj.padsConfig.spaceIndex))
+  end)
+end
+
+function obj.pickWindowsFunc()
+  return cwrap(function()
+    ---@type focus Space
+    local focus, _ = twoSpaces()
+    local winIds = M.chain(obj.windows())
+        :filter(function(w, _) ---@param w Window
+          return w.space ~= focus.index
+        end)
+        :map(function(w, _) ---@param w Window
+          return w.id
+        end)
+        :value()
+    ws.selectWindow(winIds, function(selected) ---@param selected hs.window
+      cwrap(function()
+        local win = obj.windows(selected:id())
+        local toggleFloat = (not win["is-floating"]) and "" or "--toggle float"
+        execSync(string.format("yabai -m window %d --space %d --focus %s",
+          selected:id(), focus.index, toggleFloat))
+      end)()
+    end)
+  end)
+end
 
 --- @return spoon.Yabai
 return obj

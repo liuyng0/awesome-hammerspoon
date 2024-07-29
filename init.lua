@@ -183,12 +183,14 @@ local keyMap = {
         [shift("8")] = S.wm.moveW2SFunc(8, false),
         -- Other window
         [sk("o", "other window")] = S.wm.focusOtherWindowFunc(),        -- Swap with other window
-        [{ { "control" }, "s", "swap-o" }] = S.wm.swapWithOtherWindowFunc(),
+        [sk("s", "swap-o")] = S.wm.swapWithOtherWindowFunc(),
         [sk("c", "choose+")] = {
             [sk("c", "Choose Window (Current App)")] = listWindowCurrent,
             [sk("a", "Choose Window (All App)")] = listWindowAll,
         },
         [sk("f", "fullscreen")] = S.wm.toggleZoomFullScreen(),
+        [sk("h", "hideOthers")] = S.wm.moveOthersToHiddenSpace(),
+        [sk("p", "pick windows")] = S.wm.pickWindowsFunc(),
     },
     [sk("S", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
     [sk("n", "next screen")] = S.wm.focusNextScreenFunc(),
@@ -221,7 +223,9 @@ local keyMap = {
 
     --- Exposes
     [sk('e', 'expose')] = (function()
-        local exposeAll = N.expose.new{ "Emacs", "Chrome", "Intellij", "iTerm2" }
+        local exposeAll = N.expose.new(nil,
+            {showThumbnails=false, otherSpacesStripWidth=0.35, nonVisibleStripWidth=0.25, textSize = 30,
+             fontName="Fira Code"})
         exposeAll:setCallback(
         ---@param win hs.window
             function(win)
