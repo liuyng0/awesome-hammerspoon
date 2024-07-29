@@ -20,9 +20,12 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.logger = hs.logger.new('Alerts')
 
+---@type hs.eventtap
+local eventtap = require("hs.eventtap")
+
 obj.defaultFont = "Fira Code"
 obj.defaultHelperStyle = {
-  atScreenEdge = 0, -- Bottom edge (default value)
+  atScreenEdge = 1, -- Bottom edge (default value)
   textStyle = {     -- An hs.styledtext object
     font = {
       name = obj.defaultFont,
@@ -32,7 +35,20 @@ obj.defaultHelperStyle = {
 }
 
 function obj.showDebug (msg)
-  hs.alert.show(msg, obj.defaultHelperStyle)
+  local helperId = hs.alert.show(msg, obj.defaultHelperStyle, true)
+  local tap
+  tap = eventtap.new({
+      eventtap.event.types.keyDown,
+      eventtap.event.types.keyUp
+  },
+  function(event)
+      if (event:getType() & eventtap.event.types.keyUp) == eventtap.event.types.keyUp then
+        hs.alert.closeSpecific(helperId)
+        tap:stop()
+      end
+      return true
+  end)
+  tap:start()
 end
 
 return obj

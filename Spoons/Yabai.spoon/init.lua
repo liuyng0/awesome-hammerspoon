@@ -23,7 +23,6 @@ obj.program = "/opt/homebrew/bin/yabai"
 obj.scriptPath = os.getenv("HOME") .. "/.config/yabai/"
 ---@type ScratchpadsConfig
 obj.padsConfig = {
-  spaceIndex = 5,
   pads = {}
 }
 
@@ -45,6 +44,10 @@ local function execSync (cmd, ignoreError)
     end
   end
   return output
+end
+
+local function getScratchSpaceIndex()
+  return tonumber(execSync(string.format("%s -m query --displays --display | jq '.spaces | max'", obj.program)))
 end
 
 --- The program is fixed to spoon.Yabai.program
@@ -232,7 +235,8 @@ function obj.focusedWSD ()
       app = window.app,
       title = window.title,
       currentSpace = currentSpace,
-      nextSpace = nextSpace
+      nextSpace = nextSpace,
+      window = window
     }
   end
 end
@@ -384,7 +388,7 @@ function obj.toggleZoomFullScreenFunc()
 end
 
 function obj.toggleFloatFunc()
-  return obj.bindFunction({string.format("-m window --toggle zoom-fullscreen")})
+  return obj.bindFunction({string.format("-m window --toggle float")})
 end
 
 function obj.startOrRestartServiceFunc ()
@@ -443,6 +447,7 @@ end
 
 --- @excludeYabaiAppName excluded app name
 function obj.hideScratchpadsNowrap (excludeYabaiAppName)
+  local scratchSpaceIndex = getScratchSpaceIndex()
   local otherPads = M.chain(obj.padsConfig.pads)
       :map(function(pad, _)
         return pad.yabaiAppName
@@ -455,14 +460,12 @@ function obj.hideScratchpadsNowrap (excludeYabaiAppName)
       :filter(
       --- @param w Window
         function(w, _)
-          return w.space ~= obj.padsConfig.spaceIndex
+          return w.space ~= scratchSpaceIndex
         end)
       :each(
       ---@param w Window
         function(w, _)
-          execSync(string.format("%s -m window %d --space %d && %s -m window %d --minimize",
-                                 obj.program, w.id, obj.padsConfig.spaceIndex,
-          obj.program, w.id))
+          execSync(string.format("%s -m window %d --space %d", obj.program, w.id, scratchSpaceIndex))
         end
       ):value()
 end
@@ -663,10 +666,11 @@ end
 
 function obj.moveOthersToHiddenSpace()
   return cwrap(function()
+      local scratchSpaceIndex = getScratchSpaceIndex()
       execSync(string.format("yabai -m query --windows --space | jq -r '.[] |" ..
                              "select(.[\"has-focus\"] == false and .space != %d)'" ..
                              "| jq '.id' | xargs -I{} yabai -m window {} --space %d",
-                             obj.padsConfig.spaceIndex, obj.padsConfig.spaceIndex))
+                             scratchSpaceIndex, scratchSpaceIndex))
   end)
 end
 
@@ -690,6 +694,22 @@ function obj.pickWindowsFunc()
           selected:id(), focus.index, toggleFloat))
       end)()
     end)
+  end)
+end
+
+function obj.selectNthSpacesInAllDisplaysFunc(n)
+  return cwrap(function()
+      --- Display[]
+      local displays = obj.displays()
+      M.chain(displays)
+      :each(function(d, _) ---@param d Display
+            if M.count(d.spaces) < n then
+              obj.logger.error("Not enough spaces")
+              return
+            end
+            execSync(string.format("yabai -m display %d --space %d", d.index, d.spaces[n]))
+            end)
+      :value()
   end)
 end
 

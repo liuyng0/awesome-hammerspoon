@@ -71,6 +71,7 @@
 ---@field title string
 ---@field currentSpace Space?
 ---@field nextSpace Space?
+---@field window Window
 
 ---@class Scratchpad
 ---@field key table
@@ -80,5 +81,4 @@
 ---@field opacity number
 
 ---@class ScratchpadsConfig
----@field spaceIndex number
 ---@field pads Scratchpad[]

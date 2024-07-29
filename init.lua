@@ -216,7 +216,15 @@ local keyMap = {
     [sk('s', 'space+')] = {
         [sk("m", "mission control i/o")] = toggleMissionControl,
         [sk("d", "show desktop i/o")] = toggleShowDesktop,
-        [sk("b", "bing daily")] = S.bingdaily.bingRequest
+        [sk("b", "bing daily")] = S.bingdaily.bingRequest,
+        [sk("1", "focus space (1-8) (AD)")] = S.wm.selectNthSpacesInAllDisplaysFunc(1),
+        [sk("2", nil)] = S.wm.selectNthSpacesInAllDisplaysFunc(2),
+        [sk("3")] = S.wm.selectNthSpacesInAllDisplaysFunc(3),
+        [sk("4")] = S.wm.selectNthSpacesInAllDisplaysFunc(4),
+        [sk("5")] = S.wm.selectNthSpacesInAllDisplaysFunc(5),
+        [sk("6")] = S.wm.selectNthSpacesInAllDisplaysFunc(6),
+        [sk("7")] = S.wm.selectNthSpacesInAllDisplaysFunc(7),
+        [sk("8")] = S.wm.selectNthSpacesInAllDisplaysFunc(8),
     },
     --- Spaces
     [sk("1", "focus space (1-8)")] = S.wm.focusSpaceFunc(1),

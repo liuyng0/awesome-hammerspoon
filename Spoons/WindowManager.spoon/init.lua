@@ -46,6 +46,7 @@ local function registerWM()
    obj.toggleFloatFunc = wm.toggleFloatFunc
    obj.pickWindowsFunc = wm.pickWindowsFunc
    obj.moveOthersToHiddenSpace = wm.moveOthersToHiddenSpace
+   obj.selectNthSpacesInAllDisplaysFunc = wm.selectNthSpacesInAllDisplaysFunc
 end
 
 registerWM()
