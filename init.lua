@@ -201,16 +201,16 @@ local keyMap = {
     },
     [sk("S", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
     [sk("n", "next screen")] = S.wm.focusNextScreenFunc(),
-    [sk("k", "other window(visible)")] = S.wm.focusVisibleWindowFunc(),
-    [sk("i", "other window(visible,cs)")] = S.wm.focusVisibleWindowFunc(true),
+    [sk("k", "ow - vs,vw")] = S.wm.focusVisibleWindowFunc(),
+    [sk("i", "ow - cs,vw")] = S.wm.focusVisibleWindowFunc(true),
     -- Other window
-    [sk("o", "other window")] = S.wm.focusOtherWindowFunc(),
+    [sk("o", "ow - vs,all")] = S.wm.focusOtherWindowFunc(),
     -- Other window (current app)
-    [sk("j", "other window(app)")] = S.wm.focusOtherWindowFunc(true),
+    [sk("j", "ow - vs,app")] = S.wm.focusOtherWindowFunc(true),
     -- Other window (current space)
-    [sk("u", "other window(space)")] = S.wm.focusOtherWindowFunc(false, true),
+    [sk("u", "ow - cs,all")] = S.wm.focusOtherWindowFunc(false, true),
     -- Swap with other window
-    [{ { "control" }, "s", "swap-o" }] = S.wm.swapWithOtherWindowFunc(),
+    [{ { "control" }, "s", "ow - swap" }] = S.wm.swapWithOtherWindowFunc(),
     [ctrl("l", "layout")] = S.wm.nextLayoutFunc(),
 
     [sk('s', 'space+')] = {

@@ -240,7 +240,12 @@ local function showHelper (keyFuncNameTable)
       { keyName = keyName, funcName = funcName })
   end
   table.sort(sortedKeyFuncNameTable,
-    function(a, b) return compareLetters(a.keyName, b.keyName) end)
+    function(a, b)
+      if a.funcName == nil then
+        return b.funcName ~= nil or compareLetters(a.keyName, b.keyName)
+      end
+      return compareLetters(a.funcName, b.funcName)
+    end)
 
   for _, value in ipairs(sortedKeyFuncNameTable) do
     local keyName = value.keyName
