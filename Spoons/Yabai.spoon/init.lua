@@ -379,7 +379,11 @@ function obj.bindFunction (commands)
   end)
 end
 
-function obj.toggleZoomFullScreen()
+function obj.toggleZoomFullScreenFunc()
+  return obj.bindFunction({string.format("-m window --toggle zoom-fullscreen")})
+end
+
+function obj.toggleFloatFunc()
   return obj.bindFunction({string.format("-m window --toggle zoom-fullscreen")})
 end
 

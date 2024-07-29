@@ -184,13 +184,20 @@ local keyMap = {
         -- Other window
         [sk("o", "other window")] = S.wm.focusOtherWindowFunc(),        -- Swap with other window
         [sk("s", "swap-o")] = S.wm.swapWithOtherWindowFunc(),
+        [shift("s", "stack")] = S.wm.stackAppWindowsFunc(),
         [sk("c", "choose+")] = {
             [sk("c", "Choose Window (Current App)")] = listWindowCurrent,
             [sk("a", "Choose Window (All App)")] = listWindowAll,
         },
-        [sk("f", "fullscreen")] = S.wm.toggleZoomFullScreen(),
+        [sk("f", "fullscreen")] = S.wm.toggleZoomFullScreenFunc(),
+        [shift("f", "float")] = S.wm.toggleFloatFunc(),
         [sk("h", "hideOthers")] = S.wm.moveOthersToHiddenSpace(),
         [sk("p", "pick windows")] = S.wm.pickWindowsFunc(),
+
+        [ctrl("r", "restart")] = S.wm.startOrRestartServiceFunc(),
+        [ctrl("x", "stop")] = S.wm.stopServiceFunc(),
+        [ctrl("i", "info")] = S.wm.showInfoFunc(),
+        [ctrl("s", "re-spaces")] = S.wm.reArrangeSpacesFunc(),
     },
     [sk("S", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
     [sk("n", "next screen")] = S.wm.focusNextScreenFunc(),
@@ -243,16 +250,6 @@ local keyMap = {
             bfn.toggleDebugLogger({ "G", "S", "N", "U" },
                 G, S, N, U)
         end
-    },
-    --- Yabai
-    [sk('y', "yabai+")] = {
-        [ctrl("r", "restart")] = S.wm.startOrRestartServiceFunc(),
-        [ctrl("x", "stop")] = S.wm.stopServiceFunc(),
-        [sk("s", "stack")] = {
-            [sk('a', 'application')] = S.wm.stackAppWindowsFunc()
-        },
-        [sk("i", "info")] = S.wm.showInfoFunc(),
-        [sk("r", "re-spaces")] = S.wm.reArrangeSpacesFunc(),
     },
     --- Scratch pad
     [ctrl('h', 'hide pads')] = S.wm.hideAllScratchpadsFunc(),

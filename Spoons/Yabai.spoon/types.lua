@@ -69,6 +69,8 @@
 ---@field frame Frame
 ---@field app string
 ---@field title string
+---@field currentSpace Space?
+---@field nextSpace Space?
 
 ---@class Scratchpad
 ---@field key table
