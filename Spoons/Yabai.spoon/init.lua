@@ -657,6 +657,20 @@ function obj.makePadMapFunc (curSpace)
   return result
 end
 
+function obj.resizeWindowMapping()
+  local function c(cmd)
+    return cwrap(function()
+        execSync(cmd)
+    end)
+  end
+  return {
+    [sk("h", "r,-20,l,-20")] = c("yabai -m window --resize right:-20:0  || yabai -m window --resize left:-20:0"),
+    [sk("j", "b,+20,t,+20")] = c("yabai -m window --resize bottom:0:20  || yabai -m window --resize top:0:20"),
+    [sk("k", "b,-20,t,-20")] = c("yabai -m window --resize bottom:0:-20 || yabai -m window --resize top:0:-20"),
+    [sk("l", "r,+20,l,+20")] = c("yabai -m window --resize right:20:0   || yabai -m window --resize left:20:0"),
+  }
+end
+
 function obj.nextLayoutFunc()
             local layouts = { [1] = "bsp", [2] = "stack" }
             local now = 1

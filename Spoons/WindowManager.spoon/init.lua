@@ -48,6 +48,7 @@ local function registerWM()
    obj.moveOthersToHiddenSpaceFunc = wm.moveOthersToHiddenSpaceFunc
    obj.selectVisibleWindowToHideFunc = wm.selectVisibleWindowToHideFunc
    obj.selectNthSpacesInAllDisplaysFunc = wm.selectNthSpacesInAllDisplaysFunc
+   obj.resizeWindowMapping = wm.resizeWindowMapping
 end
 
 registerWM()

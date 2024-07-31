@@ -164,6 +164,7 @@ local keyMap = {
         [sk("4", "45 minutes")] = countDownMins(45),
         [sk("6", "60 minutes")] = countDownMins(60),
     },
+    [sk('r', "resize+")] = S.wm.resizeWindowMapping(),
     [sk('w', 'windows+')] = {
         [sk("1", "move to & focus space 1-8")] = S.wm.moveW2SFunc(1, true),
         [sk("2")] = S.wm.moveW2SFunc(2, true),
