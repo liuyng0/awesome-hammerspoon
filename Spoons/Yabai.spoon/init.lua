@@ -8,6 +8,9 @@
 local obj = {}
 obj.__index = obj
 
+---@type spoon.Alerts
+local alerts = hs.loadSpoon("Alerts")
+
 -- Metadata
 obj.name = "Yabai"
 obj.version = "0.1"
@@ -553,8 +556,7 @@ function obj.focusNextScreenFunc()
   return cwrap(function() obj.focusNextScreen() end)
 end
 
---- Currently only work for two screen
-function obj.focusVisibleWindow(onlyCurrentSpace)
+function obj.operateOnVisibleWindow(onlyCurrentSpace, callback)
   ---@type Window[]
   local windows = obj.windows()
   local currentSpace, _ = twoSpaces()
@@ -568,13 +570,26 @@ function obj.focusVisibleWindow(onlyCurrentSpace)
       return w.id
       end)
   :value()
-  ws.selectWindow(winIds, function(selected)
-                    obj.focusWindowWithYabai(nil, selected)
-                    end)
+  ws.selectWindow(winIds, callback)
 end
 
-function obj.focusVisibleWindowFunc(onlyCurrentSpace)
-  return cwrap(function() obj.focusVisibleWindow(onlyCurrentSpace) end)
+--- Currently only work for two screen
+function obj.selectVisibleWindowToHideFunc (onlyCurrentSpace)
+  return cwrap(function()
+    obj.operateOnVisibleWindow(onlyCurrentSpace,
+      function(selected)
+        obj.moveWindowToHiddenSpace(selected)
+      end)
+  end)
+end
+
+function obj.focusVisibleWindowFunc (onlyCurrentSpace)
+  return cwrap(function()
+    obj.operateOnVisibleWindow(onlyCurrentSpace,
+      function(selected)
+        obj.focusWindowWithYabai(nil, selected)
+      end)
+  end)
 end
 
 function obj.launchAppFunc (appName, currentSpace)
@@ -652,8 +667,6 @@ function obj.nextLayoutFunc()
                 end)
 end
 
----@type spoon.Alerts
-alerts = hs.loadSpoon("Alerts")
 
 function obj.showInfoFunc()
   return cwrap(
@@ -664,13 +677,21 @@ function obj.showInfoFunc()
         )
 end
 
-function obj.moveOthersToHiddenSpace()
+function obj.moveOthersToHiddenSpaceFunc()
   return cwrap(function()
       local scratchSpaceIndex = getScratchSpaceIndex()
       execSync(string.format("yabai -m query --windows --space | jq -r '.[] |" ..
                              "select(.[\"has-focus\"] == false and .space != %d)'" ..
                              "| jq '.id' | xargs -I{} yabai -m window {} --space %d",
                              scratchSpaceIndex, scratchSpaceIndex))
+  end)
+end
+
+function obj.moveWindowToHiddenSpace(window)
+  return cwrap(function()
+      local scratchSpaceIndex = getScratchSpaceIndex()
+      execSync(string.format("yabai -m window %s --space %d",
+                             window:id(), scratchSpaceIndex))
   end)
 end
 

@@ -191,7 +191,8 @@ local keyMap = {
         },
         [sk("f", "fullscreen")] = S.wm.toggleZoomFullScreenFunc(),
         [shift("f", "float")] = S.wm.toggleFloatFunc(),
-        [sk("h", "hideOthers")] = S.wm.moveOthersToHiddenSpace(),
+        [sk("h", "hideOthers")] = S.wm.moveOthersToHiddenSpaceFunc(),
+        [ctrl("h", "select & hide")] = S.wm.selectVisibleWindowToHideFunc(),
         [sk("p", "pick windows")] = S.wm.pickWindowsFunc(),
 
         [ctrl("r", "restart")] = S.wm.startOrRestartServiceFunc(),

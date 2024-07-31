@@ -45,7 +45,8 @@ local function registerWM()
    obj.toggleZoomFullScreenFunc = wm.toggleZoomFullScreenFunc
    obj.toggleFloatFunc = wm.toggleFloatFunc
    obj.pickWindowsFunc = wm.pickWindowsFunc
-   obj.moveOthersToHiddenSpace = wm.moveOthersToHiddenSpace
+   obj.moveOthersToHiddenSpaceFunc = wm.moveOthersToHiddenSpaceFunc
+   obj.selectVisibleWindowToHideFunc = wm.selectVisibleWindowToHideFunc
    obj.selectNthSpacesInAllDisplaysFunc = wm.selectNthSpacesInAllDisplaysFunc
 end
 
