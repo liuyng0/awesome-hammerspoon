@@ -578,7 +578,9 @@ function obj.selectVisibleWindowToHideFunc (onlyCurrentSpace)
   return cwrap(function()
     obj.operateOnVisibleWindow(onlyCurrentSpace,
       function(selected)
-        obj.moveWindowToHiddenSpace(selected)
+        cwrap(function()
+            obj.moveWindowToHiddenSpace(selected)
+        end)()
       end)
   end)
 end
@@ -688,11 +690,8 @@ function obj.moveOthersToHiddenSpaceFunc()
 end
 
 function obj.moveWindowToHiddenSpace(window)
-  return cwrap(function()
-      local scratchSpaceIndex = getScratchSpaceIndex()
-      execSync(string.format("yabai -m window %s --space %d",
-                             window:id(), scratchSpaceIndex))
-  end)
+  local scratchSpaceIndex = getScratchSpaceIndex()
+  execSync(string.format("yabai -m window %d --space %d", window:id(), scratchSpaceIndex))
 end
 
 function obj.pickWindowsFunc()
