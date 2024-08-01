@@ -118,6 +118,10 @@ end
 local shift = function(singleKey, description)
     return { { "shift" }, singleKey, description }
 end
+local ctrlshift = function(singleKey, description)
+    return { { "control", "shift" }, singleKey, description }
+end
+
 
 ---@type BindFunctions
 local bfn = require("bind_functions")
@@ -185,7 +189,9 @@ local keyMap = {
         -- Other window
         [sk("o", "other window")] = S.wm.focusOtherWindowFunc(),        -- Swap with other window
         [sk("s", "swap-o")] = S.wm.swapWithOtherWindowFunc(),
-        [shift("s", "stack")] = S.wm.stackAppWindowsFunc(),
+        [shift("s", "stack(cs)")] = S.wm.stackAppWindowsFunc(true),
+        [ctrlshift("s", "stack(all)")] = S.wm.stackAppWindowsFunc(false),
+        [ctrl("s", "re-spaces")] = S.wm.reArrangeSpacesFunc(),
         [sk("c", "choose+")] = {
             [sk("c", "Choose Window (Current App)")] = listWindowCurrent,
             [sk("a", "Choose Window (All App)")] = listWindowAll,
@@ -199,7 +205,6 @@ local keyMap = {
         [ctrl("r", "restart")] = S.wm.startOrRestartServiceFunc(),
         [ctrl("x", "stop")] = S.wm.stopServiceFunc(),
         [ctrl("i", "info")] = S.wm.showInfoFunc(),
-        [ctrl("s", "re-spaces")] = S.wm.reArrangeSpacesFunc(),
     },
     [sk("S", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
     [sk("n", "next screen")] = S.wm.focusNextScreenFunc(),

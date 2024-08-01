@@ -348,16 +348,17 @@ function obj.switchToApp (appName)
   return false
 end
 
-function obj.stackAppWindows ()
+function obj.stackAppWindows (focusedSpace)
   local focus = obj.focusedWSD()
   if not focus then
     return
   end
+  local focusedSpaceQuery = focusedSpace and "and .space = ".. focus.spaceIndex or ""
   ---@type Window[]?
   local windows = hs.json.decode(
     execYabaiSync(
-      string.format("-m query --windows | jq -r '.[] | select(.app == \"%s\" and .space == %d)' | jq -n '[inputs]'",
-        focus.app, focus.spaceIndex)))
+      string.format("-m query --windows | jq -r '.[] | select(.app == \"%s\" %s)' | jq -n '[inputs]'",
+        focus.app, focusedSpaceQuery)))
   M.chain(windows)
       :select(
       ---@param w Window
@@ -370,7 +371,7 @@ function obj.stackAppWindows ()
       :value()
 end
 
-function obj.stackAppWindowsFunc()
+function obj.stackAppWindowsFunc(focusedSpace)
   return cwrap(function() obj.stackAppWindows() end)
 end
 
@@ -682,7 +683,6 @@ function obj.nextLayoutFunc()
                 now = next
                 end)
 end
-
 
 function obj.showInfoFunc()
   return cwrap(
