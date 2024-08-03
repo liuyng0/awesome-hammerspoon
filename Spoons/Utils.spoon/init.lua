@@ -6,14 +6,6 @@
 
 ---@class spoon.Utils
 local obj = {}
-obj.__index = obj
-
--- Metadata
-obj.name = "Utils"
-obj.version = "0.1"
-obj.author = "Your Name <your@email.org>"
-obj.homepage = "https://github.com/Hammerspoon/Spoons"
-obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 --- Utils.logger
 --- Variable
@@ -30,5 +22,22 @@ obj.command = dofile(hs.spoons.resourcePath("command.lua"))
 obj.expose = dofile(hs.spoons.resourcePath("expose.lua"))
 ---@type utils.hints
 obj.hints = dofile(hs.spoons.resourcePath("hints.lua"))
+
+--- Utilities for Bind key functions
+function obj.sk(key, description)
+   return {{}, key, description}
+end
+
+function obj.shift(key, description)
+   return {{"shift"}, key, description}
+end
+
+function obj.ctrl(key, description)
+  return {{"control"}, key, description}
+end
+
+function obj.ctrlshift(key, description)
+    return {{ "control", "shift" }, key, description }
+end
 
 return obj

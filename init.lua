@@ -15,8 +15,11 @@ hs.hotkey.bind(
 logger.i("Setup libraries")
 --- Global variables
 G = {}
---- spoon.Utils
+---@type spoon.Utils
 U = hs.loadSpoon("Utils")
+
+local sk, ctrl, shift, ctrlshift = U.sk, U.shift, U.ctrl, U.ctrlshift
+
 
 logger.i("Load Spoons")
 -- load the spoon list
@@ -82,17 +85,6 @@ S.recursivebinder.helperFormat = {
         }
     }
 }
-
-local sk = S.recursivebinder.singleKey
-local ctrl = function(singleKey, description)
-    return { { "control" }, singleKey, description }
-end
-local shift = function(singleKey, description)
-    return { { "shift" }, singleKey, description }
-end
-local ctrlshift = function(singleKey, description)
-    return { { "control", "shift" }, singleKey, description }
-end
 
 
 ---@type BindFunctions
