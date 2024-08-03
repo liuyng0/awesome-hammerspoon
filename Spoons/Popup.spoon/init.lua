@@ -1,24 +1,9 @@
---- === Alerts ===
----
---- A new Sample Spoon
----
---- Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Alerts.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Alerts.spoon.zip)
-
----@class spoon.Alerts
+---@class spoon.Popup
 local obj={}
-obj.__index = obj
 
--- Metadata
-obj.name = "Alerts"
-obj.version = "0.1"
-obj.author = "Your Name <your@email.org>"
-obj.homepage = "https://github.com/Hammerspoon/Spoons"
-obj.license = "MIT - https://opensource.org/licenses/MIT"
-
---- Alerts.logger
 --- Variable
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
-obj.logger = hs.logger.new('Alerts')
+obj.logger = hs.logger.new('Popup')
 
 ---@type hs.eventtap
 local eventtap = require("hs.eventtap")
