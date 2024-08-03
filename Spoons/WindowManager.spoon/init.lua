@@ -23,8 +23,8 @@ obj.logger = hs.logger.new('WindowManager')
 local function registerWM()
    ---@type spoon.Yabai
    ---@diagnostic disable
-   local yabai = hs.loadSpoon("Yabai")
-   local as = hs.loadSpoon("AeroSpace")
+   local yabai = dofile(hs.spoons.resourcePath("yabai/yabai.lua"))
+   local aerospace = dofile(hs.spoons.resourcePath("aerospace/aerospace.lua"))
    local wm = yabai
    obj.launchAppFunc = wm.launchAppFunc
    obj.moveW2SFunc = wm.moveW2SFunc
