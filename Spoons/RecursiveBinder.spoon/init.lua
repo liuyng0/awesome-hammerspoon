@@ -52,7 +52,7 @@ obj.helperFormat = {
 }
 
 --- @class BindNode
---- @field isLeaf boolean
+--- @field isLeaf Current
 --- @field modal hs.hotkey.modal? nil for the leaf node
 --- @field children BindNode[] empty for the leaf node
 --- @field parent BindNode? nil for the root node

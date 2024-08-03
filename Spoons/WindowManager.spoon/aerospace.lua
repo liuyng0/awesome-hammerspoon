@@ -21,29 +21,10 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 obj.logger = hs.logger.new("AeroSpace", "info")
 obj.program = "aerospace"
 
-local M = U.moses
-local command = U.command
-local cwrap = U.command.cwrap
-local ws = hs.loadSpoon("WindowSelector") --[[@as spoon.WindowSelector]]
-local rb = hs.loadSpoon("RecursiveBinder")
-local sk = rb.singleKey
-
-local function execSync (fmt, ...)
-  local cmd = string.format(fmt, ...)
-  obj.logger.i("run command: [" .. cmd .. "]")
-  local output, ec, stderr = command.execTaskInShellSync(cmd, nil, false)
-  if ec and ec ~= 0 then
-      obj.logger.e(string.format("Failed command command: %s, error: %s", cmd, stderr))
-  end
-  return output, ec, stderr
-end
-
-local function cwrapExec (fmt, ...)
-   local x = table.unpack({...})
-   return cwrap(function()
-         execSync(fmt, x)
-   end)
-end
+---@type spoon.Utils
+local U = hs.loadSpoon("Utils")
+local sk = U.sk
+local cwrap, execSync, cwrapExec = U.command.cwrap, U.command.execSync, U.command.cwrapExec
 
 local function aerospace(fmt, ...)
    return execSync("%s " .. fmt, obj.program, ...)
@@ -55,7 +36,6 @@ local function cwrapAspace(fmt, ...)
       aerospace(fmt, x)
    end)
 end
-
 
 function obj.launchAppFunc (appName, currentSpace)
    return cwrapExec("open -a \"%s\"", appName)

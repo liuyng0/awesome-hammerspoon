@@ -1,7 +1,6 @@
 ---@class utils.command
 local obj = {}
-obj.module = "utils.command"
-obj.logger = hs.logger.new(obj.module)
+obj.logger = hs.logger.new("U.command")
 obj._PATH_VARIABLE = nil
 
 ---@class CommandResult
@@ -9,9 +8,10 @@ obj._PATH_VARIABLE = nil
 ---@field stdout string
 ---@field stderr string
 
-function obj.cwrap (func)
+function obj.cwrap (func, ...)
+  local x = {...}
   return function()
-    coroutine.wrap(func)()
+    coroutine.wrap(func)(table.unpack(x))
   end
 end
 
@@ -32,7 +32,7 @@ end
 --- @param cmdWithArgs - a string with the bash commands to runs
 --- @param callback - a callback function to trigger once the command completes. Parrams for the callback fn should be exitCode, stdOut, and stdErr
 --- @param withLogin - whether to run the command in a shell that has logged in resulting in common profile and env variable settings getting applied
---- @type fun(cmdWithArgs: string, callback: function?, withLogin: boolean)
+--- @type fun(cmdWithArgs: string, callback: function?, withLogin: Current)
 obj.execTaskInShellSync = (function()
   local pathEnv = ""
   local fn = function(cmdWithArgs, callback, withLogin)
@@ -96,6 +96,24 @@ function obj.getenv (name)
     val = ""
   end
   return val
+end
+
+function obj.execSync(fmt, ...)
+  local cmd = string.format(fmt, ...)
+  obj.logger.i("run command: [" .. cmd .. "]")
+  local output, ec, stderr = obj.execTaskInShellSync(cmd, nil, false)
+  if ec and ec ~= 0 then
+      obj.logger.e(string.format("Failed command command: %s, error: %s", cmd, stderr))
+      return ""
+  end
+  return output
+end
+
+function obj.cwrapExec (fmt, ...)
+   local x = table.unpack({...})
+   return obj.cwrap(function()
+         obj.execSync(fmt, x)
+   end)
 end
 
 return obj

@@ -70,7 +70,6 @@
 ---@field app string
 ---@field title string
 ---@field currentSpace Space?
----@field nextSpace Space?
 ---@field window Window
 
 ---@class Scratchpad
@@ -82,3 +81,11 @@
 
 ---@class ScratchpadsConfig
 ---@field pads Scratchpad[]
+
+---@class WindowOptions
+---@field onlyOtherWindow boolean | nil
+---@field onlyFocusedApp boolean | nil
+---@field onlyVisible boolean | nil
+---@field onlyCurrentSpace boolean | nil
+---@field onlyOtherSpace boolean | nil
+---@field onlyVisibleSpaces boolean | nil

@@ -18,8 +18,7 @@ G = {}
 ---@type spoon.Utils
 U = hs.loadSpoon("Utils")
 
-local sk, ctrl, shift, ctrlshift = U.sk, U.shift, U.ctrl, U.ctrlshift
-
+local sk, ctrl, shift, ctrlshift = U.sk, U.ctrl, U.shift, U.ctrlshift
 
 logger.i("Load Spoons")
 -- load the spoon list
@@ -169,7 +168,7 @@ local keyMap = {
         [ctrl("x", "stop")] = S.wm.stopServiceFunc(),
         [ctrl("i", "info")] = S.wm.showInfoFunc(),
     },
-    [sk("S", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
+    [shift("s", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
     [sk("n", "next screen")] = S.wm.focusNextScreenFunc(),
     [sk("k", "ow - vs,vw")] = S.wm.focusVisibleWindowFunc(),
     [sk("i", "ow - cs,vw")] = S.wm.focusVisibleWindowFunc(true),

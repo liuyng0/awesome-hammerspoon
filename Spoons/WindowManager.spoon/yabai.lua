@@ -8,228 +8,94 @@
 local obj = {}
 obj.__index = obj
 
----@type spoon.Alerts
-local alerts = hs.loadSpoon("Alerts")
+---@type spoon.Popup
+local popup = hs.loadSpoon("Popup")
+---@type spoon.Utils
+local U = hs.loadSpoon("Utils")
+local sk = U.sk
+local M = U.moses
+local cwrap, execSync = U.command.cwrap, U.command.execSync
+local ws = hs.loadSpoon("WindowSelector") --[[@as spoon.WindowSelector]]
+---@type YabaiWrapper
+local wrapper = dofile(hs.spoons.resourcePath("yabai_wrapper.lua"))
 
--- Metadata
-obj.name = "Yabai"
-obj.version = "0.1"
-obj.author = "Your Name <your@email.org>"
-obj.homepage = "https://github.com/Hammerspoon/Spoons"
-obj.license = "MIT - https://opensource.org/licenses/MIT"
-
---- Yabai.logger
---- Variable
---- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.logger = hs.logger.new("Yabai", "info")
-obj.program = "/opt/homebrew/bin/yabai"
-obj.scriptPath = os.getenv("HOME") .. "/.config/yabai/"
+
 ---@type ScratchpadsConfig
 obj.padsConfig = {
   pads = {}
 }
 
-local M = U.moses
-local command = U.command
-local cwrap = U.command.cwrap
-local ws = hs.loadSpoon("WindowSelector") --[[@as spoon.WindowSelector]]
-
-local function execSync (cmd, ignoreError)
-  obj.logger.i("run yabai command: [" .. cmd .. "]")
-  local output, ec, stderr = command.execTaskInShellSync(cmd, nil, false)
-  if ec and ec ~= 0 then
-    if ignoreError then
-      obj.logger.w(string.format("Failed command command: %s, error: %s", cmd, stderr))
-      return ""
-    else
-      obj.logger.e(string.format("Failed command command: %s, error: %s", cmd, stderr))
-      return ""
-    end
+--- @param callback function(focused: hs.window, selected: hs.window)
+--- @param options WindowOptions?
+function obj.selectRun (callback, options)
+  local windows = wrapper.windows()
+  local includeSelf = options and (options.onlyOtherWindow == false)
+  if not includeSelf then
+    windows = M.select(windows, function (win, _) ---@param win Window
+        return win["has-focus"] == false
+    end)
   end
-  return output
-end
 
-local function getScratchSpaceIndex()
-  return tonumber(execSync(string.format("%s -m query --displays --display | jq '.spaces | max'", obj.program)))
-end
-
---- The program is fixed to spoon.Yabai.program
-local function execYabaiSync (args)
-  local cmd = obj.program .. " " .. args
-  return execSync(cmd)
-end
-
---- Run script under the scriptPath
-local function execYabaiScriptSync (script)
-  return command.execTaskInShellSync(obj.scriptPath .. script, nil, false)
-end
-
---- @return Window[]
-function obj.windows (index)
-  ---@type Window[]
-  return hs.json.decode(execYabaiSync([[-m query --windows]] .. (index and " --window " .. index or "")))
-end
-
---- @return Space[]
-function obj.spaces (index)
-  ---@type Space[]
-  return hs.json.decode(execYabaiSync([[-m query --spaces]] .. (index and " --space " .. index or "")))
-end
-
---- @return Display[]
-function obj.displays (index)
-  ---@type Display[]
-  return hs.json.decode(execYabaiSync([[-m query --displays]] .. (index and " --display " .. index or "")))
-end
-
-local function toint (val)
-  if val == nil then
-    return nil
+  if options and options.onlyVisible then
+    windows = M.select(windows, function (win, _) ---@param win Window
+        return win["is-visible"] == true
+    end)
   end
-  local num = tonumber(val)
-  if num == nil then
-    return nil
+
+  local focusedWindow = wrapper.singleWindow()
+  if options and options.onlyFocusedApp and focusedWindow then
+    windows = M.select(windows, function (win, _) ---@param win Window
+        return win.app == focusedWindow.app
+    end)
   end
-  return math.floor(tonumber(val))
-end
 
---- move window to space
-function obj.moveWindowToSpace (winId, spaceIndex, follow)
-  local focus = obj.focusedWSD()
-  local _winId = winId or (focus and focus.windowId)
-  local spacesLen = toint(execYabaiSync("-m query --spaces | jq -rj '. | length'"))
-
-  if spacesLen >= spaceIndex then
-    -- adding the window selector to move command solves some buggy behavior by yabai when dealing with windows without menubars
-    execYabaiSync("-m window " .. _winId .. " --space " .. spaceIndex .. (follow and " --focus " or ""))
-  else
-    obj.logger.e("spaceIndex exceeded" .. spacesLen .. " " .. spaceIndex)
+  local currentSpace = wrapper.singleSpace()
+  if options and options.onlyCurrentSpace and currentSpace then
+    windows = M.select(windows, function (win, _) ---@param win Window
+        return win.space == currentSpace.index
+    end)
   end
-end
 
-function obj.swapWindows (winId, otherWinId)
-  execYabaiSync("-m window " .. winId .. " --swap " .. otherWinId)
-end
-
-function obj.stackWindows (winId, otherWinId)
-  execYabaiSync("-m window " .. winId .. " --stack " .. otherWinId)
-end
-
-function obj.switchLayout (layout)
-  execYabaiSync("-m space --layout " .. layout)
-end
-
-function obj.gotoSpace (spaceIndex)
-  execYabaiSync("-m space --focus " .. spaceIndex)
-end
-
-function obj.swapWithOtherWindow ()
-  obj.selectOtherWindow(function(focused, selected)
-    --- Just run the cwrap since in callback
-    cwrap(
-      function()
-        obj.swapWindows(focused:id(), selected:id())
-      end
-    )()
-  end, false, "all")
-end
-function obj.swapWithOtherWindowFunc()
-  return cwrap(function() obj.swapWithOtherWindow() end)
-end
-
-
----@diagnostic disable: unused-function, unused-local
-local function focusWindowWithHS (_, selected)
-  selected:unminimize()
-  selected:raise()
-  selected:focus()
-end
-
-function obj.focusWindowWithYabai (_, selected)
-  cwrap(function()
-    execYabaiSync("-m window " .. selected:id() .. " --focus")
-  end)()
-end
-
-function obj.focusOtherWindow (onlyFocusedApp, onlyFocusedSpace)
-  obj.selectOtherWindow(
-  -- focusWindowWithHS
-    obj.focusWindowWithYabai,
-    onlyFocusedApp,
-    onlyFocusedSpace
-  )
-end
-
-function obj.focusOtherWindowFunc(onlyFocusedApp, onlyFocusedSpace)
-  return cwrap(
-        function() obj.focusOtherWindow(onlyFocusedApp, onlyFocusedSpace) end
-    )
-end
-
-local function visibleSpaceIndexes ()
-  local visibleSpaceIndexs = M.chain(obj.spaces())
-      :select(
-      ---@param s Space
-        function(s, _)
-          return s["is-visible"]
-        end)
-      :map(
-      ---@param s Space
-        function(s, _)
-          return s.index
-        end
-      )
-      :value()
-
-  return visibleSpaceIndexs
-end
-
----@return Space?
-function obj.focusedSpace ()
-  local spaces = M.chain(obj.spaces())
-      :select(
-      ---@param s Space
-        function(s, _)
-          return s["has-focus"]
-        end)
-     :value()
-  local spaceCount = M.count(spaces)
-  if spaceCount > 1 then
-    obj.logger.e("something wrong, should not have more than 1 focused spaces")
+  if options and options.onlyOtherSpace and currentSpace then
+    windows = M.select(windows, function (win, _) ---@param win Window
+        return win.space ~= currentSpace.index
+    end)
   end
-  return spaceCount == 1 and spaces[1] or nil
+
+  local visibleSpaceIndexes = wrapper.visibleSpaceIndexes()
+  if options and options.onlyVisibleSpaces and visibleSpaceIndexes then
+    windows = M.select(windows, function (win, _) ---@param win Window
+        return M.find(visibleSpaceIndexes, win.space)
+    end)
+  end
+  local winIds = M.map(windows, function(win, _) ---@param win Window
+                          return win.id
+                       end)
+  local focusedWindowObj = focusedWindow and hs.window.get(focusedWindow.id)
+  ws.selectWindow(winIds, function(selected) cwrap(callback, focusedWindowObj, selected)() end)
 end
 
-local function visibleSpaces()
-  return hs.json.decode(execSync(string.format(
-    "%s -m query --spaces | jq -r '.[] | select(.[\"is-visible\"] == true)' | jq -n '[inputs]'",
-    obj.program
-  )))
+function obj.swapWithOtherWindowFunc ()
+  return cwrap(obj.selectRun, function(a, b) wrapper.swapWindows(a:id(), b:id()) end)
 end
 
----@return Space?, Space?
-local function twoSpaces()
-  local fspace = obj.focusedSpace()
-  local currentSpace = fspace or nil
-  local spaces = visibleSpaces()
-  local otherSpaces = M.chain(spaces)
-      :filter(function(s, _) ---@param s Space
-        return (not currentSpace) or s.index ~= currentSpace.index
-      end)
-      :value()
-  local otherSpacesCount = M.count(otherSpaces)
-  local nextSpace = otherSpacesCount >= 1 and otherSpaces[1] or nil
-  return currentSpace, nextSpace
+function obj.focusOtherWindowFunc (onlyFocusedApp, onlyFocusedSpace)
+  ---@type WindowOptions
+  local option = {
+    onlyFocusedApp = onlyFocusedApp,
+    onlyCurrentSpace = onlyFocusedSpace
+  }
+  return cwrap(obj.selectRun, function(_, b) wrapper.focusWindow(b:id()) end,
+               option)
 end
 
 --- @return Focus?
 function obj.focusedWSD ()
-  ---@type string|nil
-  local windowJson = execYabaiSync [===[-m query --windows | jq '.[] | select(.["has-focus"] == true)']===]
-  if windowJson then
-    ---@type Window
-    local window = hs.json.decode(windowJson)
-    local currentSpace, nextSpace = twoSpaces()
+  ---@type Window
+  local window = wrapper.singleWindow()
+  if window then
+    local currentSpace = wrapper.singleSpace()
     return {
       windowId = window.id,
       displayIndex = window.display,
@@ -237,222 +103,126 @@ function obj.focusedWSD ()
       frame = window.frame,
       app = window.app,
       title = window.title,
+      window = window,
       currentSpace = currentSpace,
-      nextSpace = nextSpace,
-      window = window
     }
   end
 end
 
-local function getscratchPadYabaiAppNames ()
-  return M.chain(obj.padsConfig.pads)
-      :map(function(pad, _)
-        return pad.yabaiAppName
-      end)
-      :value()
-end
-
---- @param callback function(focused: hs.window, selected: hs.window)
-function obj.selectOtherWindow (callback, onlyFocusedApp, onlyFocusedSpace)
-  ---@as Focus
-  local focus = obj.focusedWSD()
-  if not focus then
-    obj.logger.e("no focus, do nothing")
-    return
-  end
-  local spaceIndexes = visibleSpaceIndexes()
-  if not spaceIndexes then
-    return
-  end
-
-  local function spaceSelector (indexes)
-    if type(onlyFocusedSpace) == "string" and onlyFocusedSpace == "all" then
-      return ""
-    end
-    if onlyFocusedSpace then
-      return string.format(".space == %d", focus.spaceIndex)
-    end
-    local result = string.format(".space == %d", indexes[1])
-    for i = 2, #indexes do
-      result = result .. " or " .. string.format(".space == %d", indexes[i])
-    end
-    return result
-  end
-
-  local queryString = onlyFocusedApp
-    and string.format("(%s) and %s", spaceSelector(spaceIndexes), ".app == \"" .. focus.app .. "\"")
-    or spaceSelector(spaceIndexes)
-  if queryString ~= "" then
-    queryString = string.format(" | select(%s)", queryString)
-  end
-  local cmd = string.format("%s -m query --windows | jq -r '.[] %s' | jq -n '[inputs]'",
-    obj.program,
-    queryString)
-  ---@type Window[]?
-  local windows = hs.json.decode(execSync(cmd))
-  local scratchPads = getscratchPadYabaiAppNames()
-  local winIds = M.chain(windows)
-      :select(
-      ---@param w Window
-        function(w, _)
-          -- filter out focused window
-          if focus and w.id == focus.windowId then
-            return false
-          end
-          -- filter out scratch pads
-          if M.contains(scratchPads, w.app) then
-            return false
-          end
-          return true
-        end)
-      :map(function(w, _) return w.id end)
-      :value()
-  ws.selectWindow(winIds, function(selected)
-    callback(hs.window.get(focus.windowId), selected)
-  end)
-end
-
 --- Switch to app window prefer current mission control
---- @return boolean true if switched to app, flase if no window with specified app name
+--- @return true if switched to app, flase if no window with specified app name
 function obj.switchToApp (appName)
-  local focus = obj.focusedWSD()
-  local fspace = obj.focusedSpace()
-  local currentSpace = fspace and fspace.index or nil
-  local windows = hs.json.decode(execYabaiSync(string.format(
-    "-m query --windows | jq -r '.[] | select(.app == \"%s\")' | jq -n '[inputs]'",
-    appName)))
-  if not windows then
-    return false
+  local windows = wrapper.appWindows(appName)
+  local visibleSpaceIndexes = wrapper.visibleSpaceIndexes()
+  local currentSpace = wrapper.singleSpace()
+  ---@type Window[]
+  local sortedWindows = M.chain(windows)
+  :sort(
+    ---@param a Window
+    ---@param b Window
+    function(a, b)
+      if a["has-focus"] then return true end
+      if a.space == currentSpace.index then return true end
+      if b.space == currentSpace.index then return false end
+      if a["is-visible"] and (not b["is-visible"]) then
+          return true
+      end
+      if b["is-visible"] and (not a["is-visible"]) then
+        return false
+      end
+      local av = M.find(visibleSpaceIndexes, a.space)
+      local bv = M.find(visibleSpaceIndexes, b.space)
+      if av and (not bv) then
+        return true
+      end
+      if bv and (not av) then
+        return false
+      end
+      return a.id > b.id
+    end)
+  :first()
+  :value()
+
+  if M.count(sortedWindows) > 0 then
+    wrapper.focusWindow(sortedWindows[1].id)
   end
-  ---@type Window
-  local targetWindow
-  ---@type Window
-  if type(windows) == 'table' and #windows == 0 then
-    return false
-  end
-  for _, win in pairs(windows) do
-    if focus and win.space == focus.spaceIndex then
-      targetWindow = win
-      break
-    elseif not targetWindow then
-      targetWindow = win
-    end
-  end
-  if targetWindow then
-    if targetWindow.space ~= currentSpace then
-      execYabaiSync("-m space --focus " .. targetWindow.space)
-    end
-    execYabaiSync("-m window --focus " .. targetWindow.id)
-    return true
-  end
-  return false
+  return true
 end
 
-function obj.stackAppWindows (focusedSpace)
-  local focus = obj.focusedWSD()
-  if not focus then
+function obj.stackAppWindows (onlyFocusedSpace)
+  local focusedWindow = wrapper.singleWindow()
+  if not focusedWindow then
+    obj.logger.w("No window focused, do nothing!")
     return
   end
-  local focusedSpaceQuery = focusedSpace and "and .space = ".. focus.spaceIndex or ""
   ---@type Window[]?
-  local windows = hs.json.decode(
-    execYabaiSync(
-      string.format("-m query --windows | jq -r '.[] | select(.app == \"%s\" %s)' | jq -n '[inputs]'",
-        focus.app, focusedSpaceQuery)))
+  local windows = wrapper.appWindows(focusedWindow.app)
+
   M.chain(windows)
       :select(
       ---@param w Window
-        function(w, _) return w.id ~= focus.windowId end)
+        function(w, _)
+          if onlyFocusedSpace and w.space ~= focusedWindow.space then
+            return false
+          end
+          return w.id ~= focusedWindow.id
+        end)
       :each(
       ---@param w Window
         function(w, _)
-          obj.stackWindows(focus.windowId, w.id)
+          wrapper.stackWindows(focusedWindow.id, w.id)
         end)
       :value()
 end
 
-function obj.stackAppWindowsFunc(focusedSpace)
-  return cwrap(function() obj.stackAppWindows() end)
+function obj.stackAppWindowsFunc (onlyFocusedSpace)
+  return cwrap(obj.stackAppWindows, onlyFocusedSpace)
 end
 
 function obj.reArrangeSpacesFunc ()
-  return cwrap(function() execYabaiScriptSync("keep_fixed_spaces") end)
+  return cwrap(wrapper.runScript, "keep_fixed_spaces")
 end
 
-function obj.bindFunction (commands)
-  return cwrap(function()
-    for _, cmd in pairs(commands) do
-      execYabaiSync(cmd)
-    end
-  end)
+function obj.toggleZoomFullScreenFunc ()
+  return cwrap(wrapper.windowToggle, nil, "zoom-fullscreen")
 end
 
-function obj.toggleZoomFullScreenFunc()
-  return obj.bindFunction({string.format("-m window --toggle zoom-fullscreen")})
-end
-
-function obj.toggleFloatFunc()
-  return obj.bindFunction({string.format("-m window --toggle float")})
+function obj.toggleFloatFunc ()
+  return cwrap(wrapper.windowToggle, nil, "float")
 end
 
 function obj.startOrRestartServiceFunc ()
-  return cwrap(function()
-    execSync(string.format("%s --restart-service || %s --start-service", obj.program, obj.program))
-  end)
+  return cwrap(wrapper.restartService)
 end
 
 function obj.stopServiceFunc ()
-  return cwrap(function()
-    execSync(string.format("%s --stop-service", obj.program))
-  end)
+  return cwrap(wrapper.stopService)
 end
 
-
 function obj.swapVisibleSpaces ()
-  local spaces = visibleSpaceIndexes()
+  local spaces = wrapper.visibleSpaceIndexes()
   local focus = obj.focusedWSD()
   if not spaces or #spaces ~= 2 then
     obj.logger.w("Only support swap two spaces")
     return
   end
   local other = focus and spaces[1] == focus.spaceIndex and spaces[2] or spaces[1]
-  execYabaiSync(string.format("-m space --switch %d", other))
+  wrapper.switchSpace(nil, other)
 end
 
-function obj.swapVisibleSpacesFunc()
-  return cwrap(function() obj.swapVisibleSpaces() end);
+function obj.swapVisibleSpacesFunc ()
+  return cwrap(obj.swapVisibleSpaces);
 end
+
 ---@param padsConfig ScratchpadsConfig
 function obj.configPads (padsConfig)
   obj.padsConfig = padsConfig
 end
 
----@param yabaiAppNames string[]
----@return Window[]
-local function getPadWindows (yabaiAppNames)
-  if #yabaiAppNames == 0 then
-    return {}
-  end
-  local selectStr = ""
-  for i, padName in pairs(yabaiAppNames) do
-    local condition = ".app == " .. "\"" .. padName .. "\""
-    if i == 1 then
-      selectStr = selectStr .. condition
-    else
-      selectStr = selectStr .. " or " .. condition
-    end
-  end
-  local windowsQuery = string.format("%s -m query --windows | jq -r '.[] | select(%s)' | jq -n '[inputs]'",
-    obj.program,
-    selectStr)
-  ---@diagnostic disable
-  return hs.json.decode(execSync(windowsQuery))
-end
-
 --- @excludeYabaiAppName excluded app name
 function obj.hideScratchpadsNowrap (excludeYabaiAppName)
-  local scratchSpaceIndex = getScratchSpaceIndex()
-  local otherPads = M.chain(obj.padsConfig.pads)
+  local toSpaceIndex = wrapper.maxSpaceIndexInCurrentDisplay()
+  local padsToHide = M.chain(obj.padsConfig.pads)
       :map(function(pad, _)
         return pad.yabaiAppName
       end)
@@ -460,22 +230,22 @@ function obj.hideScratchpadsNowrap (excludeYabaiAppName)
         return name ~= excludeYabaiAppName
       end)
       :value()
-  M.chain(getPadWindows(otherPads))
+  M.chain(wrapper.appWindows(padsToHide))
       :filter(
       --- @param w Window
         function(w, _)
-          return w.space ~= scratchSpaceIndex
+          return w.space ~= toSpaceIndex
         end)
       :each(
       ---@param w Window
         function(w, _)
-          execSync(string.format("%s -m window %d --space %d", obj.program, w.id, scratchSpaceIndex))
+          wrapper.moveWindowToSpace(w.id, toSpaceIndex)
         end
       ):value()
 end
 
 function obj.hideAllScratchpadsFunc ()
-  return cwrap(function() obj.hideScratchpadsNowrap() end)
+  return cwrap(obj.hideScratchpadsNowrap)
 end
 
 function obj.showScratchpad (yabaiAppName, onCurrentSpace)
@@ -492,7 +262,7 @@ function obj.showScratchpad (yabaiAppName, onCurrentSpace)
     end
     scratchPad = scratchPad[1]
     ---@type Window[]
-    local currentSpace, nextSpace= twoSpaces()
+    local currentSpace, nextSpace = twoSpaces()
     local targetSpace = onCurrentSpace and currentSpace or nextSpace or currentSpace
     local targetSpaceIndex = targetSpace.index
     local thisAppWindows = getPadWindows({ yabaiAppName })
@@ -506,11 +276,11 @@ function obj.showScratchpad (yabaiAppName, onCurrentSpace)
     local spaceSwitch = (chosenWindow.space ~= targetSpaceIndex) and "--space " .. targetSpaceIndex or ""
     local toggleFloat = ((not chosenWindow["is-floating"]) and "" .. "--toggle float" or "")
     local focuseCommand = string.format(
-      "%s -m window %d %s %s --grid %s --opacity %.2f --focus",
-      obj.program, chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity)
+      "yabai -m window %d %s %s --grid %s --opacity %.2f --focus",
+       chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity)
     local gridCommand = string.format(
-      "%s -m window %d --grid %s",
-      obj.program, chosenWindow.id, scratchPad.grid)
+      "yabai -m window %d --grid %s",
+     chosenWindow.id, scratchPad.grid)
     execSync(focuseCommand .. " && " .. gridCommand)
   end
   return cwrap(fn)
@@ -524,7 +294,7 @@ local function getVisiblePads (spaceIndex)
       end)
       :value()
 
-  return M.chain(getPadWindows(allPads))
+  return M.chain(wrapper.appWindows(allPads))
       :filter(function(win, _) ---@param win Window
         return win.space == spaceIndex and win["is-visible"]
       end)
@@ -535,6 +305,10 @@ end
 function obj.focusNextScreen ()
   local targetWindow = nil
   local _, nextSpace = twoSpaces()
+  if not nextSpace then
+    obj.logger.w("only single space, do nothing")
+    return
+  end
   local visiblePads = getVisiblePads(nextSpace.index)
   if M.count(visiblePads) > 0 then
     targetWindow = visiblePads[1].id
@@ -543,89 +317,60 @@ function obj.focusNextScreen ()
     targetWindow = nextSpace["first-window"]
   end
   if targetWindow then
-    execSync(string.format("%s -m window --focus %d", obj.program, targetWindow))
+    wrapper.focusWindow(targetWindow)
   else
-    execSync(string.format(
-      "%s -m display --focus %d",
-      obj.program,
-      nextSpace.display
-    ))
+    wrapper.focusDisplay(nextSpace.display)
   end
 end
 
-function obj.focusNextScreenFunc()
-  return cwrap(function() obj.focusNextScreen() end)
-end
-
-function obj.operateOnVisibleWindow(onlyCurrentSpace, callback)
-  ---@type Window[]
-  local windows = obj.windows()
-  local currentSpace, _ = twoSpaces()
-  obj.logger.wf("current space is %d", currentSpace.index)
-  local winIds = M.chain(windows)
-  :filter(function(w, _) ---@param w Window
-        return w["is-visible"] and w.app ~= "Hammerspoon" and (not w["has-focus"])
-          and ((onlyCurrentSpace == nil) or (currentSpace == nil) or (currentSpace.index== w.space))
-  end)
-  :map(function(w, _) ---@param w Window
-      return w.id
-      end)
-  :value()
-  ws.selectWindow(winIds, callback)
+function obj.focusNextScreenFunc ()
+  return cwrap(obj.focusNextScreen)
 end
 
 --- Currently only work for two screen
 function obj.selectVisibleWindowToHideFunc (onlyCurrentSpace)
-  return cwrap(function()
-    obj.operateOnVisibleWindow(onlyCurrentSpace,
-      function(selected)
-        cwrap(function()
-            obj.moveWindowToHiddenSpace(selected)
-        end)()
-      end)
-  end)
+  ---@type WindowOptions
+  local option = {
+    onlyCurrentSpace = onlyCurrentSpace,
+    onlyVisible = true
+  }
+  return cwrap(obj.selectRun, function(_, b)
+                 obj.moveWindowToHiddenSpace(b)
+  end, option)
 end
 
 function obj.focusVisibleWindowFunc (onlyCurrentSpace)
-  return cwrap(function()
-    obj.operateOnVisibleWindow(onlyCurrentSpace,
-      function(selected)
-        obj.focusWindowWithYabai(nil, selected)
-      end)
-  end)
+  ---@type WindowOptions
+  local option = {
+    onlyCurrentSpace = onlyCurrentSpace,
+    onlyVisible = true
+  }
+  return cwrap(obj.selectRun, function(_, b)
+                 wrapper.focusWindow(b:id())
+  end, option)
 end
 
 function obj.launchAppFunc (appName, currentSpace)
-    return cwrap(function()
-        if currentSpace then
-            hs.application.launchOrFocus(appName)
-        else
-            if not obj.switchToApp(appName) then
-                hs.application.launchOrFocus(appName)
-            end
-        end
-    end)
-end
-
-function obj.focusSpaceFunc(spaceIndex)
-       return cwrap(function()
-            obj.gotoSpace(spaceIndex)
-        end)
-end
-
-function obj.moveW2SFunc(spaceIndex, follow)
-        return cwrap(function()
-            obj.moveWindowToSpace(nil, spaceIndex, follow)
-        end)
+  return cwrap(function()
+    if currentSpace then
+      hs.application.launchOrFocus(appName)
+    else
+      if not obj.switchToApp(appName) then
+        hs.application.launchOrFocus(appName)
+      end
     end
+  end)
+end
 
-local sk = hs.loadSpoon("RecursiveBinder").singleKey
-local function ctrl (singleKey, description)
-  return { { "control" }, singleKey, description }
+function obj.focusSpaceFunc (spaceIndex)
+  return cwrap(wrapper.focusSpace, spaceIndex)
+end
+
+function obj.moveW2SFunc (spaceIndex, follow)
+  return cwrap(wrapper.moveWindowToSpace, nil, spaceIndex, follow)
 end
 
 function obj.makePadMapFunc (curSpace)
-  ---@type ScratchpadConfig
   local defaultGrid = "24:24:1:1:22:22"
   local defaultOpacity = 1.0
   local function pad (key, yabaiAppName, appName, grid, opacity)
@@ -658,10 +403,10 @@ function obj.makePadMapFunc (curSpace)
   return result
 end
 
-function obj.resizeWindowMapping()
-  local function c(cmd)
+function obj.resizeWindowMapping ()
+  local function c (cmd)
     return cwrap(function()
-        execSync(cmd)
+      execSync(cmd)
     end)
   end
   return {
@@ -672,78 +417,59 @@ function obj.resizeWindowMapping()
   }
 end
 
-function obj.nextLayoutFunc()
-            local layouts = { [1] = "bsp", [2] = "stack" }
-            local now = 1
-   return cwrap(
-            function()
-                local next = now + 1
-                if next == 3 then next = 1 end
-                obj.switchLayout(layouts[next])
-                now = next
-                end)
-end
-
-function obj.showInfoFunc()
+function obj.nextLayoutFunc ()
+  local layouts = { [1] = "bsp", [2] = "stack" }
+  local now = 1
   return cwrap(
-            function()
-                local info = obj.focusedWSD()
-                alerts.showDebug(hs.inspect(info))
-            end
-        )
+    function()
+      local next = now + 1
+      if next == 3 then next = 1 end
+      wrapper.switchLayout(layouts[next])
+      now = next
+    end)
 end
 
-function obj.moveOthersToHiddenSpaceFunc()
+function obj.showInfoFunc ()
+  return cwrap(
+    function()
+      local info = obj.focusedWSD()
+      popup.showDebug(hs.inspect(info))
+    end
+  )
+end
+
+function obj.moveOthersToHiddenSpaceFunc ()
+  return cwrap(wrapper.hideOtherWindowsInCurrentSpace)
+end
+
+function obj.moveWindowToHiddenSpace (window)
+  local scratchSpaceIndex = wrapper.maxSpaceIndexInCurrentDisplay()
+  return wrapper.moveWindowToSpace(window:id(), scratchSpaceIndex)
+end
+
+function obj.pickWindowsFunc ()
+  ---@type WindowOptions
+  local option = {
+    onlyOtherSpace = true
+  }
+  return cwrap(obj.selectRun, function(_, b)
+                 wrapper.pickWindow(b:id())
+  end, option)
+end
+
+function obj.selectNthSpacesInAllDisplaysFunc (n)
   return cwrap(function()
-      local scratchSpaceIndex = getScratchSpaceIndex()
-      execSync(string.format("yabai -m query --windows --space | jq -r '.[] |" ..
-                             "select(.[\"has-focus\"] == false and .space != %d)'" ..
-                             "| jq '.id' | xargs -I{} yabai -m window {} --space %d",
-                             scratchSpaceIndex, scratchSpaceIndex))
-  end)
-end
-
-function obj.moveWindowToHiddenSpace(window)
-  local scratchSpaceIndex = getScratchSpaceIndex()
-  execSync(string.format("yabai -m window %d --space %d", window:id(), scratchSpaceIndex))
-end
-
-function obj.pickWindowsFunc()
-  return cwrap(function()
-    ---@type focus Space
-    local focus, _ = twoSpaces()
-    local winIds = M.chain(obj.windows())
-        :filter(function(w, _) ---@param w Window
-          return w.space ~= focus.index
-        end)
-        :map(function(w, _) ---@param w Window
-          return w.id
+    --- Display[]
+    local displays = wrapper.displays()
+    M.chain(displays)
+        :each(function(d, _) ---@param d Display
+          if M.count(d.spaces) < n then
+            obj.logger.e("Not enough spaces")
+            return
+          end
+          wrapper.showSpaceOnDisplay(d.index, d.spaces[n])
         end)
         :value()
-    ws.selectWindow(winIds, function(selected) ---@param selected hs.window
-      cwrap(function()
-        local win = obj.windows(selected:id())
-        local toggleFloat = (not win["is-floating"]) and "" or "--toggle float"
-        execSync(string.format("yabai -m window %d --space %d --focus %s",
-          selected:id(), focus.index, toggleFloat))
-      end)()
-    end)
-  end)
-end
-
-function obj.selectNthSpacesInAllDisplaysFunc(n)
-  return cwrap(function()
-      --- Display[]
-      local displays = obj.displays()
-      M.chain(displays)
-      :each(function(d, _) ---@param d Display
-            if M.count(d.spaces) < n then
-              obj.logger.error("Not enough spaces")
-              return
-            end
-            execSync(string.format("yabai -m display %d --space %d", d.index, d.spaces[n]))
-            end)
-      :value()
   end)
 end
 
