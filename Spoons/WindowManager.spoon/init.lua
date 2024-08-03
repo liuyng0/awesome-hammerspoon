@@ -71,9 +71,9 @@ local function registerWM(wm, fromModule)
 end
 
 ---@type WM.Yabai
-local yabai = dofile(hs.spoons.resourcePath("yabai/yabai.lua"))
+local yabai = dofile(hs.spoons.resourcePath("yabai.lua"))
 ---@type WM.AeroSpace
-local aerospace = dofile(hs.spoons.resourcePath("aerospace/aerospace.lua"))
+local aerospace = dofile(hs.spoons.resourcePath("aerospace.lua"))
 registerWM(yabai, "yabai")
 
 return obj
