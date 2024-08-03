@@ -11,7 +11,7 @@ obj.windowHighlightMode = false
 obj.logger = hs.logger.new("Screen")
 local M = U.moses
 local hints = N.hints
----@type spoon.Yabai
+---@type WM.Yabai
 local yabai = hs.loadSpoon("Yabai")
 
 

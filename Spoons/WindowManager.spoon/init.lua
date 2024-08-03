@@ -20,11 +20,12 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.logger = hs.logger.new('WindowManager')
 
+---@type WM.Yabai
+local yabai = dofile(hs.spoons.resourcePath("yabai/yabai.lua"))
+---@type WM.AeroSpace
+local aerospace = dofile(hs.spoons.resourcePath("aerospace/aerospace.lua"))
+
 local function registerWM()
-   ---@type spoon.Yabai
-   ---@diagnostic disable
-   local yabai = dofile(hs.spoons.resourcePath("yabai/yabai.lua"))
-   local aerospace = dofile(hs.spoons.resourcePath("aerospace/aerospace.lua"))
    local wm = yabai
    obj.launchAppFunc = wm.launchAppFunc
    obj.moveW2SFunc = wm.moveW2SFunc

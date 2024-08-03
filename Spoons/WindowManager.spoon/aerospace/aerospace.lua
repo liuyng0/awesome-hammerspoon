@@ -4,7 +4,7 @@
 ---
 --- Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/AeroSpace.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/AeroSpace.spoon.zip)
 
----@class spoon.AeroSpace
+---@class WM.AeroSpace
 local obj = {}
 obj.__index = obj
 

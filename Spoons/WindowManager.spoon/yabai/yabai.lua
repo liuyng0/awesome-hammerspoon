@@ -4,7 +4,7 @@
 ---
 --- Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Yabai.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Yabai.spoon.zip)
 
----@class spoon.Yabai
+---@class WM.Yabai
 local obj = {}
 obj.__index = obj
 
@@ -747,5 +747,5 @@ function obj.selectNthSpacesInAllDisplaysFunc(n)
   end)
 end
 
---- @return spoon.Yabai
+--- @return WM.Yabai
 return obj
