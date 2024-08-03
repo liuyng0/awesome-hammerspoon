@@ -30,5 +30,4 @@ obj.command = dofile(hs.spoons.resourcePath("command.lua"))
 obj.expose = dofile(hs.spoons.resourcePath("expose.lua"))
 ---@type utils.hints
 obj.hints = dofile(hs.spoons.resourcePath("hints.lua"))
-
 return obj

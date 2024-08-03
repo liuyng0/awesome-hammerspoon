@@ -3242,7 +3242,7 @@ do
   local f = {}
 
   -- Will be returned upon requiring, indexes into the wrapper
-  ---@class Moses
+  ---@class utils.moses
   local Moses = {}
   Moses.__index = f
 
