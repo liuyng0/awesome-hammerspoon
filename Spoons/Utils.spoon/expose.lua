@@ -61,7 +61,7 @@ end
 local timer, logger = require 'hs.timer', require 'hs.logger'
 local log = logger.new('expose')
 
----@class next.expose
+---@class utils.expose
 local expose = { setLogLevel = log.setLogLevel, getLogLevel = log.getLogLevel } --module
 local activeInstances = {}                                                      -- these are updated in the background
 local modals = {}                                                               -- modal hotkeys for selecting a hint; global state
@@ -1293,7 +1293,7 @@ end
 --- Notes:
 ---   * by default expose will show invisible windows and (unlike the OSX expose) windows from other spaces; use
 ---     `hs.expose.ui` or the `uiPrefs` parameter to change these behaviours.
----@return next.expose
+---@return utils.expose
 function expose.new (wf, uiPrefs, logname, loglevel)
   if type(uiPrefs) == 'string' then
     loglevel = logname

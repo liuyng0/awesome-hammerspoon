@@ -67,7 +67,6 @@ local function registerWM(wm, fromModule)
    obj.selectVisibleWindowToHideFunc = f(wm, "selectVisibleWindowToHideFunc", fromModule)
    obj.selectNthSpacesInAllDisplaysFunc = f(wm, "selectNthSpacesInAllDisplaysFunc", fromModule)
    obj.resizeWindowMapping = f(wm, "resizeWindowMapping", fromModule, true)
-   obj.notExist = f(wm, "notExist", fromModule)
 end
 
 ---@type WM.Yabai

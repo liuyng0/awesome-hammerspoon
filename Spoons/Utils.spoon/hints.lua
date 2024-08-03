@@ -2,7 +2,7 @@
 ---
 --- Switch focus with a transient per-application keyboard shortcut
 
----@class next.hints
+---@class utils.hints
 local obj = require "hs.libhints"
 local window = require "hs.window"
 local hotkey = require "hs.hotkey"

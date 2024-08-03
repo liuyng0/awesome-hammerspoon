@@ -1,4 +1,4 @@
-
+---@class utils.F
 local F = {}
 
 local load = load
@@ -46,7 +46,7 @@ local function format(_, str)
          return fmt and string.format(fmt, fn()) or tostring(fn())
       else
          error(err, 0)
-      end         
+      end
    end))
 end
 

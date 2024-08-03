@@ -8,11 +8,13 @@
 local obj = {}
 obj.__index = obj
 
--- imports
+---@type Utils
+local U = hs.loadSpoon("Utils")
+---@type utils.moses
 local M = U.moses
 local wf = hs.window.filter
---- @type next.hints
-local hints = require("next/hints")
+--- @type utils.hints
+local hints = U.hints
 
 --- Re-order the alphabets
 hints.hintChars = {

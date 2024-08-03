@@ -16,20 +16,7 @@ logger.i("Setup libraries")
 --- Global variables
 G = {}
 --- Utils
-U = {
-    ---@type Moses
-    moses = require("utils/moses"),
-    F = require("utils/F"),
-    ---@type utils.command
-    command = require("utils/command")
-}
---- New extensions, actually are overriddens for the extensions
-N = {
-    ---@type next.expose
-    expose = require("next/expose"),
-    ---@type next.hints
-    hints = require("next/hints")
-}
+U = hs.loadSpoon("Utils")
 
 logger.i("Setup private path")
 local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
@@ -124,7 +111,6 @@ end
 
 
 ---@type BindFunctions
-local bfn = require("bind_functions")
 
 --- Make console not always on top
 hs.consoleOnTop(false)
@@ -245,7 +231,7 @@ local keyMap = {
 
     --- Exposes
     [sk('e', 'expose')] = (function()
-        local exposeAll = N.expose.new(nil,
+        local exposeAll = U.expose.new(nil,
             {showThumbnails=false, otherSpacesStripWidth=0.35, nonVisibleStripWidth=0.25, textSize = 30,
              fontName="Fira Code"})
         exposeAll:setCallback(
@@ -262,7 +248,7 @@ local keyMap = {
     --- Variable Toggles
     [sk('v', "variable on/off")] = {
        [sk('d', 'toggle debug')] = function()
-            bfn.toggleDebugLogger({ "G", "S", "N", "U" },
+            U.debug.toggleDebugLogger({ "G", "S", "N", "U" },
                 G, S, N, U)
         end
     },
