@@ -25,7 +25,6 @@ local clock                      = os and os.clock or nil
 ---@class utils.moses
 local M                          = {}
 
-
 -- ======== Private helpers
 
 local function f_max (a, b) return a > b end
@@ -249,7 +248,7 @@ M.operator.len = M.operator.length
 -- @name clear
 -- @param t a table
 -- @return the given table, cleared.
----@return Moses
+---@return utils.moses
 function M.clear (t)
   for k in pairs(t) do t[k] = nil end
   return t
@@ -261,7 +260,7 @@ end
 -- @param t a table
 -- @param f a function, prototyped as `f (v, k)`
 -- @see eachi
----@return Moses
+---@return utils.moses
 function M.each (t, f)
   for index, value in pairs(t) do
     f(value, index)
@@ -276,7 +275,7 @@ end
 -- @param t a table
 -- @param f a function, prototyped as `f (v, k)`
 -- @see each
----@return Moses
+---@return utils.moses
 function M.eachi (t, f)
   local lkeys = M.sort(M.select(M.keys(t), M.isInteger))
   for k, key in ipairs(lkeys) do
@@ -289,7 +288,7 @@ end
 -- @param t a table
 -- @param ... A variable number of keys to collect values
 -- @return an array-list of values
----@return Moses
+---@return utils.moses
 function M.at (t, ...)
   local values = {}
   for i, key in ipairs({ ... }) do values[#values + 1] = t[key] end
@@ -302,7 +301,7 @@ end
 -- @param t a table
 -- @param key a key
 -- @param f a function, prototyped as `f(v)` or a value
----@return Moses
+---@return utils.moses
 function M.adjust (t, key, f)
   if (t[key] == nil) then error("key not existing in table") end
   local _t = M.clone(t)
@@ -317,7 +316,7 @@ end
 -- @return the count of occurrences of the given value
 -- @see countf
 -- @see size
----@return Moses
+---@return utils.moses
 function M.count (t, val)
   if val == nil then return M.size(t) end
   local count = 0
@@ -335,7 +334,7 @@ end
 -- @return the count of values validating the predicate
 -- @see count
 -- @see size
----@return Moses
+---@return utils.moses
 function M.countf (t, f)
   local count = 0
   for k, v in pairs(t) do
@@ -352,7 +351,7 @@ end
 -- @param[opt] comp a comparison function. Defaults to `isEqual`
 -- @return `true` when all values in `t` are equal, `false` otherwise.
 -- @see isEqual
----@return Moses
+---@return utils.moses
 function M.allEqual (t, comp)
   local k, pivot = next(t)
   for k, v in pairs(t) do
@@ -372,7 +371,7 @@ end
 -- @param t a table
 -- @param[opt] n the number of loops
 -- @return an iterator function yielding value-key pairs from the passed-in table.
----@return Moses
+---@return utils.moses
 function M.cycle (t, n)
   n = n or 1
   if n <= 0 then return M.noop end
@@ -401,7 +400,7 @@ end
 -- @param f  an iterator function, prototyped as `f (v, k)`
 -- @return a table of results
 -- @see mapi
----@return Moses
+---@return utils.moses
 function M.map (t, f)
   local _t = {}
   for index, value in pairs(t) do
@@ -418,7 +417,7 @@ end
 -- @param f  an iterator function, prototyped as `f (v, k)`
 -- @return a table of results
 -- @see map
----@return Moses
+---@return utils.moses
 function M.mapi (t, f)
   local _t = {}
   for index, value in ipairs(t) do
@@ -440,7 +439,7 @@ end
 -- @see best
 -- @see reduceRight
 -- @see reduceBy
----@return Moses
+---@return utils.moses
 function M.reduce (t, f, state)
   for k, value in pairs(t) do
     if state == nil then
@@ -462,7 +461,7 @@ end
 -- @see reduce
 -- @see reduceRight
 -- @see reduceBy
----@return Moses
+---@return utils.moses
 function M.best (t, f)
   local _, state = next(t)
   for k, value in pairs(t) do
@@ -487,7 +486,7 @@ end
 -- @see reduce
 -- @see best
 -- @see reduceRight
----@return Moses
+---@return utils.moses
 function M.reduceBy (t, f, pred, state)
   return M.reduce(M.select(t, pred), f, state)
 end
@@ -504,7 +503,7 @@ end
 -- @see reduce
 -- @see best
 -- @see reduceBy
----@return Moses
+---@return utils.moses
 function M.reduceRight (t, f, state)
   return M.reduce(M.reverse(t), f, state)
 end
@@ -519,7 +518,7 @@ end
 -- @param[opt] state an initial state of reduction. Defaults to the first value in the table.
 -- @return an array of states
 -- @see mapReduceRight
----@return Moses
+---@return utils.moses
 function M.mapReduce (t, f, state)
   local _t = {}
   for i, value in pairs(t) do
@@ -539,7 +538,7 @@ end
 -- @param[opt] state an initial state of reduction. Defaults to the last value in the table.
 -- @return an array of states
 -- @see mapReduce
----@return Moses
+---@return utils.moses
 function M.mapReduceRight (t, f, state)
   return M.mapReduce(M.reverse(t), f, state)
 end
@@ -553,7 +552,7 @@ end
 -- @param value a value to search for
 -- @return a boolean : `true` when found, `false` otherwise
 -- @see detect
----@return Moses
+---@return utils.moses
 function M.include (t, value)
   local _iter = (type(value) == 'function') and value or M.isEqual
   for k, v in pairs(t) do
@@ -572,7 +571,7 @@ end
 -- @return the key of the value when found or __nil__
 -- @see include
 -- @see find
----@return Moses
+---@return utils.moses
 function M.detect (t, value)
   local _iter = (type(value) == 'function') and value or M.isEqual
   for key, arg in pairs(t) do
@@ -586,7 +585,7 @@ end
 -- @param props a set of keys
 -- @return an array of values from the passed-in table
 -- @see findWhere
----@return Moses
+---@return utils.moses
 function M.where (t, props)
   local r = M.select(t, function(v)
     for key in pairs(props) do
@@ -603,7 +602,7 @@ end
 -- @param props a set of keys
 -- @return a value from the passed-in table
 -- @see where
----@return Moses
+---@return utils.moses
 function M.findWhere (t, props)
   local index = M.detect(t, function(v)
     for key in pairs(props) do
@@ -621,7 +620,7 @@ end
 -- @param f an iterator function, prototyped as `f (v, k)`
 -- @return the selected values
 -- @see reject
----@return Moses
+---@return utils.moses
 function M.select (t, f)
   local _t = {}
   for index, value in pairs(t) do
@@ -637,7 +636,7 @@ end
 -- @param f an iterator function, prototyped as `f (v, k)`
 -- @return the remaining values
 -- @see select
----@return Moses
+---@return utils.moses
 function M.reject (t, f)
   local _t = {}
   for index, value in pairs(t) do
@@ -652,7 +651,7 @@ end
 -- @param t a table
 -- @param f an iterator function, prototyped as `f (v, k)`
 -- @return `true` if all values passes the predicate, `false` otherwise
----@return Moses
+---@return utils.moses
 function M.all (t, f)
   for index, value in pairs(t) do
     if not f(value, index) then return false end
@@ -666,7 +665,7 @@ end
 -- @param method a function, prototyped as `f (v, k)`
 -- @return the result of the call `f (v, k)`
 -- @see pluck
----@return Moses
+---@return utils.moses
 function M.invoke (t, method)
   return M.map(t, function(v, k)
     if (type(v) == 'table') then
@@ -692,7 +691,7 @@ end
 -- @param t a table
 -- @param key a key, will be used to index in each value: `value[key]`
 -- @return an array of values having the given key
----@return Moses
+---@return utils.moses
 function M.pluck (t, key)
   local _t = {}
   for k, v in pairs(t) do
@@ -708,7 +707,7 @@ end
 -- @param[opt] transform a transformation function, prototyped as `transform (v, k)`, defaults to @{identity}
 -- @return the max value found
 -- @see min
----@return Moses
+---@return utils.moses
 function M.max (t, transform)
   return extract(t, f_max, transform)
 end
@@ -720,7 +719,7 @@ end
 -- @param[opt] transform a transformation function, prototyped as `transform (v, k)`, defaults to @{identity}
 -- @return the min value found
 -- @see max
----@return Moses
+---@return utils.moses
 function M.min (t, transform)
   return extract(t, f_min, transform)
 end
@@ -731,7 +730,7 @@ end
 -- @param a a table
 -- @param b another table
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.same (a, b)
   return M.all(a, function(v) return M.include(b, v) end)
       and M.all(b, function(v) return M.include(a, v) end)
@@ -743,7 +742,7 @@ end
 -- @param[opt] comp a comparison function prototyped as `comp (a, b)`, defaults to <tt><</tt> operator.
 -- @return the given table, sorted.
 -- @see sortBy
----@return Moses
+---@return utils.moses
 function M.sort (t, comp)
   t_sort(t, comp)
   return t
@@ -756,7 +755,7 @@ end
 -- @param[opt] comp a comparison function. Defaults to `<` operator
 -- @return an iterator function
 -- @see sortedv
----@return Moses
+---@return utils.moses
 function M.sortedk (t, comp)
   local keys = M.keys(t)
   t_sort(keys, comp)
@@ -774,7 +773,7 @@ end
 -- @param[opt] comp a comparison function. Defaults to `<` operator
 -- @return an iterator function
 -- @see sortedk
----@return Moses
+---@return utils.moses
 function M.sortedv (t, comp)
   local keys = M.keys(t)
   comp = comp or f_min
@@ -795,7 +794,7 @@ end
 -- @param[optchain] comp a comparison function, defaults to the `<` operator
 -- @return a new array of sorted values
 -- @see sort
----@return Moses
+---@return utils.moses
 function M.sortBy (t, transform, comp)
   local f = transform or M.identity
   if (type(transform) == 'string') then
@@ -811,7 +810,7 @@ end
 -- @param t a table
 -- @param iter an iterator function, prototyped as `iter (v, k)`
 -- @return a table of subsets groups
----@return Moses
+---@return utils.moses
 function M.groupBy (t, iter)
   local _t = {}
   for k, v in pairs(t) do
@@ -830,7 +829,7 @@ end
 -- @param t a table
 -- @param iter an iterator function, prototyped as `iter (v, k)`
 -- @return a table of subsets groups names paired with their count
----@return Moses
+---@return utils.moses
 function M.countBy (t, iter)
   local stats = {}
   for i, v in pairs(t) do
@@ -847,7 +846,7 @@ end
 -- @return a count
 -- @see count
 -- @see countf
----@return Moses
+---@return utils.moses
 function M.size (...)
   local args = { ... }
   local arg1 = args[1]
@@ -862,7 +861,7 @@ end
 -- @param other another table
 -- @return `true` or `false`
 -- @see sameKeys
----@return Moses
+---@return utils.moses
 function M.containsKeys (t, other)
   for key in pairs(other) do
     if not t[key] then return false end
@@ -876,7 +875,7 @@ end
 -- @param tB another table
 -- @return `true` or `false`
 -- @see containsKeys
----@return Moses
+---@return utils.moses
 function M.sameKeys (tA, tB)
   for key in pairs(tA) do
     if not tB[key] then return false end
@@ -899,7 +898,7 @@ end
 -- @param[optchain] seed an optional seed for shuffling
 -- @return an array of selected values
 -- @see sampleProb
----@return Moses
+---@return utils.moses
 function M.sample (array, n, seed)
   n = n or 1
   if n == 0 then return {} end
@@ -919,7 +918,7 @@ end
 -- @param[opt] seed an optional seed for deterministic sampling
 -- @return an array of selected values
 -- @see sample
----@return Moses
+---@return utils.moses
 function M.sampleProb (array, prob, seed)
   if seed then randomseed(seed) end
   local t = {}
@@ -936,7 +935,7 @@ end
 -- @param[opt] n a number of values to retrieve. Defaults to 1.
 -- @param[optchain] comp a comparison function. Defaults to `<` operator.
 -- @return an array of top n values
----@return Moses
+---@return utils.moses
 function M.nsorted (array, n, comp)
   comp = comp or f_min
   n = n or 1
@@ -956,7 +955,7 @@ end
 -- @param array an array
 -- @param[opt] seed a seed
 -- @return a shuffled copy of the given array
----@return Moses
+---@return utils.moses
 function M.shuffle (array, seed)
   if seed then randomseed(seed) end
   local _shuffled = {}
@@ -972,7 +971,7 @@ end
 -- @name pack
 -- @param ... a list of arguments
 -- @return an array of all passed-in args
----@return Moses
+---@return utils.moses
 function M.pack (...) return { ... } end
 
 --- Looks for the first occurrence of a given value in an array. Returns the value index if found.
@@ -983,7 +982,7 @@ function M.pack (...) return { ... } end
 -- @param[opt] from the index from where the search will start. Defaults to 1.
 -- @return the index of the value if found in the array, `nil` otherwise.
 -- @see detect
----@return Moses
+---@return utils.moses
 function M.find (array, value, from)
   for i = from or 1, #array do
     if M.isEqual(array[i], value) then return i end
@@ -994,7 +993,7 @@ end
 -- @name reverse
 -- @param array an array
 -- @return a reversed array
----@return Moses
+---@return utils.moses
 function M.reverse (array)
   local _array = {}
   for i = #array, 1, -1 do
@@ -1012,7 +1011,7 @@ end
 -- @param[opt] i the index from which to start replacing values. Defaults to 1.
 -- @param[optchain] j the index where to stop replacing values. Defaults to the array size.
 -- @return the original array with values changed
----@return Moses
+---@return utils.moses
 function M.fill (array, value, i, j)
   j = j or M.size(array)
   for i = i or 1, j do array[i] = value end
@@ -1025,7 +1024,7 @@ end
 -- @return an array
 -- @see ones
 -- @see vector
----@return Moses
+---@return utils.moses
 function M.zeros (n) return M.fill({}, 0, 1, n) end
 
 --- Returns an array of `n` 1's.
@@ -1034,7 +1033,7 @@ function M.zeros (n) return M.fill({}, 0, 1, n) end
 -- @return an array
 -- @see zeros
 -- @see vector
----@return Moses
+---@return utils.moses
 function M.ones (n) return M.fill({}, 1, 1, n) end
 
 --- Returns an array of `n` times a given value.
@@ -1044,7 +1043,7 @@ function M.ones (n) return M.fill({}, 1, 1, n) end
 -- @return an array
 -- @see zeros
 -- @see ones
----@return Moses
+---@return utils.moses
 function M.vector (value, n) return M.fill({}, value, 1, n) end
 
 --- Collects values from a given array. The passed-in array should not be sparse.
@@ -1055,7 +1054,7 @@ function M.vector (value, n) return M.fill({}, value, 1, n) end
 -- @param f an iterator function prototyped as `f (v, k)`
 -- @return a new table containing all values collected
 -- @see dropWhile
----@return Moses
+---@return utils.moses
 function M.selectWhile (array, f)
   local t = {}
   for i, v in ipairs(array) do
@@ -1072,7 +1071,7 @@ end
 -- @param f an iterator function prototyped as `f (v, k)`
 -- @return a new table containing all values collected
 -- @see selectWhile
----@return Moses
+---@return utils.moses
 function M.dropWhile (array, f)
   local _i
   for i, v in ipairs(array) do
@@ -1094,7 +1093,7 @@ end
 -- @param[opt] comp an comparison function prototyped as `f (a, b)`, defaults to <tt><</tt> operator.
 -- @param[optchain] sort whether or not the passed-in array should be sorted
 -- @return number the index at which the passed-in value should be inserted
----@return Moses
+---@return utils.moses
 function M.sortedIndex (array, value, comp, sort)
   local _comp = comp or f_min
   if (sort == true) then t_sort(array, _comp) end
@@ -1110,7 +1109,7 @@ end
 -- @param value the value to search for
 -- @return the index of the passed-in value
 -- @see lastIndexOf
----@return Moses
+---@return utils.moses
 function M.indexOf (array, value)
   for k = 1, #array do
     if array[k] == value then return k end
@@ -1123,7 +1122,7 @@ end
 -- @param value the value to search for
 -- @return the index of the last occurrence of the passed-in value or __nil__
 -- @see indexOf
----@return Moses
+---@return utils.moses
 function M.lastIndexOf (array, value)
   local key = M.indexOf(M.reverse(array), value)
   if key then return #array - key + 1 end
@@ -1135,7 +1134,7 @@ end
 -- @param pred a predicate function prototyped as `pred (v, k)`
 -- @return the index found or __nil__
 -- @see findLastIndex
----@return Moses
+---@return utils.moses
 function M.findIndex (array, pred)
   for k = 1, #array do
     if pred(array[k], k) then return k end
@@ -1148,7 +1147,7 @@ end
 -- @param pred a predicate function prototyped as `pred (k, v)`
 -- @return the index found or __nil__
 -- @see findIndex
----@return Moses
+---@return utils.moses
 function M.findLastIndex (array, pred)
   local key = M.findIndex(M.reverse(array), pred)
   if key then return #array - key + 1 end
@@ -1162,7 +1161,7 @@ end
 -- @return the passed-in array with new values added
 -- @see prepend
 -- @see push
----@return Moses
+---@return utils.moses
 function M.addTop (array, ...)
   for k, v in ipairs({ ... }) do
     t_insert(array, 1, v)
@@ -1178,7 +1177,7 @@ end
 -- @return the passed-in array with new values added
 -- @see addTop
 -- @see push
----@return Moses
+---@return utils.moses
 function M.prepend (array, ...)
   return M.append({ ... }, array)
 end
@@ -1190,7 +1189,7 @@ end
 -- @return the passed-in array with new added values
 -- @see addTop
 -- @see prepend
----@return Moses
+---@return utils.moses
 function M.push (array, ...)
   local args = { ... }
   for k, v in ipairs({ ... }) do
@@ -1206,7 +1205,7 @@ end
 -- @param[opt] n the number of values to be popped. Defaults to 1.
 -- @return the popped values
 -- @see unshift
----@return Moses
+---@return utils.moses
 function M.shift (array, n)
   n = min(n or 1, #array)
   local ret = {}
@@ -1224,7 +1223,7 @@ end
 -- @param[opt] n the number of values to be unshifted. Defaults to 1.
 -- @return the values
 -- @see shift
----@return Moses
+---@return utils.moses
 function M.unshift (array, n)
   n = min(n or 1, #array)
   local ret = {}
@@ -1242,7 +1241,7 @@ end
 -- @param array an array
 -- @param ... a variable number of values to be removed from the array
 -- @return the passed-in array with values removed
----@return Moses
+---@return utils.moses
 function M.pull (array, ...)
   local values = { ... }
   for i = #array, 1, -1 do
@@ -1266,7 +1265,7 @@ end
 -- @param[opt] start the lower bound index, defaults to the first index in the array.
 -- @param[optchain] finish the upper bound index, defaults to the array length.
 -- @return the passed-in array with values removed
----@return Moses
+---@return utils.moses
 function M.removeRange (array, start, finish)
   start = start or 1
   finish = finish or #array
@@ -1287,7 +1286,7 @@ end
 -- @param f an iterator function prototyped as `f (v, k)`. Defaults to @{identity}.
 -- @return a table of chunks (arrays)
 -- @see zip
----@return Moses
+---@return utils.moses
 function M.chunk (array, f)
   local ch, ck, prev, val = {}, 0
   f = f or M.identity
@@ -1312,7 +1311,7 @@ end
 -- @param[opt] start the lower bound index, defaults to the first index in the array.
 -- @param[optchain] finish the upper bound index, defaults to the array length.
 -- @return a new array of sliced values
----@return Moses
+---@return utils.moses
 function M.slice (array, start, finish)
   local t = {}
   for k = start or 1, finish or #array do
@@ -1330,7 +1329,7 @@ end
 -- @see initial
 -- @see last
 -- @see rest
----@return Moses
+---@return utils.moses
 function M.first (array, n)
   n = n or 1
   local t = {}
@@ -1348,7 +1347,7 @@ end
 -- @see first
 -- @see last
 -- @see rest
----@return Moses
+---@return utils.moses
 function M.initial (array, n)
   local l = #array
   n = n and l - (min(n, l)) or l - 1
@@ -1367,7 +1366,7 @@ end
 -- @see first
 -- @see initial
 -- @see rest
----@return Moses
+---@return utils.moses
 function M.last (array, n)
   local l = #array
   n = n and l - min(n - 1, l - 1) or 2
@@ -1387,7 +1386,7 @@ end
 -- @see first
 -- @see initial
 -- @see last
----@return Moses
+---@return utils.moses
 function M.rest (array, index)
   local t = {}
   for k = index or 1, #array do
@@ -1401,7 +1400,7 @@ end
 -- @param array an array
 -- @param index an index
 -- @return the value at the given index
----@return Moses
+---@return utils.moses
 function M.nth (array, index)
   return array[index]
 end
@@ -1410,7 +1409,7 @@ end
 -- @name compact
 -- @param array an array
 -- @return a new array
----@return Moses
+---@return utils.moses
 function M.compact (array)
   local t = {}
   for k, v in pairs(array) do
@@ -1424,7 +1423,7 @@ end
 -- @param array an array
 -- @param[opt] shallow specifies the flattening depth. Defaults to `false`.`
 -- @return a flattened array
----@return Moses
+---@return utils.moses
 function M.flatten (array, shallow)
   shallow = shallow or false
   local new_flattened
@@ -1449,7 +1448,7 @@ end
 -- @see union
 -- @see intersection
 -- @see symmetricDifference
----@return Moses
+---@return utils.moses
 function M.difference (array, array2)
   if not array2 then return M.clone(array) end
   return M.select(array, function(value)
@@ -1464,7 +1463,7 @@ end
 -- @see difference
 -- @see intersection
 -- @see symmetricDifference
----@return Moses
+---@return utils.moses
 function M.union (...)
   return M.unique(M.flatten({ ... }))
 end
@@ -1477,7 +1476,7 @@ end
 -- @see difference
 -- @see union
 -- @see symmetricDifference
----@return Moses
+---@return utils.moses
 function M.intersection (...)
   local arg = { ... }
   local array = arg[1]
@@ -1496,7 +1495,7 @@ end
 -- @param ... a variable number of arrays
 -- @return `true` if the intersection of all arrays is not empty, `false` otherwise.
 -- @see intersection
----@return Moses
+---@return utils.moses
 function M.disjoint (...)
   return (#M.intersection(...) == 0)
 end
@@ -1511,7 +1510,7 @@ end
 -- @see difference
 -- @see union
 -- @see intersection
----@return Moses
+---@return utils.moses
 function M.symmetricDifference (array, array2)
   return M.difference(
     M.union(array, array2),
@@ -1526,7 +1525,7 @@ end
 -- @return a new array, duplicate-free
 -- @see isunique
 -- @see duplicates
----@return Moses
+---@return utils.moses
 function M.unique (array)
   local ret = {}
   for i = 1, #array do
@@ -1545,7 +1544,7 @@ end
 -- @return `true` if the given array is unique, `false` otherwise.
 -- @see unique
 -- @see duplicates
----@return Moses
+---@return utils.moses
 function M.isunique (array)
   return #array == #(M.unique(array))
 end
@@ -1555,7 +1554,7 @@ end
 -- @param array an array
 -- @return an array-list of duplicates
 -- @see unique
----@return Moses
+---@return utils.moses
 function M.duplicates (array)
   local dict = M.invert(array)
   local dups = {}
@@ -1574,7 +1573,7 @@ end
 -- @param ... a variable number of array arguments
 -- @return a new array
 -- @see zipWith
----@return Moses
+---@return utils.moses
 function M.zip (...)
   local args = { ... }
   local n = M.max(args, function(array) return #array end)
@@ -1597,7 +1596,7 @@ end
 -- @param ... a variable number of array arguments
 -- @return a flat array of results
 -- @see zip
----@return Moses
+---@return utils.moses
 function M.zipWith (f, ...)
   local args = { ... }
   local n = M.max(args, function(array) return #array end)
@@ -1613,7 +1612,7 @@ end
 -- @param array an array
 -- @param other an array
 -- @return a new array
----@return Moses
+---@return utils.moses
 function M.append (array, other)
   local t = {}
   for i, v in ipairs(array) do t[i] = v end
@@ -1627,7 +1626,7 @@ end
 -- @param ... a variable list of arrays
 -- @return a new array
 -- @see interpose
----@return Moses
+---@return utils.moses
 function M.interleave (...)
   local args = { ... }
   local n = M.max(args, M.size)
@@ -1647,7 +1646,7 @@ end
 -- @param value a value
 -- @return a new array
 -- @see interleave
----@return Moses
+---@return utils.moses
 function M.interpose (array, value)
   for k = #array, 2, -1 do
     t_insert(array, k, value)
@@ -1663,7 +1662,7 @@ end
 -- @param[optchain] to the final value of the range
 -- @param[optchain] step the step of count. Defaults to 1 or -1.
 -- @return a new array of numbers
----@return Moses
+---@return utils.moses
 function M.range (from, to, step)
   if (from == nil) and (to == nil) and (step == nil) then
     return {}
@@ -1683,7 +1682,7 @@ end
 -- @param value a value to be repeated
 -- @param n the number of repetitions of value.
 -- @return a new array of `n` values
----@return Moses
+---@return utils.moses
 function M.rep (value, n)
   local ret = {}
   for i = 1, n do ret[i] = value end
@@ -1695,7 +1694,7 @@ end
 -- @name powerset
 -- @param array an array
 -- @return an array
----@return Moses
+---@return utils.moses
 function M.powerset (array)
   local n = #array
   local powerset = {}
@@ -1720,7 +1719,7 @@ end
 -- @return an iterator function
 -- @see overlapping
 -- @see aperture
----@return Moses
+---@return utils.moses
 function M.partition (array, n, pad)
   if n <= 0 then return end
   return wrap(function()
@@ -1738,7 +1737,7 @@ end
 -- @return an iterator function
 -- @see partition
 -- @see aperture
----@return Moses
+---@return utils.moses
 function M.overlapping (array, n, pad)
   if n <= 1 then return end
   return wrap(function()
@@ -1755,7 +1754,7 @@ end
 -- @see partition
 -- @see overlapping
 -- @see pairwise
----@return Moses
+---@return utils.moses
 function M.aperture (array, n)
   if n <= 1 then return end
   return wrap(function()
@@ -1768,7 +1767,7 @@ end
 -- @param array an array
 -- @return an iterator function
 -- @see overlapping
----@return Moses
+---@return utils.moses
 function M.pairwise (array) return M.aperture(array, 2) end
 
 --- Iterator returning the permutations of an array. It returns arrays made of all values
@@ -1776,7 +1775,7 @@ function M.pairwise (array) return M.aperture(array, 2) end
 -- @name permutation
 -- @param array an array
 -- @return an iterator function
----@return Moses
+---@return utils.moses
 function M.permutation (array)
   return wrap(function()
     permgen(array, #array, yield)
@@ -1793,7 +1792,7 @@ end
 -- @param[optchain] i the starting index, defaults to 1.
 -- @param[optchain] j the final index, defaults to the array length.
 -- @return a string
----@return Moses
+---@return utils.moses
 function M.concat (array, sep, i, j)
   return t_concat(M.map(array, tostring), sep, i, j)
 end
@@ -1803,7 +1802,7 @@ end
 -- @param array a first array
 -- @param array2 a second array
 -- @return an array list of all pairs
----@return Moses
+---@return utils.moses
 function M.xprod (array, array2)
   local p = {}
   for i, v1 in ipairs(array) do
@@ -1819,7 +1818,7 @@ end
 -- @param valua a value
 -- @param array an array
 -- @return an array list of all pairs
----@return Moses
+---@return utils.moses
 function M.xpairs (value, array)
   local xpairs = {}
   for k, v in ipairs(array) do
@@ -1833,7 +1832,7 @@ end
 -- @param valua a value
 -- @param array an array
 -- @return an array list of all pairs
----@return Moses
+---@return utils.moses
 function M.xpairsRight (value, array)
   local xpairs = {}
   for k, v in ipairs(array) do
@@ -1846,7 +1845,7 @@ end
 -- @name sum
 -- @param array a given array
 -- @return the sum of array values
----@return Moses
+---@return utils.moses
 function M.sum (array)
   local s = 0
   for k, v in ipairs(array) do s = s + v end
@@ -1857,7 +1856,7 @@ end
 -- @name product
 -- @param array a given array
 -- @return the product of array values
----@return Moses
+---@return utils.moses
 function M.product (array)
   local p = 1
   for k, v in ipairs(array) do p = p * v end
@@ -1872,7 +1871,7 @@ end
 -- @see sum
 -- @see product
 -- @see median
----@return Moses
+---@return utils.moses
 function M.mean (array)
   return M.sum(array) / (#array)
 end
@@ -1884,7 +1883,7 @@ end
 -- @see sum
 -- @see product
 -- @see mean
----@return Moses
+---@return utils.moses
 function M.median (array)
   local t = M.sort(M.clone(array))
   local n = #t
@@ -1903,7 +1902,7 @@ end
 --- The no operation function.
 -- @name noop
 -- @return nothing
----@return Moses
+---@return utils.moses
 function M.noop () return end
 
 --- Returns the passed-in value. This function is used internally
@@ -1911,7 +1910,7 @@ function M.noop () return end
 -- @name identity
 -- @param value a value
 -- @return the passed-in value
----@return Moses
+---@return utils.moses
 function M.identity (value) return value end
 
 --- Calls `f` with the supplied arguments. Returns the results of `f(...)`.
@@ -1919,7 +1918,7 @@ function M.identity (value) return value end
 -- @param f a function
 -- @param[opt] ... a vararg list of args to `f`
 -- @return the result of `f(...)` call.
----@return Moses
+---@return utils.moses
 function M.call (f, ...)
   return f(...)
 end
@@ -1929,7 +1928,7 @@ end
 -- @name constant
 -- @param value a constant value
 -- @return a constant function
----@return Moses
+---@return utils.moses
 function M.constant (value)
   return function() return value end
 end
@@ -1940,7 +1939,7 @@ end
 -- @name applySpec
 -- @param specs a table
 -- @return a function
----@return Moses
+---@return utils.moses
 function M.applySpec (specs)
   return function(...)
     local spec = {}
@@ -1957,7 +1956,7 @@ end
 -- @param ... a vararg list of functions or arrays
 -- @return a value
 -- @see threadRight
----@return Moses
+---@return utils.moses
 function M.thread (value, ...)
   local state = value
   local arg = { ... }
@@ -1981,7 +1980,7 @@ end
 -- @param ... a vararg list of functions or arrays
 -- @return a value
 -- @see thread
----@return Moses
+---@return utils.moses
 function M.threadRight (value, ...)
   local state = value
   local arg = { ... }
@@ -2003,7 +2002,7 @@ end
 -- @name dispatch
 -- @param ... a vararg list of functions
 -- @return a dispatch function
----@return Moses
+---@return utils.moses
 function M.dispatch (...)
   local funcs = { ... }
   return function(...)
@@ -2020,7 +2019,7 @@ end
 -- @name memoize
 -- @param f a function
 -- @return a new function
----@return Moses
+---@return utils.moses
 function M.memoize (f)
   local _cache = setmetatable({}, { __mode = 'kv' })
   return function(key)
@@ -2038,7 +2037,7 @@ end
 -- @param f an iterator function
 -- @param seed a seed value
 -- @return an array of values
----@return Moses
+---@return utils.moses
 function M.unfold (f, seed)
   local t, result = {}
   while true do
@@ -2060,7 +2059,7 @@ end
 -- @return a new function
 -- @see before
 -- @see after
----@return Moses
+---@return utils.moses
 function M.once (f)
   local _internal = 0
   local _args = {}
@@ -2079,7 +2078,7 @@ end
 -- @return a new function
 -- @see once
 -- @see after
----@return Moses
+---@return utils.moses
 function M.before (f, count)
   local _internal = 0
   local _args = {}
@@ -2098,7 +2097,7 @@ end
 -- @return a new function
 -- @see once
 -- @see before
----@return Moses
+---@return utils.moses
 function M.after (f, count)
   local _limit, _internal = count, 0
   return function(...)
@@ -2113,7 +2112,7 @@ end
 -- @param ... a variable number of functions
 -- @return a new function
 -- @see pipe
----@return Moses
+---@return utils.moses
 function M.compose (...)
   -- See: https://github.com/Yonaba/Moses/pull/15#issuecomment-139038895
   local f = M.reverse { ... }
@@ -2138,7 +2137,7 @@ end
 -- @param ... a variable number of functions
 -- @return the result of the composition of function calls.
 -- @see compose
----@return Moses
+---@return utils.moses
 function M.pipe (value, ...)
   return M.compose(...)(value)
 end
@@ -2149,7 +2148,7 @@ end
 -- @name complement
 -- @param f a function
 -- @return  the logical complement of the given function `f`.
----@return Moses
+---@return utils.moses
 function M.complement (f)
   return function(...) return not f(...) end
 end
@@ -2161,7 +2160,7 @@ end
 -- @param value a value
 -- @param ... a variable number of functions
 -- @return a list of results
----@return Moses
+---@return utils.moses
 function M.juxtapose (value, ...)
   local res = {}
   for i, func in ipairs({ ... }) do
@@ -2177,7 +2176,7 @@ end
 -- @param f a function to be wrapped, prototyped as `f (...)`
 -- @param wrapper a wrapper function, prototyped as `wrapper (f, ...)`
 -- @return the results
----@return Moses
+---@return utils.moses
 function M.wrap (f, wrapper)
   return function(...) return wrapper(f, ...) end
 end
@@ -2187,7 +2186,7 @@ end
 -- @param  iter an iterator function, prototyped as `iter (i)`
 -- @param[opt] n the number of times `iter` should be called. Defaults to 1.
 -- @return table an array of results
----@return Moses
+---@return utils.moses
 function M.times (iter, n)
   local results = {}
   for i = 1, (n or 1) do
@@ -2204,7 +2203,7 @@ end
 -- @see bind2
 -- @see bindn
 -- @see bindall
----@return Moses
+---@return utils.moses
 function M.bind (f, v)
   return function(...)
     return f(v, ...)
@@ -2219,7 +2218,7 @@ end
 -- @see bind
 -- @see bindn
 -- @see bindall
----@return Moses
+---@return utils.moses
 function M.bind2 (f, v)
   return function(t, ...)
     return f(t, v, ...)
@@ -2235,7 +2234,7 @@ end
 -- @see bind
 -- @see bind2
 -- @see bindall
----@return Moses
+---@return utils.moses
 function M.bindn (f, ...)
   local args = { ... }
   return function(...)
@@ -2252,7 +2251,7 @@ end
 -- @see bind
 -- @see bind2
 -- @see bindn
----@return Moses
+---@return utils.moses
 function M.bindall (obj, ...)
   local methodNames = { ... }
   for i, methodName in ipairs(methodNames) do
@@ -2268,7 +2267,7 @@ end
 -- @name cond
 -- @param conds an array list of predicate-function pairs
 -- @return the result of invoking `f(...)` of the first predicate to return a non-nil value
----@return Moses
+---@return utils.moses
 function M.cond (conds)
   return function(...)
     for k, condset in ipairs(conds) do
@@ -2284,7 +2283,7 @@ end
 -- @name both
 -- @param ... an array list of functions
 -- @return `true` when all given funcs returns true with input, false otherwise
----@return Moses
+---@return utils.moses
 function M.both (...)
   local funcs = { ... }
   return function(...)
@@ -2300,7 +2299,7 @@ end
 -- @name either
 -- @param ... an array list of functions
 -- @return `true` when one of the given funcs returns `true` with input, `false` otherwise
----@return Moses
+---@return utils.moses
 function M.either (...)
   local funcs = { ... }
   return function(...)
@@ -2316,7 +2315,7 @@ end
 -- @name neither
 -- @param ... an array list of functions
 -- @return `true` when neither of the given funcs returns `true` with input, `false` otherwise
----@return Moses
+---@return utils.moses
 function M.neither (...)
   local funcs = { ... }
   return function(...)
@@ -2334,7 +2333,7 @@ end
 -- @name uniqueId
 -- @param[opt] template either a string or a function template to format the ID
 -- @return value an ID
----@return Moses
+---@return utils.moses
 function M.uniqueId (template)
   unique_id_counter = unique_id_counter + 1
   if template then
@@ -2355,7 +2354,7 @@ end
 -- @param value an initial input to `f`
 -- @param[opt] n the number of times the iterator should run
 -- @return an iterator function
----@return Moses
+---@return utils.moses
 function M.iterator (f, value, n)
   local cnt = 0
   return function()
@@ -2371,7 +2370,7 @@ end
 -- @param iter an iterator function
 -- @param[opt] n a number. Defaults to 1.
 -- @return the given iterator
----@return Moses
+---@return utils.moses
 function M.skip (iter, n)
   for i = 1, (n or 1) do
     if iter() == nil then return end
@@ -2383,7 +2382,7 @@ end
 -- @name tabulate
 -- @param ... an iterator function (returning a generator, a state and a value)
 -- @return an array of results
----@return Moses
+---@return utils.moses
 function M.tabulate (...)
   local r = {}
   for v in ... do r[#r + 1] = v end
@@ -2394,7 +2393,7 @@ end
 -- @name iterlen
 -- @param ... an iterator function (returning a generator, a state and a value)
 -- @return the iterator length
----@return Moses
+---@return utils.moses
 function M.iterlen (...)
   local l = 0
   for v in ... do l = l + 1 end
@@ -2405,7 +2404,7 @@ end
 -- @name castArray
 -- @param value a value
 -- @return an array containing the given value
----@return Moses
+---@return utils.moses
 function M.castArray (value)
   return (type(value) ~= 'table') and { value } or value
 end
@@ -2414,7 +2413,7 @@ end
 -- @name flip
 -- @param f a function
 -- @return a function
----@return Moses
+---@return utils.moses
 function M.flip (f)
   return function(...)
     return f(unpack(M.reverse({ ... })))
@@ -2426,7 +2425,7 @@ end
 -- @name nthArg
 -- @param n a number
 -- @return a function
----@return Moses
+---@return utils.moses
 function M.nthArg (n)
   return function(...)
     local args = { ... }
@@ -2439,7 +2438,7 @@ end
 -- @param f a function
 -- @return a function
 -- @see ary
----@return Moses
+---@return utils.moses
 function M.unary (f)
   return function(...)
     local args = { ... }
@@ -2454,7 +2453,7 @@ end
 -- @param[opt] n a number. Defaults to 1.
 -- @return a function
 -- @see unary
----@return Moses
+---@return utils.moses
 function M.ary (f, n)
   n = n or 1
   return function(...)
@@ -2469,7 +2468,7 @@ end
 -- @name noarg
 -- @param f a function
 -- @return a new function
----@return Moses
+---@return utils.moses
 function M.noarg (f)
   return function()
     return f()
@@ -2482,7 +2481,7 @@ end
 -- @param f a function
 -- @param indexes an array list of indexes
 -- @return a function
----@return Moses
+---@return utils.moses
 function M.rearg (f, indexes)
   return function(...)
     local args = { ... }
@@ -2499,7 +2498,7 @@ end
 -- @see overEvery
 -- @see overSome
 -- @see overArgs
----@return Moses
+---@return utils.moses
 function M.over (...)
   local transforms = { ... }
   return function(...)
@@ -2519,7 +2518,7 @@ end
 -- @see over
 -- @see overSome
 -- @see overArgs
----@return Moses
+---@return utils.moses
 function M.overEvery (...)
   local f = M.over(...)
   return function(...)
@@ -2535,7 +2534,7 @@ end
 -- @see over
 -- @see overEvery
 -- @see overArgs
----@return Moses
+---@return utils.moses
 function M.overSome (...)
   local f = M.over(...)
   return function(...)
@@ -2552,7 +2551,7 @@ end
 -- @see over
 -- @see overEvery
 -- @see overSome
----@return Moses
+---@return utils.moses
 function M.overArgs (f, ...)
   local _argf = { ... }
   return function(...)
@@ -2571,7 +2570,7 @@ end
 -- @param g a function
 -- @param h a function
 -- @return a new version of function f
----@return Moses
+---@return utils.moses
 function M.converge (f, g, h) return function(...) return f(g(...), h(...)) end end
 
 --- Partially apply a function by filling in any number of its arguments.
@@ -2583,7 +2582,7 @@ function M.converge (f, g, h) return function(...) return f(g(...), h(...)) end 
 -- @return a new version of function f having some of it original arguments filled
 -- @see partialRight
 -- @see curry
----@return Moses
+---@return utils.moses
 function M.partial (f, ...)
   local partial_args = { ... }
   return function(...)
@@ -2603,7 +2602,7 @@ end
 -- @return a new version of function f having some of it original arguments filled
 -- @see partialRight
 -- @see curry
----@return Moses
+---@return utils.moses
 function M.partialRight (f, ...)
   local partial_args = { ... }
   return function(...)
@@ -2625,7 +2624,7 @@ end
 -- @return a curried version of `f`
 -- @see partial
 -- @see partialRight
----@return Moses
+---@return utils.moses
 function M.curry (f, n_args)
   n_args = n_args or 2
   local _args = {}
@@ -2648,7 +2647,7 @@ end
 -- @param f a function
 -- @param[opt] ... optional args to `f`
 -- @return the execution time and the results of `f (...)`
----@return Moses
+---@return utils.moses
 function M.time (f, ...)
   local stime = clock()
   local r = { f(...) }
@@ -2662,7 +2661,7 @@ end
 -- @name keys
 -- @param obj an object
 -- @return an array
----@return Moses
+---@return utils.moses
 function M.keys (obj)
   local keys = {}
   for key in pairs(obj) do keys[#keys + 1] = key end
@@ -2673,7 +2672,7 @@ end
 -- @name values
 -- @param obj an object
 -- @return an array of values
----@return Moses
+---@return utils.moses
 function M.values (obj)
   local values = {}
   for key, value in pairs(obj) do values[#values + 1] = value end
@@ -2686,7 +2685,7 @@ end
 -- @param obj an object
 -- @param ... a vararg list of keys
 -- @return a value or nil
----@return Moses
+---@return utils.moses
 function M.path (obj, ...)
   local value, path = obj, { ... }
   for i, p in ipairs(path) do
@@ -2703,7 +2702,7 @@ end
 -- @param ... a property path given as a vararg list
 -- @return the passed-in object with changes
 -- @see flattenPath
----@return Moses
+---@return utils.moses
 function M.spreadPath (obj, ...)
   local path = { ... }
   for _, p in ipairs(path) do
@@ -2724,7 +2723,7 @@ end
 -- @param ... a property path given as a vararg list
 -- @return the passed-in object with changes
 -- @see spreadPath
----@return Moses
+---@return utils.moses
 function M.flattenPath (obj, ...)
   local path = { ... }
   for _, p in ipairs(path) do
@@ -2740,7 +2739,7 @@ end
 -- @param obj an object
 -- @return an array list of key-value pairs
 -- @see toObj
----@return Moses
+---@return utils.moses
 function M.kvpairs (obj)
   local t = {}
   for k, v in pairs(obj) do t[#t + 1] = { k, v } end
@@ -2754,7 +2753,7 @@ end
 -- @param kvpairs an array-list of `[k,v]` pairs
 -- @return an object
 -- @see kvpairs
----@return Moses
+---@return utils.moses
 function M.toObj (kvpairs)
   local obj = {}
   for k, v in ipairs(kvpairs) do
@@ -2769,7 +2768,7 @@ end
 -- @name invert
 -- @param obj a given object
 -- @return a new object
----@return Moses
+---@return utils.moses
 function M.invert (obj)
   local _ret = {}
   for k, v in pairs(obj) do
@@ -2783,7 +2782,7 @@ end
 -- @param key a key property name
 -- @return a function which should accept an object as argument
 -- @see propertyOf
----@return Moses
+---@return utils.moses
 function M.property (key)
   return function(obj) return obj[key] end
 end
@@ -2793,7 +2792,7 @@ end
 -- @param obj an object
 -- @return a function which should accept a key property argument
 -- @see property
----@return Moses
+---@return utils.moses
 function M.propertyOf (obj)
   return function(key) return obj[key] end
 end
@@ -2802,7 +2801,7 @@ end
 -- @name toBoolean
 -- @param value a value. Can be of any type
 -- @return `true` if value is true, `false` otherwise (false or nil).
----@return Moses
+---@return utils.moses
 function M.toBoolean (value)
   return not not value
 end
@@ -2814,7 +2813,7 @@ end
 -- @param destObj a destination object
 -- @param ... a list of objects
 -- @return the destination object extended
----@return Moses
+---@return utils.moses
 function M.extend (destObj, ...)
   local sources = { ... }
   for k, source in ipairs(sources) do
@@ -2832,7 +2831,7 @@ end
 -- @name functions
 -- @param[opt] obj an object. Defaults to Moses library functions.
 -- @return an array-list of methods names
----@return Moses
+---@return utils.moses
 function M.functions (obj, recurseMt)
   obj = obj or M
   local _methods = {}
@@ -2858,7 +2857,7 @@ end
 -- @param obj an object
 -- @param[opt] shallow whether or not nested array-properties should be cloned, defaults to false.
 -- @return a copy of the passed-in object
----@return Moses
+---@return utils.moses
 function M.clone (obj, shallow)
   if type(obj) ~= 'table' then return obj end
   local _obj = {}
@@ -2883,7 +2882,7 @@ end
 -- @param obj an object
 -- @param f an interceptor function, should be prototyped as `f (obj)`
 -- @return the passed-in object
----@return Moses
+---@return utils.moses
 function M.tap (obj, f)
   f(obj)
   return obj
@@ -2894,7 +2893,7 @@ end
 -- @param obj an object
 -- @param key a key property to be checked
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.has (obj, key)
   return obj[key] ~= nil
 end
@@ -2905,7 +2904,7 @@ end
 -- @param obj an object
 -- @param ... a variable number of string keys
 -- @return the filtered object
----@return Moses
+---@return utils.moses
 function M.pick (obj, ...)
   local whitelist = M.flatten { ... }
   local _picked = {}
@@ -2923,7 +2922,7 @@ end
 -- @param obj an object
 -- @param ... a variable number of string keys
 -- @return the filtered object
----@return Moses
+---@return utils.moses
 function M.omit (obj, ...)
   local blacklist = M.flatten { ... }
   local _picked = {}
@@ -2941,7 +2940,7 @@ end
 -- @param obj an object
 -- @param[opt] template a template object. If `nil`, leaves `obj` untouched.
 -- @return the passed-in object filled
----@return Moses
+---@return utils.moses
 function M.template (obj, template)
   if not template then return obj end
   for i, v in pairs(template) do
@@ -2961,7 +2960,7 @@ end
 -- @param[opt] useMt whether or not `__eq` should be used, defaults to false.
 -- @return `true` or `false`
 -- @see allEqual
----@return Moses
+---@return utils.moses
 function M.isEqual (objA, objB, useMt)
   local typeObjA = type(objA)
   local typeObjB = type(objB)
@@ -2999,7 +2998,7 @@ end
 -- @param obj an object
 -- @param method a string key to index in object `obj`.
 -- @return the returned value of `method (obj)` call
----@return Moses
+---@return utils.moses
 function M.result (obj, method)
   if obj[method] then
     if M.isCallable(obj[method]) then
@@ -3017,7 +3016,7 @@ end
 -- @name isTable
 -- @param t a value to be tested
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.isTable (t)
   return type(t) == 'table'
 end
@@ -3027,7 +3026,7 @@ end
 -- @name isCallable
 -- @param obj an object
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.isCallable (obj)
   return
       ((type(obj) == 'function') or
@@ -3040,7 +3039,7 @@ end
 -- @name isArray
 -- @param obj an object
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.isArray (obj)
   if not (type(obj) == 'table') then return false end
   -- Thanks @Wojak and @Enrique García Cota for suggesting this
@@ -3057,7 +3056,7 @@ end
 -- @name isIterable
 -- @param obj an object
 -- @return `true` if the object can be iterated with `pairs` (or `ipairs`), `false` otherwise
----@return Moses
+---@return utils.moses
 function M.isIterable (obj)
   return M.toBoolean((pcall(pairs, obj)))
 end
@@ -3067,7 +3066,7 @@ end
 -- @name type
 -- @param obj an object
 -- @return the given object type
----@return Moses
+---@return utils.moses
 function M.type (obj)
   local tp = type(obj)
   if tp == 'userdata' then
@@ -3086,7 +3085,7 @@ end
 -- @name isEmpty
 -- @param[opt] obj an object
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.isEmpty (obj)
   if (obj == nil) then return true end
   if type(obj) == 'string' then return #obj == 0 end
@@ -3098,7 +3097,7 @@ end
 -- @name isString
 -- @param obj an object
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.isString (obj)
   return type(obj) == 'string'
 end
@@ -3107,7 +3106,7 @@ end
 -- @name isFunction
 -- @param obj an object
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.isFunction (obj)
   return type(obj) == 'function'
 end
@@ -3116,7 +3115,7 @@ end
 -- @name isNil
 -- @param obj an object
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.isNil (obj)
   return obj == nil
 end
@@ -3126,7 +3125,7 @@ end
 -- @param obj an object
 -- @return `true` or `false`
 -- @see isNaN
----@return Moses
+---@return utils.moses
 function M.isNumber (obj)
   return type(obj) == 'number'
 end
@@ -3136,7 +3135,7 @@ end
 -- @param obj an object
 -- @return `true` or `false`
 -- @see isNumber
----@return Moses
+---@return utils.moses
 function M.isNaN (obj)
   return type(obj) == 'number' and obj ~= obj
 end
@@ -3145,7 +3144,7 @@ end
 -- @name isFinite
 -- @param obj an object
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.isFinite (obj)
   if type(obj) ~= 'number' then return false end
   return obj > -huge and obj < huge
@@ -3155,7 +3154,7 @@ end
 -- @name isBoolean
 -- @param obj an object
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.isBoolean (obj)
   return type(obj) == 'boolean'
 end
@@ -3164,7 +3163,7 @@ end
 -- @name isInteger
 -- @param obj an object
 -- @return `true` or `false`
----@return Moses
+---@return utils.moses
 function M.isInteger (obj)
   return type(obj) == 'number' and floor(obj) == obj
 end
@@ -3263,7 +3262,7 @@ do
   -- @name chain
   -- @param value a value to be wrapped
   -- @return a wrapped object
-  ---@return Moses
+  ---@return utils.moses
   function Moses.chain (value)
     return new(value)
   end

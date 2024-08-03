@@ -8,7 +8,7 @@
 local obj = {}
 obj.__index = obj
 
----@type Utils
+---@type spoon.Utils
 local U = hs.loadSpoon("Utils")
 ---@type utils.moses
 local M = U.moses

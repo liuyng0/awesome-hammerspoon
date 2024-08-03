@@ -15,23 +15,8 @@ hs.hotkey.bind(
 logger.i("Setup libraries")
 --- Global variables
 G = {}
---- Utils
+--- spoon.Utils
 U = hs.loadSpoon("Utils")
-
-logger.i("Setup private path")
-local privatepath = hs.fs.pathToAbsolute(hs.configdir .. "/private")
-if not privatepath then
-    -- Create `~/.hammerspoon/private` directory if not exists.
-    hs.fs.mkdir(hs.configdir .. "/private")
-end
-
-require("private-config-default")
-privateconf = hs.fs.pathToAbsolute(hs.configdir .. "/private/config.lua")
-if privateconf then
-    -- Load awesomeconfig file if exists
-    -- The private/config will override the default values
-    require("private/config")
-end
 
 logger.i("Load Spoons")
 -- load the spoon list

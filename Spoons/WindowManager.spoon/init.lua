@@ -20,7 +20,6 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.logger = hs.logger.new('WindowManager')
 
-
 ---@param wm WM.Yabai | WM.AeroSpace
 ---@param functionName string
 local function f(wm, functionName, moduleName, isMappingFunc)

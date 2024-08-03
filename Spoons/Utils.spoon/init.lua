@@ -4,7 +4,7 @@
 ---
 --- Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Utils.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Utils.spoon.zip)
 
----@class Utils
+---@class spoon.Utils
 local obj = {}
 obj.__index = obj
 
