@@ -20,38 +20,60 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.logger = hs.logger.new('WindowManager')
 
+
+---@param wm WM.Yabai | WM.AeroSpace
+---@param functionName string
+local function f(wm, functionName, moduleName, isMappingFunc)
+   if wm[functionName] and type(wm[functionName]) == "function" then
+      return wm[functionName]
+   else
+      obj.logger.w(string.format("No function with name %s in %s exist, bind to mock!", functionName, moduleName))
+      if isMappingFunc then
+         return function(...)
+            return {}
+         end
+      else
+         return function(...)
+            return function(...)
+               error(string.format("Not implemented function in %s", moduleName))
+            end
+         end
+      end
+   end
+end
+
+---@param wm WM.Yabai | WM.AeroSpace
+local function registerWM(wm, fromModule)
+   obj.launchAppFunc = f(wm, "launchAppFunc", fromModule)
+   obj.moveW2SFunc = f(wm, "moveW2SFunc", fromModule)
+   obj.focusOtherWindowFunc = f(wm, "focusOtherWindowFunc", fromModule)
+   obj.swapWithOtherWindowFunc = f(wm, "swapWithOtherWindowFunc", fromModule)
+   obj.swapVisibleSpacesFunc = f(wm, "swapVisibleSpacesFunc", fromModule)
+   obj.focusNextScreenFunc = f(wm, "focusNextScreenFunc", fromModule)
+   obj.focusVisibleWindowFunc = f(wm, "focusVisibleWindowFunc", fromModule)
+   obj.nextLayoutFunc = f(wm, "nextLayoutFunc", fromModule)
+   obj.focusSpaceFunc = f(wm, "focusSpaceFunc", fromModule)
+   obj.hideAllScratchpadsFunc = f(wm, "hideAllScratchpadsFunc", fromModule)
+   obj.makePadMapFunc = f(wm, "makePadMapFunc", fromModule)
+   obj.showInfoFunc = f(wm, "showInfoFunc", fromModule)
+   obj.reArrangeSpacesFunc = f(wm, "reArrangeSpacesFunc", fromModule)
+   obj.stackAppWindowsFunc = f(wm, "stackAppWindowsFunc", fromModule)
+   obj.startOrRestartServiceFunc = f(wm, "startOrRestartServiceFunc", fromModule)
+   obj.stopServiceFunc = f(wm, "stopServiceFunc", fromModule)
+   obj.toggleZoomFullScreenFunc = f(wm, "toggleZoomFullScreenFunc", fromModule)
+   obj.toggleFloatFunc = f(wm, "toggleFloatFunc", fromModule)
+   obj.pickWindowsFunc = f(wm, "pickWindowsFunc", fromModule)
+   obj.moveOthersToHiddenSpaceFunc = f(wm, "moveOthersToHiddenSpaceFunc", fromModule)
+   obj.selectVisibleWindowToHideFunc = f(wm, "selectVisibleWindowToHideFunc", fromModule)
+   obj.selectNthSpacesInAllDisplaysFunc = f(wm, "selectNthSpacesInAllDisplaysFunc", fromModule)
+   obj.resizeWindowMapping = f(wm, "resizeWindowMapping", fromModule, true)
+   obj.notExist = f(wm, "notExist", fromModule)
+end
+
 ---@type WM.Yabai
 local yabai = dofile(hs.spoons.resourcePath("yabai/yabai.lua"))
 ---@type WM.AeroSpace
 local aerospace = dofile(hs.spoons.resourcePath("aerospace/aerospace.lua"))
-
-local function registerWM()
-   local wm = yabai
-   obj.launchAppFunc = wm.launchAppFunc
-   obj.moveW2SFunc = wm.moveW2SFunc
-   obj.focusOtherWindowFunc = wm.focusOtherWindowFunc
-   obj.swapWithOtherWindowFunc = wm.swapWithOtherWindowFunc
-   obj.swapVisibleSpacesFunc = wm.swapVisibleSpacesFunc
-   obj.focusNextScreenFunc = wm.focusNextScreenFunc
-   obj.focusVisibleWindowFunc = wm.focusVisibleWindowFunc
-   obj.nextLayoutFunc = wm.nextLayoutFunc
-   obj.focusSpaceFunc = wm.focusSpaceFunc
-   obj.hideAllScratchpadsFunc = wm.hideAllScratchpadsFunc
-   obj.makePadMapFunc = wm.makePadMapFunc
-   obj.showInfoFunc = wm.showInfoFunc
-   obj.reArrangeSpacesFunc = wm.reArrangeSpacesFunc
-   obj.stackAppWindowsFunc = wm.stackAppWindowsFunc
-   obj.startOrRestartServiceFunc = wm.startOrRestartServiceFunc
-   obj.stopServiceFunc = wm.stopServiceFunc
-   obj.toggleZoomFullScreenFunc = wm.toggleZoomFullScreenFunc
-   obj.toggleFloatFunc = wm.toggleFloatFunc
-   obj.pickWindowsFunc = wm.pickWindowsFunc
-   obj.moveOthersToHiddenSpaceFunc = wm.moveOthersToHiddenSpaceFunc
-   obj.selectVisibleWindowToHideFunc = wm.selectVisibleWindowToHideFunc
-   obj.selectNthSpacesInAllDisplaysFunc = wm.selectNthSpacesInAllDisplaysFunc
-   obj.resizeWindowMapping = wm.resizeWindowMapping
-end
-
-registerWM()
+registerWM(yabai, "yabai")
 
 return obj
