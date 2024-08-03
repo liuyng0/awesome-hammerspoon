@@ -142,4 +142,29 @@ function obj.showSpaceOnDisplay(displayIndex, spaceIndex)
   execSync("yabai -m display %d --space %d", displayIndex, spaceIndex)
 end
 
+---@return Space?, Space?
+function obj.twoSpaces()
+  local spaces = obj.visibleSpaces()
+  local focusedSpace = obj.singleSpace()
+  local otherSpace = M.select(spaces, function(space, _) ---@param space Space
+                                return focusedSpace.index ~= space.index
+                                end)
+  return focusedSpace, M.count(otherSpace) > 0 and otherSpace[1] or nil
+end
+
+---@param window Window
+---@param spaceIndex number?
+---@param scratchpad Scratchpad
+function obj.showScratchPad(window, spaceIndex, scratchpad)
+  local spaceSwitch = (window.space ~= spaceIndex) and "--space " .. spaceIndex or ""
+  local toggleFloat = ((not window["is-floating"]) and "" .. "--toggle float" or "")
+  local focuseCommand = string.format(
+      "yabai -m window %d %s %s --grid %s --opacity %.2f --focus",
+       window.id, spaceSwitch, toggleFloat, scratchpad.grid, scratchpad.opacity)
+  local gridCommand = string.format(
+      "yabai -m window %d --grid %s",
+     window.id, scratchpad.grid)
+    execSync(focuseCommand .. " && " .. gridCommand)
+end
+
 return obj

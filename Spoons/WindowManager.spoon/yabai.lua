@@ -261,27 +261,18 @@ function obj.showScratchpad (yabaiAppName, onCurrentSpace)
       return
     end
     scratchPad = scratchPad[1]
-    ---@type Window[]
-    local currentSpace, nextSpace = twoSpaces()
+    local currentSpace, nextSpace = wrapper.twoSpaces()
     local targetSpace = onCurrentSpace and currentSpace or nextSpace or currentSpace
-    local targetSpaceIndex = targetSpace.index
-    local thisAppWindows = getPadWindows({ yabaiAppName })
-    if #thisAppWindows == 0 then
+    local targetSpaceIndex = targetSpace and targetSpace.index
+    local thisAppWindows = wrapper.appWindows({ yabaiAppName })
+    if M.count(thisAppWindows) == 0 then
       obj.logger.d("No appWindow found for " .. yabaiAppName)
       return
     end
     obj.hideScratchpadsNowrap(yabaiAppName)
     local chosenWindow = thisAppWindows[1]
     obj.logger.d("chosenWindow type:" .. type(chosenWindow) .. " " .. hs.inspect(chosenWindow))
-    local spaceSwitch = (chosenWindow.space ~= targetSpaceIndex) and "--space " .. targetSpaceIndex or ""
-    local toggleFloat = ((not chosenWindow["is-floating"]) and "" .. "--toggle float" or "")
-    local focuseCommand = string.format(
-      "yabai -m window %d %s %s --grid %s --opacity %.2f --focus",
-       chosenWindow.id, spaceSwitch, toggleFloat, scratchPad.grid, scratchPad.opacity)
-    local gridCommand = string.format(
-      "yabai -m window %d --grid %s",
-     chosenWindow.id, scratchPad.grid)
-    execSync(focuseCommand .. " && " .. gridCommand)
+    wrapper.showScratchPad(chosenWindow, targetSpaceIndex, scratchPad)
   end
   return cwrap(fn)
 end
@@ -304,7 +295,7 @@ end
 --- Currently only work for two screen
 function obj.focusNextScreen ()
   local targetWindow = nil
-  local _, nextSpace = twoSpaces()
+  local _, nextSpace = wrapper.twoSpaces()
   if not nextSpace then
     obj.logger.w("only single space, do nothing")
     return
