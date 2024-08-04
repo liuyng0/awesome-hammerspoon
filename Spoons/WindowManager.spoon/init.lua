@@ -66,11 +66,7 @@ local function registerWM(wm, fromModule)
    obj.selectVisibleWindowToHideFunc = f(wm, "selectVisibleWindowToHideFunc", fromModule)
    obj.selectNthSpacesInAllDisplaysFunc = f(wm, "selectNthSpacesInAllDisplaysFunc", fromModule)
    obj.resizeWindowMapping = f(wm, "resizeWindowMapping", fromModule, true)
-end
-
-local cwrap, execSync = U.command.cwrap, U.command.execSync
-function obj.restartSketchybar()
-   return cwrap(execSync, "HOMEBREW_NO_AUTO_UPDATE=true arch -arm64e /opt/homebrew/bin/brew services restart sketchybar")
+   obj.restartSketchybar = f(wm, "restartSketchybar", fromModule)
 end
 
 ---@type WM.Yabai
