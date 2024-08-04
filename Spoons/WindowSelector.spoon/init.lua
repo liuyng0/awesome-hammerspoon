@@ -25,14 +25,8 @@ hints.hintChars = {
 hints.hintCharsVimperator = hints.hintChars
 
 --- Show title with more windows
-hints.showTitleThresh = 8
-
--- Metadata
-obj.name = "WindowSelector"
-obj.version = "0.1"
-obj.author = "Your Name <your@email.org>"
-obj.homepage = "https://github.com/Hammerspoon/Spoons"
-obj.license = "MIT - https://opensource.org/licenses/MIT"
+hints.fontSize = 15
+hints.showTitleThresh = 16
 
 --- WindowSelector.logger
 --- Variable
@@ -99,7 +93,6 @@ function obj.selectWindow (winIds, callback, allowNonStandard)
   else
     hints.style = nil
   end
-
   hints.windowHints(windows, callback, allowNonStandard)
 
   obj.logger.d("hs.hints.windowHints done!")
