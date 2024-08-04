@@ -16,24 +16,28 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 obj.canvas = nil
 obj.timer = nil
-
+obj.progressBarHeight = 3
 local color = hs.drawing.color.x11
 
 function obj:init()
     self.canvas = hs.canvas.new({x = 0, y = 0, w = 0, h = 0}):show()
     self.canvas:behavior(hs.canvas.windowBehaviors.canJoinAllSpaces)
     self.canvas:level(hs.canvas.windowLevels.status)
-    self.canvas:alpha(0.45)
+    self.canvas:alpha(0.70)
     self.canvas[1] = {
         type = "rectangle",
         action = "fill",
-        fillColor = color.lightred,
+        fillColor = {hex="#87c3fa", alpha=1.0},
+        roundedRectRadii = { xRadius = obj.progressBarHeight,
+                             yRadius = obj.progressBarHeight },
         frame = {x = "0%", y = "0%", w = "0%", h = "100%"}
     }
     self.canvas[2] = {
         type = "rectangle",
         action = "fill",
-        fillColor = color.lightgreen,
+        fillColor = {hex="#8b2253", alpha=1.0},
+        roundedRectRadii = { xRadius = obj.progressBarHeight,
+                             yRadius = obj.progressBarHeight },
         frame = {x = "0%", y = "0%", w = "0%", h = "100%"}
     }
 end
@@ -63,7 +67,7 @@ function obj:startFor(minutes)
 
     local mainScreen = hs.screen.primaryScreen()
     local mainRes = mainScreen:fullFrame()
-    obj.canvas:frame({x = mainRes.x, y = mainRes.y + mainRes.h - 5, w = mainRes.w, h = 5})
+    obj.canvas:frame({x = mainRes.x, y = mainRes.y + mainRes.h - obj.progressBarHeight, w = mainRes.w, h = obj.progressBarHeight})
     -- Set minimum visual step to 2px (i.e. Make sure every trigger updates 2px on screen at least.)
     local minimumStep = 2
     local secCount = math.ceil(60 * minutes)
@@ -119,7 +123,7 @@ function obj:setProgress(progress, notifystr)
         -- Make the canvas actully visible
         local mainScreen = hs.screen.mainScreen()
         local mainRes = mainScreen:fullFrame()
-        obj.canvas:frame({x = mainRes.x, y = mainRes.h - 5, w = mainRes.w, h = 5})
+        obj.canvas:frame({x = mainRes.x, y = mainRes.h - obj.progressBarHeight, w = mainRes.w, h = obj.progressBarHeight})
     end
     if progress >= 1 then
         canvasCleanup()
