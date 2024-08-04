@@ -458,11 +458,12 @@ function obj.buildModals (keymap, parent, prefixKeySeq, lastKey)
       prefixKeySeq .. "/" .. lastKey, createKeyName(key))
     table.insert(thisNode.children, child)
     -- key[1] is modifiers, i.e. {'shift'}, key[2] is key, i.e. 'f'
+    --- NOTE: put the "[R]" as suffix of a leaf function can make the function repeatable
+    local shouldRepeat = (#key >= 3 and string.sub(key[3], -3, -1) == "[R]")
     thisNode.modal:bind(key[1], key[2], function()
-      obj.logger.i(
-        F("Enter modal [{child.prefixKeySeq}]+[{child.key}] ~~", child))
-      killHelper()
-      if child.isLeaf then
+      -- obj.logger.i(F("Enter modal [{child.prefixKeySeq}]+[{child.key}] ~~", child))
+      if child.isLeaf and (not shouldRepeat) then
+        killHelper()
         thisNode.modal:exit()
       end
       child.action()
@@ -470,15 +471,15 @@ function obj.buildModals (keymap, parent, prefixKeySeq, lastKey)
     --- NOTE: The eventtap should be only enabled on release key tap, to avoid eat the release key.
     function()
       --- NOTE: this node should be exit later here, so the release fun will be called.
-      thisNode.modal:exit()
-      if child.eventtap then
-        obj.logger.i(
-          F("Enter eventtap for modal with [{child.prefixKeySeq}]+[{child.key}]", child))
-        child.eventtap:start()
-      else
-        obj.logger.i(
-          F("eventtap for modal with [{child.prefixKeySeq}]+[{child.key}] is null!!", child))
-      end
+      if not (child.isLeaf and shouldRepeat) then
+        thisNode.modal:exit()
+          if child.eventtap then
+            -- obj.logger.i(F("Enter eventtap for modal with [{child.prefixKeySeq}]+[{child.key}]", child))
+            child.eventtap:start()
+          else
+            -- obj.logger.i(F("eventtap for modal with [{child.prefixKeySeq}]+[{child.key}] is null!!", child))
+          end
+        end
     end)
     if #key >= 3 then
       keyFuncNameTable[createKeyName(key)] = key[3]
