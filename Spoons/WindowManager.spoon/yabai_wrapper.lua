@@ -167,4 +167,12 @@ function obj.showScratchPad(window, spaceIndex, scratchpad)
     execSync(focuseCommand .. " && " .. gridCommand)
 end
 
+function obj.restartSketchybar()
+   ---NOTE: the special parameters in brew
+   return cwrap(execSync, "HOMEBREW_NO_AUTO_UPDATE=true arch -arm64e /opt/homebrew/bin/brew services restart sketchybar")
+end
+
+function obj.signalLayoutChanged()
+  return execSync("sketchybar --trigger yabai_space_layout_changed")
+end
 return obj

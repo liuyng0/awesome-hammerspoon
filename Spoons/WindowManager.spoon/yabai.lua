@@ -416,6 +416,7 @@ function obj.nextLayoutFunc ()
       local next = now + 1
       if next == 3 then next = 1 end
       wrapper.switchLayout(layouts[next])
+      wrapper.signalLayoutChanged()
       now = next
     end)
 end
@@ -462,6 +463,11 @@ function obj.selectNthSpacesInAllDisplaysFunc (n)
         end)
         :value()
   end)
+end
+
+
+function obj.restartSketchybar()
+  return wrapper.restartSketchybar()
 end
 
 --- @return WM.Yabai
