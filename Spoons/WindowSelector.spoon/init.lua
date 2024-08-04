@@ -71,6 +71,7 @@ function obj.selectWindow (winIds, callback, allowNonStandard)
   local windowCounts = M.count(windows)
   if windowCounts < 1 then
     hs.alert.show("Not enough windows, skip", 0.1)
+    return
   end
   if windowCounts == 1 then
     obj.logger.w("Single window, just call the callback!")

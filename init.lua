@@ -167,6 +167,7 @@ local keyMap = {
         [ctrl("r", "restart")] = S.wm.startOrRestartServiceFunc(),
         [ctrl("x", "stop")] = S.wm.stopServiceFunc(),
         [ctrl("i", "info")] = S.wm.showInfoFunc(),
+        [ctrl("b", "restart sketchybar")] = S.wm.restartSketchybar(),
     },
     [shift("s", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
     [sk("n", "next screen")] = S.wm.focusNextScreenFunc(),

@@ -68,6 +68,11 @@ local function registerWM(wm, fromModule)
    obj.resizeWindowMapping = f(wm, "resizeWindowMapping", fromModule, true)
 end
 
+local cwrap, execSync = U.command.cwrap, U.command.execSync
+function obj.restartSketchybar()
+   return cwrap(execSync, "HOMEBREW_NO_AUTO_UPDATE=true arch -arm64e /opt/homebrew/bin/brew services restart sketchybar")
+end
+
 ---@type WM.Yabai
 local yabai = dofile(hs.spoons.resourcePath("yabai.lua"))
 ---@type WM.AeroSpace

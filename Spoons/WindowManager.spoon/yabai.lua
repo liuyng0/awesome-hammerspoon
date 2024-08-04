@@ -297,7 +297,7 @@ function obj.focusNextScreen ()
   local targetWindow = nil
   local _, nextSpace = wrapper.twoSpaces()
   if not nextSpace then
-    obj.logger.w("only single space, do nothing")
+    hs.alert.show("only single space, do nothing", 0.1)
     return
   end
   local visiblePads = getVisiblePads(nextSpace.index)
