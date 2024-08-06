@@ -132,7 +132,7 @@ end
 
 function obj.hideOtherWindowsInCurrentSpace()
   if obj.inMaxSpace() then
-      hs.alert.show("Already in the max space, hide nothing", 0.1)
+      hs.alert.show("Already in the max space, hide nothing", 0.5)
       return
   end
   local scratchSpaceIndex = obj.maxSpaceIndexInCurrentDisplay()
