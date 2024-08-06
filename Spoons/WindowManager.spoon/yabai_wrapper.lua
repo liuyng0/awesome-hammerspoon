@@ -77,6 +77,10 @@ function obj.focusWindow (windowId)
   return execSync("yabai -m window --focus %s", windowId)
 end
 
+function obj.closeWindow(windowId)
+  return execSync("yabai -m window --close %s", windowId or "")
+end
+
 function obj.focusSpace (spaceId)
   return execSync("yabai -m space --focus %s", spaceId)
 end

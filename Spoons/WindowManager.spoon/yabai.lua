@@ -483,5 +483,36 @@ function obj.restartSketchybar()
   return wrapper.restartSketchybar()
 end
 
+function obj.normalize ()
+  return cwrap(function()
+      local currentSpace = wrapper.singleSpace()
+      if not currentSpace then
+        popup.instantAlert("No focused space, do nothing!")
+      end
+      local windows = M.select(wrapper.windows(),
+      function(w, _) ---@param w Window
+        return w.space == currentSpace.index
+      end);
+
+      M.each(windows, function(w, _) ---@param w Window
+        if w["is-floating"] then
+          wrapper.windowToggle(w.id, "float")
+        end
+        if w["is-native-fullscreen"] then
+          wrapper.windowToggle(w.id, "native-fullscreen")
+        end
+        if w["has-fullscreen-zoom"] then
+          wrapper.windowToggle(w.id, "zoom-fullscreen")
+        end
+      end)
+  end)
+end
+
+function obj.closeWindow()
+  return cwrap(function()
+      wrapper.closeWindow()
+  end)
+end
+
 --- @return WM.Yabai
 return obj

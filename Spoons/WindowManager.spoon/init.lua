@@ -67,6 +67,8 @@ local function registerWM(wm, fromModule)
    obj.selectNthSpacesInAllDisplaysFunc = f(wm, "selectNthSpacesInAllDisplaysFunc", fromModule)
    obj.resizeWindowMapping = f(wm, "resizeWindowMapping", fromModule, true)
    obj.restartSketchybar = f(wm, "restartSketchybar", fromModule)
+   obj.normalize = f(wm, "normalize", fromModule)
+   obj.closeWindow = f(wm, "closeWindow", fromModule)
 end
 
 ---@type WM.Yabai

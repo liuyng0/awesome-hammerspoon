@@ -149,7 +149,6 @@ local keyMap = {
         [shift("7")] = S.wm.moveW2SFunc(7, false),
         [shift("8")] = S.wm.moveW2SFunc(8, false),
         -- Other window
-        [sk("o", "other window")] = S.wm.focusOtherWindowFunc(),        -- Swap with other window
         [sk("s", "swap-o")] = S.wm.swapWithOtherWindowFunc(),
         [shift("s", "stack(cs)")] = S.wm.stackAppWindowsFunc(true),
         [ctrlshift("s", "stack(all)")] = S.wm.stackAppWindowsFunc(false),
@@ -158,10 +157,7 @@ local keyMap = {
             [sk("c", "Choose Window (Current App)")] = listWindowCurrent,
             [sk("a", "Choose Window (All App)")] = listWindowAll,
         },
-        [sk("f", "fullscreen")] = S.wm.toggleZoomFullScreenFunc(),
-        [shift("f", "float")] = S.wm.toggleFloatFunc(),
         [ctrl("h", "hideOthers")] = S.wm.moveOthersToHiddenSpaceFunc(),
-        [sk("h", "select & hide")] = S.wm.selectVisibleWindowToHideFunc(),
         [sk("p", "pick windows")] = S.wm.pickWindowsFunc(),
 
         [ctrl("r", "restart")] = S.wm.startOrRestartServiceFunc(),
@@ -169,7 +165,8 @@ local keyMap = {
         [ctrl("i", "info")] = S.wm.showInfoFunc(),
         [ctrl("b", "restart sketchybar")] = S.wm.restartSketchybar(),
     },
-    [shift("s", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
+    [sk("h", "select & hide")] = S.wm.selectVisibleWindowToHideFunc(),
+    [ctrl("s", "switch spaces")] = S.wm.swapVisibleSpacesFunc(),
     [sk("n", "next screen")] = S.wm.focusNextScreenFunc(),
     [sk("k", "ow - vs,vw")] = S.wm.focusVisibleWindowFunc(),
     [sk("i", "ow - cs,vw")] = S.wm.focusVisibleWindowFunc(true),
@@ -179,9 +176,12 @@ local keyMap = {
     [sk("j", "ow - vs,app")] = S.wm.focusOtherWindowFunc(true),
     -- Other window (current space)
     [sk("u", "ow - cs,all")] = S.wm.focusOtherWindowFunc(false, true),
-    -- Swap with other window
-    [{ { "control" }, "s", "ow - swap" }] = S.wm.swapWithOtherWindowFunc(),
     [ctrl("l", "layout")] = S.wm.nextLayoutFunc(),
+    [sk("f", "fullscreen[O]")] = S.wm.toggleZoomFullScreenFunc(),
+    [shift("f", "float[O]")] = S.wm.toggleFloatFunc(),
+    [ctrl("n", "normalize")] = S.wm.normalize(),
+    [ctrl("x", "close Window")] = S.wm.closeWindow(),
+
 
     [sk('s', 'space+')] = {
         [sk("m", "mission control i/o")] = toggleMissionControl,
@@ -209,8 +209,13 @@ local keyMap = {
     --- Exposes
     [sk('e', 'expose')] = (function()
         local exposeAll = U.expose.new(nil,
-            {showThumbnails=false, otherSpacesStripWidth=0.35, nonVisibleStripWidth=0.25, textSize = 30,
-             fontName="Fira Code"})
+            {
+                showThumbnails = false,
+                otherSpacesStripWidth = 0.35,
+                nonVisibleStripWidth = 0.25,
+                textSize = 30,
+                fontName = "Fira Code"
+            })
         exposeAll:setCallback(
         ---@param win hs.window
             function(win)
@@ -224,7 +229,7 @@ local keyMap = {
     end)(),
     --- Variable Toggles
     [sk('v', "variable on/off")] = {
-       [sk('d', 'toggle debug')] = function()
+        [sk('d', 'toggle debug')] = function()
             U.debug.toggleDebugLogger({ "G", "S", "N", "U" },
                 G, S, N, U)
         end
