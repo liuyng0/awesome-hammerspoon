@@ -154,7 +154,7 @@ end
 function obj.stackAppWindows (onlyFocusedSpace)
   local focusedWindow = wrapper.singleWindow()
   if not focusedWindow then
-    obj.logger.w("No window focused, do nothing!")
+    popup.instantAlert("No window focused, do nothing!")
     return
   end
   ---@type Window[]?
@@ -205,7 +205,7 @@ function obj.swapVisibleSpaces ()
   local spaces = wrapper.visibleSpaceIndexes()
   local focus = obj.focusedWSD()
   if not spaces or #spaces ~= 2 then
-    obj.logger.w("Only support swap two spaces")
+    popup.instantAlert("Only support swap two spaces")
     return
   end
   local other = focus and spaces[1] == focus.spaceIndex and spaces[2] or spaces[1]
@@ -299,7 +299,7 @@ function obj.focusNextScreen ()
   local targetWindow = nil
   local _, nextSpace = wrapper.twoSpaces()
   if not nextSpace then
-    hs.alert.show("only single space, do nothing", 0.1)
+    popup.instantAlert("Only single space, do nothing")
     return
   end
   local visiblePads = getVisiblePads(nextSpace.index)
@@ -328,10 +328,8 @@ function obj.selectVisibleWindowToHideFunc (onlyCurrentSpace)
     onlyVisible = true
   }
   return cwrap(function()
-    local currentSpace = wrapper.singleSpace()
-    local scratchSpaceIndex = wrapper.maxSpaceIndexInCurrentDisplay()
-    if currentSpace and scratchSpaceIndex and currentSpace.index == scratchSpaceIndex then
-      hs.alert.show("Already in the max space, hide nothing", 0.1)
+    if wrapper.inMaxSpace() then
+      popup.instantAlert("Already in the max space, hide nothing")
       return
     end
     obj.selectRun(function(_, b)
@@ -466,7 +464,7 @@ function obj.selectNthSpacesInAllDisplaysFunc (n)
     M.chain(displays)
         :each(function(d, _) ---@param d Display
           if M.count(d.spaces) < n then
-            obj.logger.e("Not enough spaces")
+            popup.instantAlert("Not enough spaces, do nothing!")
             return
           end
           wrapper.showSpaceOnDisplay(d.index, d.spaces[n])

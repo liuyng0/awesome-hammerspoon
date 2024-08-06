@@ -4,7 +4,7 @@ local obj={}
 --- Variable
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.logger = hs.logger.new('Popup')
-
+obj.instantSeconds = 0.5
 ---@type hs.eventtap
 local eventtap = require("hs.eventtap")
 
@@ -36,4 +36,7 @@ function obj.showDebug (msg)
   tap:start()
 end
 
+function obj.instantAlert(msg)
+    hs.alert.show(msg, obj.instantSeconds)
+end
 return obj
