@@ -45,7 +45,7 @@ S = {
 }
 
 local APP_GOODNOTES = "Goodnotes"
-spoon.AppBindings:bind(
+S.appbindings:bind(
     APP_GOODNOTES,
     {
         { { "ctrl" }, "i", {}, "up" },   -- Scroll message window
@@ -235,9 +235,21 @@ local keyMap = {
     [ctrl('p', "pad+(this space)")] = S.wm.makePadMapFunc(true),
 }
 local hyper = { { "shift", "command", "control", "option" }, "1", }
-spoon.RecursiveBinder.recursiveBind(keyMap, hyper)
+S.recursivebinder.recursiveBind(keyMap, hyper)
 
--- Disable the alert key showing
+
+--- Bind the space keys separately
+G.bindSpaceKeys = function()
+    local count = 1
+    while count <= 8 do
+        local countStr = string.format("%s", count)
+        hs.hotkey.bind("ctrl", countStr, "focus space " .. countStr, S.wm.focusSpaceFunc(count))
+        count = count + 1
+    end
+end
+G.bindSpaceKeys()
+
+--- Disable the alert key showing
 hs.hotkey.alertDuration = 0
 
 local function autoReload (files)
