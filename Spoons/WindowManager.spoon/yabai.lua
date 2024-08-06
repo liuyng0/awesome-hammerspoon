@@ -110,7 +110,7 @@ function obj.focusedWSD ()
 end
 
 --- Switch to app window prefer current mission control
---- @return true if switched to app, flase if no window with specified app name
+--- @return boolean if switched to app, flase if no window with specified app name
 function obj.switchToApp (appName)
   local windows = wrapper.appWindows(appName)
   local visibleSpaceIndexes = wrapper.visibleSpaceIndexes()
@@ -145,8 +145,10 @@ function obj.switchToApp (appName)
 
   if M.count(sortedWindows) > 0 then
     wrapper.focusWindow(sortedWindows[1].id)
+    return true
+  else
+    return false
   end
-  return true
 end
 
 function obj.stackAppWindows (onlyFocusedSpace)
