@@ -327,9 +327,17 @@ function obj.selectVisibleWindowToHideFunc (onlyCurrentSpace)
     onlyCurrentSpace = onlyCurrentSpace,
     onlyVisible = true
   }
-  return cwrap(obj.selectRun, function(_, b)
-                 obj.moveWindowToHiddenSpace(b)
-  end, option)
+  return cwrap(function()
+    local currentSpace = wrapper.singleSpace()
+    local scratchSpaceIndex = wrapper.maxSpaceIndexInCurrentDisplay()
+    if currentSpace and scratchSpaceIndex and currentSpace.index == scratchSpaceIndex then
+      hs.alert.show("Already in the max space, hide nothing", 0.1)
+      return
+    end
+    obj.selectRun(function(_, b)
+      obj.moveWindowToHiddenSpace(b)
+    end, option)
+  end)
 end
 
 function obj.focusVisibleWindowFunc (onlyCurrentSpace)

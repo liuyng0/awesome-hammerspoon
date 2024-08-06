@@ -131,6 +131,10 @@ function obj.pickWindow (windowId)
 end
 
 function obj.hideOtherWindowsInCurrentSpace()
+  if obj.inMaxSpace() then
+      hs.alert.show("Already in the max space, hide nothing", 0.1)
+      return
+  end
   local scratchSpaceIndex = obj.maxSpaceIndexInCurrentDisplay()
   execSync(string.format("yabai -m query --windows --space | jq -r '.[] |" ..
       "select(.[\"has-focus\"] == false and .space != %d)'" ..
@@ -174,5 +178,11 @@ end
 
 function obj.signalLayoutChanged()
   return execSync("sketchybar --trigger yabai_space_layout_changed")
+end
+
+function obj.inMaxSpace()
+    local currentSpace = obj.singleSpace()
+    local scratchSpaceIndex = obj.maxSpaceIndexInCurrentDisplay()
+    return currentSpace and scratchSpaceIndex and currentSpace.index == scratchSpaceIndex
 end
 return obj
