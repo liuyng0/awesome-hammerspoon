@@ -144,7 +144,11 @@ function obj.switchToApp (appName)
   :value()
 
   if M.count(sortedWindows) > 0 then
-    wrapper.focusWindow(sortedWindows[1].id)
+    if visibleSpaceIndexes and M.count(visibleSpaceIndexes) > 0 and M.find(visibleSpaceIndexes, sortedWindows[1].space) == nil then
+      wrapper.moveWindowToSpace(sortedWindows[1].id, currentSpace.index, true)
+    else
+      wrapper.focusWindow(sortedWindows[1].id)
+    end
     return true
   else
     return false
@@ -325,7 +329,8 @@ function obj.selectVisibleWindowToHideFunc (onlyCurrentSpace)
   ---@type WindowOptions
   local option = {
     onlyCurrentSpace = onlyCurrentSpace,
-    onlyVisible = true
+    onlyVisible = true,
+    onlyOtherWindow = false,
   }
   return cwrap(function()
     if wrapper.inMaxSpace() then

@@ -160,8 +160,8 @@ local keyMap = {
         },
         [sk("f", "fullscreen")] = S.wm.toggleZoomFullScreenFunc(),
         [shift("f", "float")] = S.wm.toggleFloatFunc(),
-        [sk("h", "hideOthers")] = S.wm.moveOthersToHiddenSpaceFunc(),
-        [ctrl("h", "select & hide")] = S.wm.selectVisibleWindowToHideFunc(),
+        [ctrl("h", "hideOthers")] = S.wm.moveOthersToHiddenSpaceFunc(),
+        [sk("h", "select & hide[R]")] = S.wm.selectVisibleWindowToHideFunc(),
         [sk("p", "pick windows")] = S.wm.pickWindowsFunc(),
 
         [ctrl("r", "restart")] = S.wm.startOrRestartServiceFunc(),
@@ -236,7 +236,6 @@ local keyMap = {
 }
 local hyper = { { "shift", "command", "control", "option" }, "1", }
 S.recursivebinder.recursiveBind(keyMap, hyper)
-
 
 --- Bind the space keys separately
 G.bindSpaceKeys = function()

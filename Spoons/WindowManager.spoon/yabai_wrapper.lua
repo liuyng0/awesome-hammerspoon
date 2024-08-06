@@ -3,6 +3,9 @@ local U = hs.loadSpoon("Utils")
 local M = U.moses
 local cwrap, execSync, cwrapExec = U.command.cwrap, U.command.execSync, U.command.cwrapExec
 
+---@type spoon.Popup
+local popup = hs.loadSpoon("Popup")
+
 ---@class YabaiWrapper
 local obj = {}
 
@@ -132,7 +135,7 @@ end
 
 function obj.hideOtherWindowsInCurrentSpace()
   if obj.inMaxSpace() then
-      hs.alert.show("Already in the max space, hide nothing", 0.5)
+      popup.instantAlert("Already in the max space, hide nothing")
       return
   end
   local scratchSpaceIndex = obj.maxSpaceIndexInCurrentDisplay()
@@ -185,4 +188,5 @@ function obj.inMaxSpace()
     local scratchSpaceIndex = obj.maxSpaceIndexInCurrentDisplay()
     return currentSpace and scratchSpaceIndex and currentSpace.index == scratchSpaceIndex
 end
+
 return obj
