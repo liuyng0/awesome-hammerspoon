@@ -121,9 +121,9 @@ function obj.switchToApp (appName)
     ---@param a Window
     ---@param b Window
     function(a, b)
-      if a["has-focus"] then return true end
-      if a.space == currentSpace.index then return true end
-      if b.space == currentSpace.index then return false end
+      if a["has-focus"] and (not b["has-focus"]) then return true end
+      if a.space == currentSpace.index and b.space ~= currentSpace.index then return true end
+      if b.space == currentSpace.index and a.space ~= currentSpace.index then return false end
       if a["is-visible"] and (not b["is-visible"]) then
           return true
       end
